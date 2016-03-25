@@ -1,0 +1,37 @@
+cxx = clang++ -fcolor-diagnostics
+cxxflags = -Wall -Wextra -std=c++11
+includedirs = include
+libs = sfml-system sfml-window sfml-graphics
+
+bd = .build/${variation}
+wd = .
+
+
+filter variation: debug
+  cxxflags += -g -O0 -DDEBUG
+
+filter variation: release
+  cxxflags += -O2 -DNDEBUG
+
+
+rule copy
+  command = cp $in $out
+  description = copying $in to $out
+
+
+build objects($bd/lib/*): auto src/*.cc
+build library($bd/lib/tspart): auto objects($bd/lib/*)
+
+build objects($bd/*): auto tools/*.cc
+
+build application($bd/main): auto objects($bd/main) | library($bd/lib/tspart)
+  libs += tspart
+  libdirs += $bd/lib
+
+build application($bd/cfgtest): auto objects($bd/cfgtest) | library($bd/lib/tspart)
+  libs += tspart
+  libdirs += $bd/lib
+
+build application($wd/main): copy application($bd/main)
+
+build application($wd/cfgtest): copy application($bd/cfgtest)

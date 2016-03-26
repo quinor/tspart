@@ -115,7 +115,11 @@ void apply_filters()
     if (i%(int(img_size.x*img_size.y)/10) == 0)
       progress.update(i);
     double v = 0.3*img_ptr[i*4] + 0.59*img_ptr[i*4+1] + 0.11*img_ptr[i*4+2];
-    v = atan((v+sigmoid_beta)/sigmoid_alpha)/M_PI+0.5;
+    if (false)
+      v = atan((v+sigmoid_beta)/sigmoid_alpha)/M_PI+0.5;
+    else
+      v = v/255.0;
+    v = pow(v, 0.666);
     v = 1-v;
     v = (v-0.05)/0.95;
     v*=255;

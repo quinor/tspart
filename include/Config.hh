@@ -3,7 +3,7 @@
 class Config
 {
 public:
-  const char* filename;
+  char filename[256];
 
   bool maximize;
   float img_max_size;
@@ -14,9 +14,11 @@ public:
 
   unsigned scale_factor;
 
-  int fill;
+  unsigned fill;
 
-  int number_of_passes;
+  unsigned number_of_passes;
 
+
+  Config();
   void load_from_args(int argc, char** argv);
 };

@@ -10,7 +10,7 @@ void visualize_polyline(
   for (size_t i=0; i<polyline.size(); i++)
   {
     curve[i].position=polyline[i]/float(scale_factor*2)+sf::Vector2f(50,50);
-    curve[i].color=sf::Color(80,80,80);
+    curve[i].color=sf::Color(0,0,0, 255);
   }
   sf::RenderWindow window;
   window.create(

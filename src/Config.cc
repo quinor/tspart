@@ -32,7 +32,6 @@ argp_option options[] =
 const std::string re_float = "(-?[0-9]{1,5}(\\.[0-9]{1,3})?)";
 const std::string re_int = "(-?[0-9]{1,5})";
 
-//placeholder
 error_t parse_opt (int key, char *arg, argp_state *state)
 {
   Config* cfg = static_cast<Config*>(state->input);

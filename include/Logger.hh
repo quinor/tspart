@@ -51,4 +51,4 @@ public:
   Progress progress(Level level, const char* desc, int max);
 };
 
-Logger& logger(); //singleton
+Logger& get_logger(); //singleton

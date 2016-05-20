@@ -43,16 +43,16 @@ MassElement* prefix_sums;
 
 void load_image(const char* fname)
 {
-  logger().enter(Logger::Level::Info, "Image loading");
+  get_logger().enter(Logger::Level::Info, "Image loading");
 
   sf::Image tmp;
   if(!tmp.loadFromFile(fname))
   {
-    logger().log(Logger::Level::Error, "Invalid image file!");
+    get_logger().log(Logger::Level::Error, "Invalid image file!");
     exit(-1);
   }
 
-  logger().log(Logger::Level::Verbose, "Maximizing");
+  get_logger().log(Logger::Level::Verbose, "Maximizing");
 
   sf::Vector2f s = sf::Vector2f(tmp.getSize());
   float scale = 1500.f/std::max(s.x, s.y);
@@ -60,7 +60,7 @@ void load_image(const char* fname)
   {
     std::ostringstream stream;
     stream<<"Size before maximizing: ("<<s.x<<", "<<s.y<<")";
-    logger().log(Logger::Level::Verbose, stream.str().c_str());
+    get_logger().log(Logger::Level::Verbose, stream.str().c_str());
   }
 
   s*=scale;
@@ -68,7 +68,7 @@ void load_image(const char* fname)
   {
     std::ostringstream stream;
     stream<<"Size after maximizing: ("<<s.x<<", "<<s.y<<")";
-    logger().log(Logger::Level::Verbose, stream.str().c_str());
+    get_logger().log(Logger::Level::Verbose, stream.str().c_str());
   }
 
   
@@ -86,25 +86,25 @@ void load_image(const char* fname)
   img = rtex.getTexture().copyToImage();
   img_size = img.getSize();
 
-  logger().exit();
+  get_logger().exit();
 }
 
 void apply_filters()
 {
-  logger().enter(Logger::Level::Info, "Applying filters");
+  get_logger().enter(Logger::Level::Info, "Applying filters");
   auto img_ptr = img.getPixelsPtr();
   data = new uint8_t[img_size.x*img_size.y+7];
 
-  logger().log(Logger::Level::Verbose, "Applying grayscale (to [0...255])");
+  get_logger().log(Logger::Level::Verbose, "Applying grayscale (to [0...255])");
   {
     std::ostringstream stream;
     stream
       <<"Applying sigmoid function: atan((x + "
       <<sigmoid_beta<<") * "<<sigmoid_alpha<<")";
-    logger().log(Logger::Level::Verbose, stream.str().c_str());
+    get_logger().log(Logger::Level::Verbose, stream.str().c_str());
   }
 
-  auto progress = logger().progress(
+  auto progress = get_logger().progress(
     Logger::Level::Info,
     "Filters",
     img_size.x*img_size.y
@@ -115,7 +115,7 @@ void apply_filters()
     if (i%(int(img_size.x*img_size.y)/10) == 0)
       progress.update(i);
     double v = 0.3*img_ptr[i*4] + 0.59*img_ptr[i*4+1] + 0.11*img_ptr[i*4+2];
-    if (false)
+    if (true)
       v = atan((v+sigmoid_beta)/sigmoid_alpha)/M_PI+0.5;
     else
       v = v/255.0;
@@ -127,22 +127,22 @@ void apply_filters()
     data[i] = val;
   }
   progress.finish();
-  logger().exit();
+  get_logger().exit();
 }
 
 void upscale()
 {
-  logger().enter(Logger::Level::Info, "Upscaling");
+  get_logger().enter(Logger::Level::Info, "Upscaling");
   img2_size = img_size*scale_factor;
   img2_ptr = new uint8_t[img2_size.x*img2_size.y+7];
 
   {
     std::ostringstream stream;
     stream<<"Upscaling with factor "<<scale_factor;
-    logger().log(Logger::Level::Verbose, stream.str().c_str());
+    get_logger().log(Logger::Level::Verbose, stream.str().c_str());
   }
 
-  auto progress = logger().progress(Logger::Level::Info, "Upscale", img2_size.y);
+  auto progress = get_logger().progress(Logger::Level::Info, "Upscale", img2_size.y);
   for (size_t y = 0; y<img2_size.y; y++)
   {
     if (y%int(img2_size.y/10) == 0)
@@ -167,14 +167,14 @@ void upscale()
 
   delete [] data;
 
-  logger().exit();
+  get_logger().exit();
 }
 
 void calculate_prefix_sums()
 {
-  logger().enter(Logger::Level::Info, "Calculating prefix sums");
+  get_logger().enter(Logger::Level::Info, "Calculating prefix sums");
   MassElement* prefix_sums = new MassElement[img2_size.x*img2_size.y+7];
-  auto progress = logger().progress(
+  auto progress = get_logger().progress(
     Logger::Level::Info,
     "Prefix summarize",
     img2_size.y
@@ -192,12 +192,12 @@ void calculate_prefix_sums()
   }
   progress.finish();
 
-  logger().exit();
+  get_logger().exit();
 }
 
 std::vector<sf::Vector2f> create_base_points ()
 {
-  logger().enter(Logger::Level::Info, "Creating basic points");
+  get_logger().enter(Logger::Level::Info, "Creating basic points");
 
   int order = 0;
   while ((unsigned)(1<<order) < std::max(img2_size.x, img2_size.y))
@@ -206,7 +206,7 @@ std::vector<sf::Vector2f> create_base_points ()
   HilbertGenerator generator(order);
   std::vector<sf::Vector2f> pts;
 
-  auto progress = logger().progress(
+  auto progress = get_logger().progress(
     Logger::Level::Info,
     "Progress through Hilbert curve",
     1<<(2*order)
@@ -229,19 +229,19 @@ std::vector<sf::Vector2f> create_base_points ()
   }
   progress.finish();
 
-  logger().exit();
+  get_logger().exit();
   return pts;
 }
 
 int main (int argc, char** argv)
 {
-  logger().set_log_level(Logger::Level::Max);
+  get_logger().set_log_level(Logger::Level::Max);
 
 
 
   if (argc!=2)
   {
-    logger().log(Logger::Level::Error, "Invalid number of arguments!");
+    get_logger().log(Logger::Level::Error, "Invalid number of arguments!");
     return 0;
   }
 

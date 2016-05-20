@@ -1,17 +1,19 @@
+bd = .build/${variation}
+wd = .
+
 cxx = clang++ -fcolor-diagnostics
+#cxx = g++
 cxxflags = -Wall -Wextra -std=c++11
 includedirs = include
 libs = sfml-system sfml-window sfml-graphics
-
-bd = .build/${variation}
-wd = .
+libdirs = $bd/lib
 
 
 filter variation: debug
   cxxflags += -g -O0 -DDEBUG
 
 filter variation: release
-  cxxflags += -O2 -DNDEBUG
+  cxxflags += -O3 -DNDEBUG
 
 
 rule copy
@@ -24,14 +26,19 @@ build library($bd/lib/tspart): auto objects($bd/lib/*)
 
 build objects($bd/*): auto tools/*.cc
 
+
 build application($bd/main): auto objects($bd/main) | library($bd/lib/tspart)
   libs += tspart
-  libdirs += $bd/lib
 
 build application($bd/cfgtest): auto objects($bd/cfgtest) | library($bd/lib/tspart)
   libs += tspart
-  libdirs += $bd/lib
+
+build application($bd/build_tsp_art): auto objects($bd/build_tsp_art) | library($bd/lib/tspart)
+  libs += tspart
+
 
 build application($wd/main): copy application($bd/main)
 
 build application($wd/cfgtest): copy application($bd/cfgtest)
+
+build application($wd/build_tsp_art): copy application($bd/build_tsp_art)

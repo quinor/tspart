@@ -112,7 +112,7 @@ void Logger::Progress::finish()
 //  parent->print(msg_headers[level], msg_strings["empty"], "");
 }
 
-Logger& logger()
+Logger& get_logger()
 {
   static Logger _ = Logger();
   return _;

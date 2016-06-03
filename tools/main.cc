@@ -255,5 +255,5 @@ int main (int argc, char** argv)
 
   auto pts = create_base_points();
 
-  visualize_polyline(img2_size, pts);
+  visualize_polyline(img2_size, scale_factor, pts);
 }

@@ -33,7 +33,7 @@ public:
 
   std::pair<sf::Vector2u, std::vector<sf::Vector2f>> build_image()
   {
-    logger.enter(Logger::Level::Info, "TSPBuilder starting");
+    logger.enter(Logger::Level::Info, "TSPBuilder");
     auto img = loader.load();
 
     std::pair<sf::Vector2u, uint8_t*>

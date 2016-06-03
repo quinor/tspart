@@ -1,5 +1,4 @@
 #pragma once
-#include <cstdint>
 
 const double sigmoid_alpha = 30;
 const double sigmoid_beta = -128;

@@ -48,7 +48,7 @@ uint8_t* UpscaleImageProcessor::apply_filters(const sf::Image& img)
 
 
 std::pair<sf::Vector2u, uint8_t*>
-  UpscaleImageProcessor::upscale(sf::Vector2u img_size, uint8_t* data)
+  UpscaleImageProcessor::upscale(sf::Vector2u img_size, const uint8_t* data)
 {
   get_logger().enter(Logger::Level::Info, "Upscaling");
   sf::Vector2u img2_size = img_size*config.scale_factor;
@@ -69,13 +69,15 @@ std::pair<sf::Vector2u, uint8_t*>
     {
       int px = x/config.scale_factor;
       int py = y/config.scale_factor;
+      int kx = std::min(px+1, (int)img_size.x-1);
+      int ky = std::min(py+1, (int)img_size.y-1);
       float dx = (x%config.scale_factor)/float(config.scale_factor);
       float dy = (y%config.scale_factor)/float(config.scale_factor);
 
       int v00=data[py*img_size.x+px];
-      int v01=data[(py+1)*img_size.x+px];
-      int v10=data[py*img_size.x+px+1];
-      int v11=data[(py+1)*img_size.x+px+1];
+      int v01=data[ky*img_size.x+px];
+      int v10=data[py*img_size.x+kx];
+      int v11=data[ky*img_size.x+kx];
       double v = v00*(1-dx)*(1-dy) + v10*dx*(1-dy) + v01*(1-dx)*(dy) + v11*dx*dy;
       uint8_t val = std::min(std::max(0, int(v)), 255);
       img2_ptr[y*img2_size.x+x] = val;

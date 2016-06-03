@@ -22,6 +22,7 @@ rule copy
 
 
 build objects($bd/lib/*): auto src/*.cc
+build objects($bd/lib/*): auto src/*.cpp
 build library($bd/lib/tspart): auto objects($bd/lib/*)
 
 build objects($bd/*): auto tools/*.cc

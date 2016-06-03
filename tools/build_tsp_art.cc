@@ -7,12 +7,11 @@ int main (int argc, char** argv)
   TSPBuilder
       <FileImageLoader,
       UpscaleImageProcessor,
-      HilbertPointsGenerator,
-      EmptyPolylineGenerator>
+      VoronoiPointsGenerator,
+      HilbertPolylineGenerator>
       builder;
   builder.config.load_from_args(argc, argv);
 
-  std::pair<sf::Vector2u, std::vector<sf::Vector2f>>
-    out = builder.build_image();
-  visualize_polyline(out.first, out.second);
+  auto out = builder.build_image();
+  visualize_polyline(out.first, builder.config.scale_factor, out.second);
 }

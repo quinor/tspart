@@ -27,3 +27,11 @@ public:
   virtual std::pair<sf::Vector2u, std::vector<sf::Vector2f>>
     generate(std::pair<sf::Vector2u, std::vector<sf::Vector2f>>);
 };
+
+class HilbertPolylineGenerator : public PolylineGenerator
+{
+public:
+  using PolylineGenerator::PolylineGenerator;
+  virtual std::pair<sf::Vector2u, std::vector<sf::Vector2f>>
+    generate(std::pair<sf::Vector2u, std::vector<sf::Vector2f>>);
+};

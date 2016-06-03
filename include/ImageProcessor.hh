@@ -23,7 +23,7 @@ public:
 class UpscaleImageProcessor : public ImageProcessor
 {
   uint8_t* apply_filters(const sf::Image&);
-  std::pair<sf::Vector2u, uint8_t*> upscale(sf::Vector2u, uint8_t*);
+  std::pair<sf::Vector2u, uint8_t*> upscale(sf::Vector2u, const uint8_t*);
 public:
   using ImageProcessor::ImageProcessor;
   virtual std::pair<sf::Vector2u, uint8_t*> process(const sf::Image&);

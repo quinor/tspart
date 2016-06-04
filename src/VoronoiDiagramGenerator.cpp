@@ -27,6 +27,11 @@
 * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
 */
 
+/*
+* Scrapped from https://github.com/thegrandpoobah/voronoi
+* as autor did some modifications to the original code
+*/
+
 #include "VoronoiDiagramGenerator.h"
 
 #include <limits>

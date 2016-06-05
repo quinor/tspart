@@ -8,7 +8,7 @@ int main (int argc, char** argv)
       <FileImageLoader,
       UpscaleImageProcessor,
       VoronoiPointsGenerator,
-      HilbertPolylineGenerator>
+      MSTPolylineGenerator>
       builder;
   builder.config.load_from_args(argc, argv);
 

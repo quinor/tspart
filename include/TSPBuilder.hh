@@ -18,22 +18,28 @@ public:
 private:
   Logger& logger;
 
-  Loader loader;
-  Processor processor;
-  Points points;
-  Polyline polyline;
+  static_assert(std::is_base_of<ImageLoader, Loader>::value,
+    "Loader doesn't inherit from base loader class");
+  static_assert(std::is_base_of<ImageProcessor, Processor>::value,
+    "Processor doesn't inherit from base processor class");
+  static_assert(std::is_base_of<PointsGenerator, Points>::value,
+    "Points generator doesn't inherit from base points generator class");
+  static_assert(std::is_base_of<PolylineGenerator, Polyline>::value,
+    "PolylineGenerator doesn't inherit from base polyline generator class");
+
 public:
   TSPBuilder(Logger& log = get_logger())
   : logger   (log)
-  , loader    (config, logger)
-  , processor (config, logger)
-  , points    (config, logger)
-  , polyline  (config, logger)
   {}
 
   std::pair<sf::Vector2u, std::vector<sf::Vector2f>> build_image()
   {
     logger.enter(Logger::Level::Info, "TSPBuilder");
+
+    Loader    loader    (config, logger);
+    Processor processor (config, logger);
+    Points    points    (config, logger);
+    Polyline  polyline  (config, logger);
     auto img = loader.load();
 
     std::pair<sf::Vector2u, uint8_t*>

@@ -3,9 +3,10 @@ wd = .
 
 cxx = clang++ -fcolor-diagnostics
 #cxx = g++
-cxxflags = -Wall -Wextra -std=c++11
+cxxflags = -Wall -Wextra -std=c++11 -fopenmp
+ldflags = -fopenmp
 includedirs = include
-libs = sfml-system sfml-window sfml-graphics
+libs = sfml-system sfml-window sfml-graphics pthread
 libdirs = $bd/lib
 
 
@@ -27,12 +28,6 @@ build library($bd/lib/tspart): auto objects($bd/lib/*)
 
 build objects($bd/*): auto tools/*.cc
 
-
-build application($bd/main): auto objects($bd/main) | library($bd/lib/tspart)
-  libs += tspart
-
-build application($bd/cfgtest): auto objects($bd/cfgtest) | library($bd/lib/tspart)
-  libs += tspart
 
 build application($bd/build_tsp_art): auto objects($bd/build_tsp_art) | library($bd/lib/tspart)
   libs += tspart

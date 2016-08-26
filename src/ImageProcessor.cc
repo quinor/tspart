@@ -20,7 +20,7 @@ uint8_t* UpscaleImageProcessor::apply_filters(const sf::Image& img)
   }
 
   auto progress = logger.progress(
-    Logger::Level::Info,
+    Logger::Level::Verbose,
     "Filters",
     img_size.x*img_size.y
   );
@@ -60,7 +60,7 @@ std::pair<sf::Vector2u, uint8_t*>
     get_logger().log(Logger::Level::Verbose, stream.str().c_str());
   }
 
-  auto progress = get_logger().progress(Logger::Level::Info, "Upscale", img2_size.y);
+  auto progress = get_logger().progress(Logger::Level::Verbose, "Upscale", img2_size.y);
   for (size_t y = 0; y<img2_size.y; y++)
   {
     if (y%int(img2_size.y/10) == 0)

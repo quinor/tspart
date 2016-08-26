@@ -3,7 +3,6 @@
 
 int main (int argc, char** argv)
 {
-  get_logger().set_log_level(Logger::Level::Max);
   TSPBuilder
       <FileImageLoader,
       UpscaleImageProcessor,

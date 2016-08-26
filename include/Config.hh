@@ -6,7 +6,7 @@ public:
   char filename[256];
 
   bool maximize;
-  float img_max_size;
+  unsigned img_max_size;
 
   bool use_sigmoid;
   double sigmoid_alpha;
@@ -17,6 +17,8 @@ public:
   unsigned fill;
 
   unsigned number_of_passes;
+
+  unsigned log_level;
 
 
   Config();

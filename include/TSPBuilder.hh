@@ -3,11 +3,13 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
+#include "Config.hh"
 #include "Logger.hh"
 
 #include "ImageLoader.hh"
 #include "ImageProcessor.hh"
 #include "PointsGenerator.hh"
+#include "VoronoiPointsGenerator.hh"
 #include "PolylineGenerator.hh"
 
 template <class Loader, class Processor, class Points, class Polyline>
@@ -25,15 +27,25 @@ private:
   static_assert(std::is_base_of<PointsGenerator, Points>::value,
     "Points generator doesn't inherit from base points generator class");
   static_assert(std::is_base_of<PolylineGenerator, Polyline>::value,
-    "PolylineGenerator doesn't inherit from base polyline generator class");
+    "Polyline generator doesn't inherit from base polyline generator class");
 
 public:
   TSPBuilder(Logger& log = get_logger())
-  : logger   (log)
+  : logger (log)
   {}
 
   std::pair<sf::Vector2u, std::vector<sf::Vector2f>> build_image()
   {
+    logger.set_log_level(std::vector<Logger::Level> {
+      Logger::Level::None,
+      Logger::Level::Error,
+      Logger::Level::Warning,
+      Logger::Level::Info,
+      Logger::Level::Verbose,
+      Logger::Level::Debug,
+      Logger::Level::Max
+    }[config.log_level]);
+
     logger.enter(Logger::Level::Info, "TSPBuilder");
 
     Loader    loader    (config, logger);

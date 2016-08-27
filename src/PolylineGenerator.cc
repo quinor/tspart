@@ -2,6 +2,7 @@
 #include "VoronoiDiagramGenerator.h"
 #include <algorithm>
 #include <sstream>
+#include <cmath>
 
 std::pair<sf::Vector2u, std::vector<sf::Vector2f>>
 EmptyPolylineGenerator::generate(std::pair<sf::Vector2u, std::vector<sf::Vector2f>> input)
@@ -104,7 +105,7 @@ void MSTPolylineGenerator::GenerateGraph(std::pair<sf::Vector2u, std::vector<sf:
 bool MSTPolylineGenerator::EdgCmp::operator()(const sf::Vector2u & a, const sf::Vector2u & b)
 {
   auto p=intv[a.x]-intv[a.y], q=intv[b.x]-intv[b.y];
-  long double A=(long double)p.x*p.x+(long double)p.y*p.y, B=(long double)q.x*q.x+(long double)q.y*q.y;
+  double A=(double)p.x*p.x+(double)p.y*p.y, B=(double)q.x*q.x+(double)q.y*q.y;
   if (std::abs(A-B)<0.00001)
     return false;
   return A<B;

@@ -2,7 +2,6 @@ bd = .build/${variation}
 wd = .
 
 cxx = clang++ -fcolor-diagnostics
-#cxx = g++
 cxxflags = -Wall -Wextra -std=c++11 -fopenmp
 ldflags = -fopenmp
 includedirs = include
@@ -32,9 +31,5 @@ build objects($bd/*): auto tools/*.cc
 build application($bd/build_tsp_art): auto objects($bd/build_tsp_art) | library($bd/lib/tspart)
   libs += tspart
 
-
-build application($wd/main): copy application($bd/main)
-
-build application($wd/cfgtest): copy application($bd/cfgtest)
 
 build application($wd/build_tsp_art): copy application($bd/build_tsp_art)

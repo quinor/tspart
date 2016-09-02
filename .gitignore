@@ -3,9 +3,8 @@ build.ninja
 .ninja_deps
 .ninja_log
 venv/
-main
-cfgtest
 build_tsp_art
+block_test
 res/
 *.sublime*
 activate

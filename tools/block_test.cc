@@ -1,69 +1,39 @@
-#include <iostream>
-#include "Block.hh"
+#include "Image/ImageTools.hh"
+#include "Logger.hh"
 
-template <typename Content>
-class DataProvider : public Block
+
+int main (int argc, char** argv)
 {
-public:
-  DataPromise<Content> data;
+  if (argc == 1)
+    return 0;
 
-  DataProvider()
-  : data(this)
-  {}
+  get_logger().set_log_level(Logger::Level::Verbose);
 
-  Content& hook()
-  {
-    refresh();
-    return data_hook(data);
-  }
+  ImageLoader load(get_logger());
+  load.set_filename(argv[1]);
 
-protected:
+  ImageMaximizer max(get_logger());
+  max.set_max_size(850);
+  max.in.connect(load.out);
+  
+  ImageFilterGrayscale gray(get_logger());
+  gray.in.connect(max.out);
+  
+  ImageFilterBlur bl(get_logger());
+  bl.set_radius(50);
+  bl.in.connect(gray.out);
 
-  virtual void compute() override
-  {}
-};
+  ImageCompositorAverage avg(get_logger());
+  avg.set_ratio(-1);
+  avg.in1.connect(gray.out);
+  avg.in2.connect(bl.out);
 
-class NothingDoer : public Block
-{
-public:
-  DataInput<int> in;
-  DataPromise<int> out;
+  ImageFilterInverse inv(get_logger());
+  inv.in.connect(avg.out);
 
-  NothingDoer()
-  : in(this)
-  , out(this)
-  {}
-protected:
-  virtual void compute() override
-  {
-    data_hook(out) = in.get_data();
-  }
-};
+  ImageViewer view1(get_logger());
+  view1.in.connect(inv.out);
+  view1.update();
 
-
-int main ()
-{
-  NothingDoer nd;
-  DataProvider<int> input;
-  input.hook() = 1;
-  input.refresh();
-
-  nd.in.connect(input.data);
-  nd.update();
-  std::cout<<nd.out.get_data()<<"\n";
-
-  input.hook() = 2;
-  input.refresh();
-
-  nd.update();
-  std::cout<<nd.out.get_data()<<"\n";
-
-  DataProvider<int> second_input;
-  second_input.hook() = 3;
-  second_input.refresh();
-
-  nd.in.connect(second_input.data);
-  nd.update();
-  std::cout<<nd.out.get_data()<<"\n";
   return 0;
 }

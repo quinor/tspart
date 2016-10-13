@@ -61,7 +61,7 @@ void Logger::exit()
   auto top = stack.back();
   stack.pop_back();
   if (top.first <= loglevel)
-    print(msg_headers[top.first], msg_strings["exit"], top.second);
+    print(msg_headers[top.first], msg_strings["exit"], top.second.c_str());
 }
 
 void Logger::log(Logger::Level level, const char* message)

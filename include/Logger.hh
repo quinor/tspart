@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <vector>
+#include <string>
 #include <SFML/System.hpp>
 
 
@@ -37,7 +38,7 @@ public:
 
 private:
   Level loglevel;
-  std::vector<std::pair<Level, const char*> > stack;
+  std::vector<std::pair<Level, std::string> > stack;
   FILE* output;
   sf::Clock time;
 

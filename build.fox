@@ -21,20 +21,20 @@ rule copy
   description = copying $in to $out
 
 
-build objects($bd/lib/*): auto src/*.cc
-build objects($bd/lib/*): auto src/*.cpp
-build library($bd/lib/tspart): auto objects($bd/lib/*)
+build objects($bd/lib/**/*): auto src/**/*.cc
+build objects($bd/lib/**/*): auto src/**/*.cpp
+build library($bd/lib/tspart): auto objects($bd/lib/**/*)
 
 build objects($bd/*): auto tools/*.cc
 
 
-build application($bd/build_tsp_art): auto objects($bd/build_tsp_art) | library($bd/lib/tspart)
-  libs += tspart
+#build application($bd/build_tsp_art): auto objects($bd/build_tsp_art) | library($bd/lib/tspart)
+#  libs += tspart
 
 build application($bd/block_test): auto objects($bd/block_test) | library($bd/lib/tspart)
   libs += tspart
 
 
-build application($wd/build_tsp_art): copy application($bd/build_tsp_art)
+#build application($wd/build_tsp_art): copy application($bd/build_tsp_art)
 
 build application($wd/block_test): copy application($bd/block_test)

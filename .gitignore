@@ -8,3 +8,4 @@ block_test
 res/
 *.sublime*
 activate
+.clang_complete

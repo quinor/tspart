@@ -52,6 +52,53 @@ ImageFilterInverse::ImageFilterInverse(Logger& log)
 }
 
 
+ImageFilterSigmoid::ImageFilterSigmoid(Logger& log)
+: logger(log)
+, alpha(30)
+, beta(-128)
+, in(this)
+, out(this)
+{
+  if (!frag.loadFromFile("shaders/sigmoid.frag", sf::Shader::Fragment))
+  {
+    logger.log(Logger::Level::Error, "Failed to load X shader");
+    exit(-1);
+  }
+}
+
+void ImageFilterSigmoid::set_shape(float a, float b)
+{
+  refresh();
+  alpha = a;
+  beta = b;
+}
+
+void ImageFilterSigmoid::compute()
+{
+  logger.enter(Logger::Level::Info, "Applying filter: Sigmoid");
+
+  {
+    std::ostringstream stream;
+    stream<<"Sigmoid function: "
+      <<"atan((x + "<<beta<<") * "<<alpha<<")";
+    logger.log(Logger::Level::Verbose, stream.str().c_str());    
+  }
+
+  sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
+  sf::RenderTexture rtex;
+  rtex.create(s.x, s.y);
+  sf::RectangleShape rs(s);
+  rs.setTextureRect(sf::IntRect(0, 0, 1, 1));
+  frag.setUniform("tex", in.get_data());
+  frag.setUniform("alpha", alpha);
+  frag.setUniform("beta", beta);
+  rtex.draw(rs, &frag);
+  rtex.display();
+  data_hook(out) = rtex.getTexture();
+
+  logger.exit();
+}
+
 ImageFilterBlur::ImageFilterBlur(Logger& log)
 : logger(log)
 , blur_radius(0)

@@ -29,13 +29,13 @@ void ImageViewer::compute()
 
   sf::Event evt;
   while (window.isOpen())
-    if (window.pollEvent(evt) && evt.type == sf::Event::Closed)
-      window.close();
-    else
-    {
-      sf::sleep(sf::milliseconds(50));
-      window.display();
-    }
+  {
+    while (window.pollEvent(evt))
+      if(evt.type == sf::Event::Closed)
+        window.close();
+    sf::sleep(sf::milliseconds(50));
+    window.display();
+  }
   
   refresh(); //so that window appears every time we update this block
   logger.exit();

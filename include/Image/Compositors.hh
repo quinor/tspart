@@ -32,3 +32,15 @@ public:
   ImageCompositorAverage(Logger& log);
   void set_ratio(float ratio);
 };
+
+class ImageCompositorDifference : public ImageCompositor
+{
+public:
+  ImageCompositorDifference(Logger& log);
+};
+
+class ImageCompositorAbsoluteDifference : public ImageCompositor
+{
+public:
+  ImageCompositorAbsoluteDifference(Logger& log);
+};

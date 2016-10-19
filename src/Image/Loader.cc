@@ -15,6 +15,11 @@ void ImageLoader::set_filename(std::string fname)
 void ImageLoader::compute()
 {
   logger.enter(Logger::Level::Info, "Image loading");
+  {
+    std::ostringstream stream;
+    stream<<"Filename: "<<filename;
+    logger.log(Logger::Level::Verbose, stream.str().c_str());
+  }
   sf::Image tmp;
   if(!tmp.loadFromFile(filename))
   {

@@ -53,3 +53,27 @@ void ImageCompositorAverage::set_ratio(float ratio)
 {
   frag.setUniform("ratio", ratio);  
 }
+
+
+ImageCompositorDifference::ImageCompositorDifference(Logger& log)
+: ImageCompositor(log)
+{
+  compositor_name = "Difference";
+  if (!frag.loadFromFile("shaders/difference.frag", sf::Shader::Fragment))
+  {
+    logger.log(Logger::Level::Error, "Failed to load shader");
+    exit(-1);
+  }
+}
+
+
+ImageCompositorAbsoluteDifference::ImageCompositorAbsoluteDifference(Logger& log)
+: ImageCompositor(log)
+{
+  compositor_name = "Absolute difference";
+  if (!frag.loadFromFile("shaders/abs_difference.frag", sf::Shader::Fragment))
+  {
+    logger.log(Logger::Level::Error, "Failed to load shader");
+    exit(-1);
+  }
+}

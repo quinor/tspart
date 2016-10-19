@@ -2,7 +2,7 @@ bd = .build/${variation}
 wd = .
 
 cxx = clang++ -fcolor-diagnostics
-cxxflags = -Wall -Wextra -std=c++11 -fopenmp
+cxxflags = -Wall -Wextra -std=c++14 -fopenmp
 ldflags = -fopenmp
 includedirs = include
 libs = sfml-system sfml-window sfml-graphics pthread
@@ -31,10 +31,16 @@ build objects($bd/*): auto tools/*.cc
 #build application($bd/build_tsp_art): auto objects($bd/build_tsp_art) | library($bd/lib/tspart)
 #  libs += tspart
 
+#build application($wd/build_tsp_art): copy application($bd/build_tsp_art)
+
+
 build application($bd/block_test): auto objects($bd/block_test) | library($bd/lib/tspart)
   libs += tspart
 
-
-#build application($wd/build_tsp_art): copy application($bd/build_tsp_art)
-
 build application($wd/block_test): copy application($bd/block_test)
+
+
+build application($bd/mid_pass): auto objects($bd/mid_pass) | library($bd/lib/tspart)
+  libs += tspart
+
+build application($wd/mid_pass): copy application($bd/mid_pass)

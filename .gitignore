@@ -5,6 +5,8 @@ build.ninja
 venv/
 build_tsp_art
 block_test
+mid_pass
+out.jpg
 res/
 *.sublime*
 activate

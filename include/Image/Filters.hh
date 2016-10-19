@@ -38,6 +38,24 @@ public:
 };
 
 
+class ImageFilterSigmoid : public Block
+{
+public:
+  ImageFilterSigmoid(Logger& log);
+
+  void set_shape(float a, float b);
+private:
+  virtual void compute() override;
+  sf::Shader frag;
+  Logger& logger;
+  float alpha;
+  float beta;
+public:
+  DataInput<sf::Texture> in;
+  DataPromise<sf::Texture> out;
+};
+
+
 class ImageFilterBlur : public Block
 {
 public:

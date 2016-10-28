@@ -5,8 +5,8 @@
 #include <sstream>
 #include <cstdlib>
 
-#include "Block.hh"
-#include "Logger.hh"
+#include "utils/Block.hh"
+#include "utils/Logger.hh"
 
 
 class ImageCompositor : public Block
@@ -16,6 +16,7 @@ public:
 
 protected:
   virtual void compute() override;
+  virtual void prepare_shader();
   std::string compositor_name;
   sf::Shader frag;
   Logger& logger;
@@ -30,7 +31,12 @@ class ImageCompositorAverage : public ImageCompositor
 {
 public:
   ImageCompositorAverage(Logger& log);
-  void set_ratio(float ratio);
+
+  DataInput<float> ratio_input;
+  DataPromiseManual<float> ratio_manual;
+private:
+  virtual void prepare_shader() override;
+
 };
 
 class ImageCompositorDifference : public ImageCompositor

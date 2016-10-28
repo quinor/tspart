@@ -8,7 +8,7 @@ uniform float beta;
 
 float sigmoid(float val)
 {
-  return atan((val*256+beta)/alpha)/M_PI+0.5;
+  return atan((val*256-beta)/alpha)/M_PI+0.5;
 }
 
 void main()

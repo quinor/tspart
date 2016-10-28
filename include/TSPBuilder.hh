@@ -3,8 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-#include "Config.hh"
-#include "Logger.hh"
+#include "utils/Config.hh"
+#include "utils/Logger.hh"
 
 #include "ImageLoader.hh"
 #include "ImageProcessor.hh"

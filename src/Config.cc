@@ -1,5 +1,5 @@
 #include "Config.hh"
-#include "Logger.hh"
+#include "utils/Logger.hh"
 #include <argp.h>
 #include <cstring>
 #include <regex>

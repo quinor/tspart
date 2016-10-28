@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include "Config.hh"
-#include "Logger.hh"
+#include "utils/Logger.hh"
 
 
 class PolylineGenerator

@@ -1,4 +1,4 @@
-#include "HilbertGenerator.hh"
+#include "utils/HilbertGenerator.hh"
 
 HilbertGenerator::HilbertGenerator (int depth)
 : height(depth)

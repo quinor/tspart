@@ -3,8 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-#include "Block.hh"
-#include "Logger.hh"
+#include "utils/Block.hh"
+#include "utils/Logger.hh"
 
 
 class ImageMaximizer : public Block
@@ -13,16 +13,17 @@ public:
 
   ImageMaximizer(Logger& log);
 
-  void set_max_size(size_t size);
 
-protected:
+private:
   virtual void compute() override;
 
 private:
   Logger& logger;
-  size_t max_size;
 
 public:
   DataInput<sf::Texture> in;
   DataPromise<sf::Texture> out;
+
+  DataInput<size_t> max_size_input;
+  DataPromiseManual<size_t> max_size_manual;
 };

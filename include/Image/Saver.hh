@@ -3,8 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-#include "Block.hh"
-#include "Logger.hh"
+#include "utils/Block.hh"
+#include "utils/Logger.hh"
 
 
 class ImageSaver : public Block
@@ -12,15 +12,16 @@ class ImageSaver : public Block
 public:
   DataInput<sf::Texture> in;
 
+  DataInput<std::string> filename_input;
+  DataPromiseManual<std::string> filename_manual;
+
   ImageSaver(Logger& log);
 
-  void set_filename(std::string fname);
 
 protected:
   virtual void compute() override;
 
 private:
   Logger& logger;
-  std::string filename;
 
 };

@@ -3,13 +3,10 @@
 
 ImageLoader::ImageLoader(Logger& log)
 : out(this)
+, filename_input(this)
 , logger(log)
-{}
-
-void ImageLoader::set_filename(std::string fname)
 {
-  refresh();
-  filename = fname;
+  filename_input.connect(filename_manual);
 }
 
 void ImageLoader::compute()
@@ -17,11 +14,11 @@ void ImageLoader::compute()
   logger.enter(Logger::Level::Info, "Image loading");
   {
     std::ostringstream stream;
-    stream<<"Filename: "<<filename;
+    stream<<"Filename: "<<filename_input.get_data();
     logger.log(Logger::Level::Verbose, stream.str().c_str());
   }
   sf::Image tmp;
-  if(!tmp.loadFromFile(filename))
+  if(!tmp.loadFromFile(filename_input.get_data()))
   {
     logger.log(Logger::Level::Error, "Invalid image file!");
     exit(-1);

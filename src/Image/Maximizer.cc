@@ -5,12 +5,9 @@ ImageMaximizer::ImageMaximizer(Logger& log)
 : logger(log)
 , in(this)
 , out(this)
-{}
-
-void ImageMaximizer::set_max_size(size_t size)
+, max_size_input(this)
 {
-  refresh();
-  max_size = size;
+  max_size_input.connect(max_size_manual);
 }
 
 void ImageMaximizer::compute()
@@ -18,7 +15,7 @@ void ImageMaximizer::compute()
   logger.enter(Logger::Level::Info, "Image maximizing");
 
   sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
-  float scale = max_size/std::max(s.x, s.y);
+  float scale = max_size_input.get_data()/std::max(s.x, s.y);
   {
     std::ostringstream stream;
     stream<<"Size before maximizing: ("<<s.x<<", "<<s.y<<")";

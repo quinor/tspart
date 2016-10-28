@@ -3,22 +3,22 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-#include "Block.hh"
-#include "Logger.hh"
+#include "utils/Block.hh"
+#include "utils/Logger.hh"
 
 class ImageViewer : public Block
 {
 public:
   DataInput<sf::Texture> in;
 
-  ImageViewer(Logger& log);
+  DataInput<std::string> window_name_input;
+  DataPromiseManual<std::string> window_name_manual;
 
-  void set_window_name(std::string fname);
+  ImageViewer(Logger& log);
 
 protected:
   virtual void compute() override;
 
 private:
   Logger& logger;
-  std::string window_name;
 };

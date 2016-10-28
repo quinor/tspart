@@ -16,11 +16,14 @@ void ImageCompositor::compute()
     logger.enter(Logger::Level::Info, stream.str().c_str());    
   }
 
+
   if (in1.get_data().getSize() != in2.get_data().getSize())
   {
     logger.log(Logger::Level::Error, "Inputs differ in size!");
     exit(-1);
   }
+
+  prepare_shader();
 
   sf::Vector2f s = sf::Vector2f(in1.get_data().getSize());
   sf::RenderTexture rtex;
@@ -36,22 +39,22 @@ void ImageCompositor::compute()
   logger.exit();
 }
 
+void ImageCompositor::prepare_shader()
+{}
+
 
 ImageCompositorAverage::ImageCompositorAverage(Logger& log)
 : ImageCompositor(log)
+, ratio_input(this)
 {
+  ratio_manual.set_data(0.5);
+  ratio_input.connect(ratio_manual);
   compositor_name = "Average";
   if (!frag.loadFromFile("shaders/average.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load shader");
     exit(-1);
   }
-  frag.setUniform("ratio", 0.5f);
-}
-
-void ImageCompositorAverage::set_ratio(float ratio)
-{
-  frag.setUniform("ratio", ratio);  
 }
 
 
@@ -76,4 +79,9 @@ ImageCompositorAbsoluteDifference::ImageCompositorAbsoluteDifference(Logger& log
     logger.log(Logger::Level::Error, "Failed to load shader");
     exit(-1);
   }
+}
+
+void ImageCompositorAverage::prepare_shader()
+{
+  frag.setUniform("ratio", ratio_input.get_data());
 }

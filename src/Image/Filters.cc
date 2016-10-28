@@ -7,6 +7,9 @@ ImageFilter::ImageFilter(Logger& log)
 {
 }
 
+void ImageFilter::prepare_shader()
+{}
+
 void ImageFilter::compute()
 {
   {
@@ -14,6 +17,8 @@ void ImageFilter::compute()
     stream<<"Applying filter: "<<filter_name;
     logger.enter(Logger::Level::Info, stream.str().c_str());    
   }
+
+  prepare_shader();
 
   sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
   sf::RenderTexture rtex;
@@ -35,7 +40,7 @@ ImageFilterGrayscale::ImageFilterGrayscale(Logger& log)
   filter_name = "Grayscale";
   if (!frag.loadFromFile("shaders/grayscale.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load shader");
+    logger.log(Logger::Level::Error, "Failed to load grayscale shader");
     exit(-1);
   }
 }
@@ -46,65 +51,99 @@ ImageFilterInverse::ImageFilterInverse(Logger& log)
   filter_name = "Inverse";
   if (!frag.loadFromFile("shaders/inverse.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load shader");
+    logger.log(Logger::Level::Error, "Failed to load inverse shader");
     exit(-1);
   }
 }
 
 
 ImageFilterSigmoid::ImageFilterSigmoid(Logger& log)
-: logger(log)
-, alpha(30)
-, beta(-128)
-, in(this)
-, out(this)
+: ImageFilter(log)
+, shape_input(this)
 {
+  filter_name = "Sigmoid";
+  shape_input.connect(shape_manual);
+  shape_manual.set_data({30, 128});
   if (!frag.loadFromFile("shaders/sigmoid.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load X shader");
+    logger.log(Logger::Level::Error, "Failed to load sigmoid shader");
     exit(-1);
   }
 }
 
-void ImageFilterSigmoid::set_shape(float a, float b)
+void ImageFilterSigmoid::prepare_shader()
 {
-  refresh();
-  alpha = a;
-  beta = b;
-}
-
-void ImageFilterSigmoid::compute()
-{
-  logger.enter(Logger::Level::Info, "Applying filter: Sigmoid");
-
   {
     std::ostringstream stream;
     stream<<"Sigmoid function: "
-      <<"atan((x + "<<beta<<") * "<<alpha<<")";
+      <<"atan((x + "<<shape_input.get_data().second<<") * "<<shape_input.get_data().first<<")";
+    logger.log(Logger::Level::Verbose, stream.str().c_str());    
+  }
+  frag.setUniform("alpha", shape_input.get_data().first);
+  frag.setUniform("beta", shape_input.get_data().second);
+}
+
+
+ImageFilterGamma::ImageFilterGamma(Logger& log)
+: ImageFilter(log)
+, shape_input(this)
+{
+  filter_name = "Gamma";
+  shape_input.connect(shape_manual);
+  shape_manual.set_data(1/2.2);
+  if (!frag.loadFromFile("shaders/gamma.frag", sf::Shader::Fragment))
+  {
+    logger.log(Logger::Level::Error, "Failed to load gamma shader");
+    exit(-1);
+  }
+}
+
+void ImageFilterGamma::prepare_shader()
+{
+  {
+    std::ostringstream stream;
+    stream<<"Gamma correction: x^"<<shape_input.get_data();
     logger.log(Logger::Level::Verbose, stream.str().c_str());    
   }
 
-  sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
-  sf::RenderTexture rtex;
-  rtex.create(s.x, s.y);
-  sf::RectangleShape rs(s);
-  rs.setTextureRect(sf::IntRect(0, 0, 1, 1));
-  frag.setUniform("tex", in.get_data());
-  frag.setUniform("alpha", alpha);
-  frag.setUniform("beta", beta);
-  rtex.draw(rs, &frag);
-  rtex.display();
-  data_hook(out) = rtex.getTexture();
-
-  logger.exit();
+  frag.setUniform("power", shape_input.get_data());
 }
+
+
+ImageFilterLogarithm::ImageFilterLogarithm(Logger& log)
+: ImageFilter(log)
+, shape_input(this)
+{
+  filter_name = "Logarithm";
+  shape_input.connect(shape_manual);
+  shape_manual.set_data(10);
+  if (!frag.loadFromFile("shaders/logarithm.frag", sf::Shader::Fragment))
+  {
+    logger.log(Logger::Level::Error, "Failed to load logarithm shader");
+    exit(-1);
+  }
+}
+
+void ImageFilterLogarithm::prepare_shader()
+{
+  {
+    std::ostringstream stream;
+    stream<<"Log brightness correction: log(1+x/256*"
+      <<shape_input.get_data()<<")/log(1+"<<shape_input.get_data()<<")";
+    logger.log(Logger::Level::Verbose, stream.str().c_str());    
+  }
+
+  frag.setUniform("scale", shape_input.get_data());
+}
+
 
 ImageFilterBlur::ImageFilterBlur(Logger& log)
 : logger(log)
-, blur_radius(0)
 , in(this)
 , out(this)
+, radius_input(this)
 {
+  radius_input.connect(radius_manual);
   if (!frag_x.loadFromFile("shaders/blur_x.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load X shader");
@@ -117,19 +156,13 @@ ImageFilterBlur::ImageFilterBlur(Logger& log)
   }
 }
 
-void ImageFilterBlur::set_radius(size_t new_radius)
-{
-  refresh();
-  blur_radius = new_radius;
-}
-
 void ImageFilterBlur::compute()
 {
   logger.enter(Logger::Level::Info, "Applying filter: Blur");
 
   {
     std::ostringstream stream;
-    stream<<"Blur radius: "<<blur_radius;
+    stream<<"Blur radius: "<<radius_input.get_data();
     logger.log(Logger::Level::Verbose, stream.str().c_str());    
   }
 
@@ -139,8 +172,8 @@ void ImageFilterBlur::compute()
   sf::Texture tex;
   rt1.create(s.x, s.y);
   rt2.create(s.x, s.y);
-  frag_x.setUniform("radius", (int)blur_radius);
-  frag_y.setUniform("radius", (int)blur_radius);
+  frag_x.setUniform("radius", (int)radius_input.get_data());
+  frag_y.setUniform("radius", (int)radius_input.get_data());
   sf::RectangleShape rs(s);
   rs.setTextureRect(sf::IntRect(0, 0, 1, 1));
   

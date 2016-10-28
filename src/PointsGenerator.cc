@@ -1,5 +1,5 @@
 #include "PointsGenerator.hh"
-#include "HilbertGenerator.hh"
+#include "utils/HilbertGenerator.hh"
 
 
 std::pair<sf::Vector2u, std::vector<sf::Vector2f>>

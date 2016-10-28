@@ -2,14 +2,10 @@
 
 ImageViewer::ImageViewer(Logger& log)
 : in(this)
+, window_name_input(this)
 , logger(log)
-{}
-
-
-void ImageViewer::set_window_name(std::string fname)
 {
-  refresh();
-  window_name = fname;
+  window_name_input.connect(window_name_manual);
 }
 
 void ImageViewer::compute()
@@ -20,7 +16,7 @@ void ImageViewer::compute()
 
   window.create(
     sf::VideoMode(size.x, size.y, 32),
-    window_name,
+    window_name_input.get_data(),
     sf::Style::Titlebar | sf::Style::Close
     );
 

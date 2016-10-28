@@ -5,8 +5,8 @@
 #include <string>
 #include <boost/optional.hpp>
 
-#include "Block.hh"
-#include "Logger.hh"
+#include "utils/Block.hh"
+#include "utils/Logger.hh"
 
 namespace
 {
@@ -21,10 +21,15 @@ class ImageMultiViewer : public Block
 public:
   ImageMultiViewer(Logger& log);
 
-  void set_window_name(std::string fname);
-  void set_window_size(int w, int h);
-  std::string& caption(int x, int y);
+  DataPromiseManual<std::string>& caption_manual(int x, int y);
+  DataInput<std::string>& caption(int x, int y);
   DataInput<sf::Texture>& input(int x, int y);
+
+  DataInput<std::string> window_name_input;
+  DataPromiseManual<std::string> window_name_manual;
+
+  DataInput<sf::Vector2u> window_size_input;
+  DataPromiseManual<sf::Vector2u> window_size_manual;
 
 protected:
   virtual void compute() override;
@@ -34,11 +39,11 @@ private:
   sf::Font font;
 
   Logger& logger;
-  std::string window_name;
-  sf::Vector2u window_size;
-  boost::optional<DataInput<sf::Texture>> in[W][H];
-  std::string capt[W][H];
-  bool is_active[W][H];
+  boost::optional<std::pair<
+    DataInput<sf::Texture>,
+    DataInput<std::string>
+  >> in[W][H];
+  DataPromiseManual<std::string> capt[W][H];
 };
 
 
@@ -48,35 +53,37 @@ bool ImageMultiViewer<W, H>::check_bonds(int x, int y)
   return x >= 0 && y >= 0 && x < W && y < H;
 }
 
-
-
 template<int W, int H>
 ImageMultiViewer<W, H>::ImageMultiViewer(Logger& log)
-: logger(log)
-, window_size(1280, 720)
-, is_active()
+: window_name_input(this)
+, window_size_input(this)
+, logger(log)
 {
+  window_size_manual.set_data({1280,720});
+  window_name_input.connect(window_name_manual);
+  window_size_input.connect(window_size_manual);
   font.loadFromFile("misc/DejaVuSans.ttf");
 }
 
 template<int W, int H>
-void ImageMultiViewer<W, H>::set_window_name(std::string name)
-{
-  window_name = name;
-}
-
-template<int W, int H>
-void ImageMultiViewer<W, H>::set_window_size(int w, int h)
-{
-  window_size = {w, h};
-}
-
-template<int W, int H>
-std::string& ImageMultiViewer<W, H>::caption(int x, int y)
+DataPromiseManual<std::string>& ImageMultiViewer<W, H>::caption_manual(int x, int y)
 {
   if (!check_bonds(x, y))
     throw "invalid x and y";
   return capt[x][y];
+}
+
+template<int W, int H>
+DataInput<std::string>& ImageMultiViewer<W, H>::caption(int x, int y)
+{
+  if (!check_bonds(x, y))
+    throw "invalid x and y";
+  if (!in[x][y])
+  {
+    in[x][y].emplace(this, this);
+    in[x][y]->second.connect(capt[x][y]);
+  }
+  return in[x][y]->second;
 }
 
 template<int W, int H>
@@ -85,8 +92,11 @@ DataInput<sf::Texture>& ImageMultiViewer<W, H>::input(int x, int y)
   if (!check_bonds(x, y))
     throw "invalid x and y";
   if (!in[x][y])
-    in[x][y].emplace(this);
-  return *(in[x][y]);
+  {
+    in[x][y].emplace(this, this);
+    in[x][y]->second.connect(capt[x][y]);
+  }
+  return in[x][y]->first;
 }
 
 template<int W, int H>
@@ -97,18 +107,18 @@ void ImageMultiViewer<W, H>::compute()
   sf::RenderWindow window;
 
   window.create(
-    sf::VideoMode(window_size.x, window_size.y, 32),
-    window_name,
+    sf::VideoMode(window_size_input.get_data().x, window_size_input.get_data().y, 32),
+    window_name_input.get_data(),
     sf::Style::Titlebar | sf::Style::Close
     );
   window.clear(sf::Color::Black);
 
-  auto pic_size = sf::Vector2u(window_size.x/W, window_size.y/H);
+  auto pic_size = sf::Vector2u(window_size_input.get_data().x/W, window_size_input.get_data().y/H);
   for (int x=0; x<W; x++)
     for (int y=0; y<H; y++)
       if (in[x][y])
       {
-        sf::Sprite sp(in[x][y]->get_data());
+        sf::Sprite sp(in[x][y]->first.get_data());
         auto ts = sp.getTexture()->getSize();
         sp.setOrigin(sf::Vector2f(ts)*0.5f);
         sp.setPosition(pic_size.x*(x+0.5), pic_size.y*(y+0.5)-15);
@@ -116,7 +126,7 @@ void ImageMultiViewer<W, H>::compute()
         sp.setScale(scale, scale);
         window.draw(sp);
 
-        sf::Text text(capt[x][y], font, CAPTION_FONT_SIZE);
+        sf::Text text(in[x][y]->second.get_data(), font, CAPTION_FONT_SIZE);
         text.setPosition(
           pic_size.x*x+2*CAPITON_PADDING,
           pic_size.y*(y+1)-CAPTION_SPACE_SIZE+CAPITON_PADDING

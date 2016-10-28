@@ -5,8 +5,8 @@
 #include <sstream>
 #include <cstdlib>
 
-#include "Block.hh"
-#include "Logger.hh"
+#include "utils/Block.hh"
+#include "utils/Logger.hh"
 
 
 class ImageFilter : public Block
@@ -16,6 +16,7 @@ public:
 
 protected:
   virtual void compute() override;
+  virtual void prepare_shader();
   std::string filter_name;
   sf::Shader frag;
   Logger& logger;
@@ -38,21 +39,45 @@ public:
 };
 
 
-class ImageFilterSigmoid : public Block
+class ImageFilterSigmoid : public ImageFilter
 {
 public:
   ImageFilterSigmoid(Logger& log);
 
-  void set_shape(float a, float b);
 private:
-  virtual void compute() override;
-  sf::Shader frag;
-  Logger& logger;
-  float alpha;
-  float beta;
+  virtual void prepare_shader() override;
+
 public:
-  DataInput<sf::Texture> in;
-  DataPromise<sf::Texture> out;
+  DataInput<std::pair<float, float>> shape_input;
+  DataPromiseManual<std::pair<float, float>> shape_manual;
+};
+
+
+class ImageFilterGamma : public ImageFilter
+{
+public:
+  ImageFilterGamma(Logger& log);
+
+private:
+  virtual void prepare_shader() override;
+
+public:
+  DataInput<float> shape_input;
+  DataPromiseManual<float> shape_manual;
+};
+
+
+class ImageFilterLogarithm : public ImageFilter
+{
+public:
+  ImageFilterLogarithm(Logger& log);
+
+private:
+  virtual void prepare_shader() override;
+
+public:
+  DataInput<float> shape_input;
+  DataPromiseManual<float> shape_manual;
 };
 
 
@@ -61,16 +86,16 @@ class ImageFilterBlur : public Block
 public:
   ImageFilterBlur(Logger& log);
 
-  void set_radius(size_t radius);
-
 private:
   virtual void compute() override;
   sf::Shader frag_x;
   sf::Shader frag_y;
   Logger& logger;
-  size_t blur_radius;
 
 public:
   DataInput<sf::Texture> in;
   DataPromise<sf::Texture> out;
+
+  DataInput<size_t> radius_input;
+  DataPromiseManual<size_t> radius_manual;
 };

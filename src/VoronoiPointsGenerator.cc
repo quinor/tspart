@@ -1,6 +1,6 @@
 #include "VoronoiPointsGenerator.hh"
 #include "VoronoiDiagramGenerator.h"
-#include "HilbertGenerator.hh"
+#include "utils/HilbertGenerator.hh"
 
 #include <map>
 #include <algorithm>

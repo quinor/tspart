@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <utility>
 #include "Config.hh"
-#include "Logger.hh"
+#include "utils/Logger.hh"
 
 
 class ImageProcessor

@@ -19,25 +19,60 @@ namespace block_impl
 
 
   template <typename Content>
-  class DataPromise
+  class DataPromiseMeta
   {
     friend class DataInput<Content>;
+
+  public:
+
+    virtual const Content& get_data() = 0;
+
+  protected:
+
+    virtual void update(timestamp_t now = get_timestamp()) = 0;
+
+    virtual timestamp_t timestamp() = 0;
+  };
+
+
+  template <typename Content>
+  class DataPromise : public DataPromiseMeta<Content>
+  {
     friend class Block;
 
   public:
 
-    DataPromise(Block* m);
+    explicit DataPromise(Block* m);
 
-    const Content& get_data();
+    virtual const Content& get_data() override;
 
   private:
 
-    void update(timestamp_t now = get_timestamp());
+    virtual void update(timestamp_t now = get_timestamp()) override;
 
-    timestamp_t timestamp();
+    virtual timestamp_t timestamp() override;
 
     Content data;
     Block* creator;
+  };
+
+  template <typename Content>
+  class DataPromiseManual : public DataPromiseMeta<Content>
+  {
+  public:
+    DataPromiseManual();
+    virtual const Content& get_data();
+
+    void set_data(const Content&);
+
+  private:
+
+    virtual void update(timestamp_t now = get_timestamp());
+
+    virtual timestamp_t timestamp();
+
+    Content data;
+    timestamp_t change_timestamp;
   };
 
 
@@ -56,7 +91,7 @@ namespace block_impl
   {
   public:
 
-    DataInputDummy(Block* m);
+    explicit DataInputDummy(Block* m);
 
     void force_update();
 
@@ -78,9 +113,9 @@ namespace block_impl
 
   public:
 
-    DataInput(Block* m);
+    explicit DataInput(Block* m);
 
-    void connect(DataPromise<Content>& p);
+    void connect(DataPromiseMeta<Content>& p);
 
     const Content& get_data();
 
@@ -92,7 +127,7 @@ namespace block_impl
 
   private:
 
-    DataPromise<Content>* provider;
+    DataPromiseMeta<Content>* provider;
     timestamp_t connect_timestamp;
   };
 
@@ -157,15 +192,44 @@ namespace block_impl
 
 
   template <typename Content>
+  DataPromiseManual<Content>::DataPromiseManual()
+  : change_timestamp(get_timestamp())
+  {}
+
+  template <typename Content>
+  const Content& DataPromiseManual<Content>::get_data()
+  {
+    return data;
+  }
+
+  template <typename Content>
+  void DataPromiseManual<Content>::set_data(const Content& d)
+  {
+    data = d;
+    change_timestamp = get_timestamp();
+  }
+
+  template <typename Content>
+  timestamp_t DataPromiseManual<Content>::timestamp()
+  {
+    return change_timestamp;
+  }
+
+  template <typename Content>
+  void DataPromiseManual<Content>::update(timestamp_t)
+  {}
+
+
+  template <typename Content>
   DataInput<Content>::DataInput(Block* m)
   : provider(nullptr)
   , connect_timestamp(0)
   {
-    m->inputs.push_back(this);    
+    m->inputs.push_back(this);
   }
 
   template <typename Content>
-  void DataInput<Content>::connect(DataPromise<Content>& p)
+  void DataInput<Content>::connect(DataPromiseMeta<Content>& p)
   {
     provider = &p;
     connect_timestamp = get_timestamp();
@@ -176,7 +240,7 @@ namespace block_impl
   {
     if (provider == nullptr)
       throw "No provider for this input!";
-    return provider->data;
+    return provider->get_data();
   }
 
   template <typename Content>
@@ -210,4 +274,8 @@ template<typename Content>
 using DataPromise = block_impl::DataPromise<Content>;
 
 template<typename Content>
+using DataPromiseManual = block_impl::DataPromiseManual<Content>;
+
+template<typename Content>
 using DataInput = block_impl::DataInput<Content>;
+

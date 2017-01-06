@@ -40,11 +40,11 @@ int main (int argc, char** argv)
 
   ImageFilterSigmoid sigm2(get_logger());
   sigm2.in.connect(sigm.out);
-  sigm2.shape_manual.set_data({30,128});
+  sigm2.shape_manual.set_data({10,128});
 
   ImageFilterLogarithm gam(get_logger());
   gam.in.connect(sigm2.out);
-  gam.shape_manual.set_data(10);
+  gam.shape_manual.set_data(0.1);
 
 
   ImageFilterInverse inv(get_logger());
@@ -88,6 +88,12 @@ int main (int argc, char** argv)
   ImageSaver save(get_logger());
   save.in.connect(vis_poly.out);
   save.filename_manual.set_data("out.jpg");
+
+  PloterOutput pout(get_logger());
+  pout.in.connect(gen.out);
+  pout.filename_manual.set_data("out.plt");
+
+  pout.update();
 
   save.update();
 

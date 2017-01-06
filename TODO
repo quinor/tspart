@@ -1,0 +1,6 @@
+refactor points+ScalarField->points (relaxation) block
+refactor points ---(MST)--> points (ordering) block
+add native Logger to Block (auto enter/exit + block name + block ID)
+refactor Logger for more convinient (iostream or cstdio style) text input
+add more standard demos
+add packing block networks into single block

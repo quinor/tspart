@@ -15,12 +15,8 @@ public:
   DataInput<std::string> filename_input;
   DataPromiseManual<std::string> filename_manual;
 
-  ImageLoader(Logger& log);
+  ImageLoader();
 
 protected:
   virtual void compute() override;
-
-private:
-  Logger& logger;
-
 };

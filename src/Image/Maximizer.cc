@@ -1,19 +1,17 @@
 #include <sstream>
 #include "Image/Maximizer.hh"
 
-ImageMaximizer::ImageMaximizer(Logger& log)
-: logger(log)
-, in(this)
+ImageMaximizer::ImageMaximizer()
+: in(this)
 , out(this)
 , max_size_input(this)
 {
+  name = "ImageMaximizer";
   max_size_input.connect(max_size_manual);
 }
 
 void ImageMaximizer::compute()
 {
-  logger.enter(Logger::Level::Info, "Image maximizing");
-
   sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
   float scale = max_size_input.get_data()/std::max(s.x, s.y);
   {
@@ -35,6 +33,4 @@ void ImageMaximizer::compute()
   rtex.draw(sp);
   rtex.display();
   data_hook(out) = rtex.getTexture();
-
-  logger.exit();
 }

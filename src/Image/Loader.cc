@@ -1,17 +1,16 @@
 #include <sstream>
 #include "Image/Loader.hh"
 
-ImageLoader::ImageLoader(Logger& log)
+ImageLoader::ImageLoader()
 : out(this)
 , filename_input(this)
-, logger(log)
 {
+  name = "ImageLoader";
   filename_input.connect(filename_manual);
 }
 
 void ImageLoader::compute()
 {
-  logger.enter(Logger::Level::Info, "Image loading");
   {
     std::ostringstream stream;
     stream<<"Filename: "<<filename_input.get_data();
@@ -24,5 +23,4 @@ void ImageLoader::compute()
     exit(-1);
   }
   data_hook(out).loadFromImage(tmp);
-  logger.exit();
 }

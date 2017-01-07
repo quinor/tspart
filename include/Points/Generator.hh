@@ -7,15 +7,15 @@
 class PointsGenerator : public Block
 {
 public:
-  PointsGenerator(Logger& log);
+
+  PointsGenerator();
 
 private:
+
   virtual void compute() override;
 
-private:
-  Logger& logger;
-
 public:
+
   DataInput<ScalarField> in;
   DataPromise<Polyline> out;
 

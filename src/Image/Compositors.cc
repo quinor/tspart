@@ -1,22 +1,15 @@
 #include "Image/Compositors.hh"
 
-ImageCompositor::ImageCompositor(Logger& log)
-: logger(log)
-, in1(this)
+ImageCompositor::ImageCompositor()
+: in1(this)
 , in2(this)
 , out(this)
 {
+  name = "ImageCompositor";
 }
 
 void ImageCompositor::compute()
 {
-  {
-    std::ostringstream stream;
-    stream<<"Applying compositor: "<<compositor_name;
-    logger.enter(Logger::Level::Info, stream.str().c_str());    
-  }
-
-
   if (in1.get_data().getSize() != in2.get_data().getSize())
   {
     logger.log(Logger::Level::Error, "Inputs differ in size!");
@@ -35,21 +28,19 @@ void ImageCompositor::compute()
   rtex.draw(rs, &frag);
   rtex.display();
   data_hook(out) = rtex.getTexture();
-
-  logger.exit();
 }
 
 void ImageCompositor::prepare_shader()
 {}
 
 
-ImageCompositorAverage::ImageCompositorAverage(Logger& log)
-: ImageCompositor(log)
+ImageCompositorAverage::ImageCompositorAverage()
+: ImageCompositor()
 , ratio_input(this)
 {
+  name = "ImageCompositorAverage";
   ratio_manual.set_data(0.5);
   ratio_input.connect(ratio_manual);
-  compositor_name = "Average";
   if (!frag.loadFromFile("shaders/average.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load shader");
@@ -58,10 +49,10 @@ ImageCompositorAverage::ImageCompositorAverage(Logger& log)
 }
 
 
-ImageCompositorDifference::ImageCompositorDifference(Logger& log)
-: ImageCompositor(log)
+ImageCompositorDifference::ImageCompositorDifference()
+: ImageCompositor()
 {
-  compositor_name = "Difference";
+  name = "ImageCompositorDifference";
   if (!frag.loadFromFile("shaders/difference.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load shader");
@@ -70,10 +61,10 @@ ImageCompositorDifference::ImageCompositorDifference(Logger& log)
 }
 
 
-ImageCompositorAbsoluteDifference::ImageCompositorAbsoluteDifference(Logger& log)
-: ImageCompositor(log)
+ImageCompositorAbsoluteDifference::ImageCompositorAbsoluteDifference()
+: ImageCompositor()
 {
-  compositor_name = "Absolute difference";
+  name = "ImageCompositorAbsoluteDifference";
   if (!frag.loadFromFile("shaders/abs_difference.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load shader");

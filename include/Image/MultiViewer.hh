@@ -19,7 +19,7 @@ template<int W, int H>
 class ImageMultiViewer : public Block
 {
 public:
-  ImageMultiViewer(Logger& log);
+  ImageMultiViewer();
 
   DataPromiseManual<std::string>& caption_manual(int x, int y);
   DataInput<std::string>& caption(int x, int y);
@@ -38,7 +38,6 @@ private:
   bool check_bonds(int x, int y);
   sf::Font font;
 
-  Logger& logger;
   boost::optional<std::pair<
     DataInput<sf::Texture>,
     DataInput<std::string>
@@ -54,11 +53,11 @@ bool ImageMultiViewer<W, H>::check_bonds(int x, int y)
 }
 
 template<int W, int H>
-ImageMultiViewer<W, H>::ImageMultiViewer(Logger& log)
+ImageMultiViewer<W, H>::ImageMultiViewer()
 : window_name_input(this)
 , window_size_input(this)
-, logger(log)
 {
+  name = "ImageMultiViewer";
   window_size_manual.set_data({1280,720});
   window_name_input.connect(window_name_manual);
   window_size_input.connect(window_size_manual);

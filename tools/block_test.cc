@@ -10,64 +10,64 @@ int main (int argc, char** argv)
 
   get_logger().set_log_level(Logger::Level::Verbose);
 
-  ImageLoader load(get_logger());
+  ImageLoader load;
   load.filename_manual.set_data(argv[1]);
 
-  ImageMaximizer max(get_logger());
+  ImageMaximizer max;
   max.max_size_manual.set_data(1536);
   max.in.connect(load.out);
   
-  ImageFilterGrayscale gray(get_logger());
+  ImageFilterGrayscale gray;
   gray.in.connect(max.out);
 
-  ImageFilterBlur bl1(get_logger());
+  ImageFilterBlur bl1;
   bl1.radius_manual.set_data(1);
   bl1.in.connect(gray.out);
 
-  ImageFilterBlur bl2(get_logger());
+  ImageFilterBlur bl2;
   bl2.radius_manual.set_data(30);
   bl2.in.connect(gray.out);
 
-  ImageCompositorDifference diff(get_logger());
+  ImageCompositorDifference diff;
   diff.in1.connect(bl1.out);
   diff.in2.connect(bl2.out);
 
-  ImageFilterSigmoid sigm(get_logger());
+  ImageFilterSigmoid sigm;
   sigm.shape_manual.set_data({10,128});
   sigm.in.connect(diff.out);
 
 
 
-  ImageFilterSigmoid sigm2(get_logger());
+  ImageFilterSigmoid sigm2;
   sigm2.in.connect(sigm.out);
   sigm2.shape_manual.set_data({10,128});
 
-  ImageFilterLogarithm gam(get_logger());
+  ImageFilterLogarithm gam;
   gam.in.connect(sigm2.out);
   gam.shape_manual.set_data(0.1);
 
 
-  ImageFilterInverse inv(get_logger());
+  ImageFilterInverse inv;
   inv.in.connect(gam.out);
 
-  ImageToScalarFieldConverter im_to_sc(get_logger());
+  ImageToScalarFieldConverter im_to_sc;
   im_to_sc.in.connect(inv.out);
 
-  PointsGenerator gen(get_logger());
+  PointsGenerator gen;
   gen.in.connect(im_to_sc.out);
   gen.fill_manual.set_data(6);
 
-  PolylineVisualizer vis_poly(get_logger());
+  PolylineVisualizer vis_poly;
   vis_poly.in.connect(gen.out);
 
 
-  ImageFilterBlur bl3(get_logger()); //dirty trick for proper visualisation
+  ImageFilterBlur bl3; //dirty trick for proper visualisation
   bl3.radius_manual.set_data(1);
   bl3.in.connect(vis_poly.out); 
 
 
 
-  ImageMultiViewer<3,2> view(get_logger());
+  ImageMultiViewer<3,2> view;
   view.window_size_manual.set_data({1200,675});
 
   view.input(0, 0).connect(max.out);
@@ -85,11 +85,11 @@ int main (int argc, char** argv)
   view.input(2, 1).connect(bl3.out);
   view.caption_manual(2, 1).set_data("Polyline visualization");
   
-  ImageSaver save(get_logger());
+  ImageSaver save;
   save.in.connect(vis_poly.out);
   save.filename_manual.set_data("out.jpg");
 
-  PloterOutput pout(get_logger());
+  PloterOutput pout;
   pout.in.connect(gen.out);
   pout.filename_manual.set_data("out.plt");
 

@@ -1,15 +1,14 @@
 #include "Points/Visualizers.hh"
 
-PolylineVisualizer::PolylineVisualizer(Logger& log)
-: logger(log)
-, in(this)
+PolylineVisualizer::PolylineVisualizer()
+: in(this)
 , out(this)
-{}
+{
+  name = "PolylineVisualizer";
+}
 
 void PolylineVisualizer::compute()
 {
-  logger.enter(Logger::Level::Info, "Visualizing polyline");
-
   auto& input = in.get_data();
   sf::Vector2f s = sf::Vector2f(input.size);
   sf::RenderTexture rtex;

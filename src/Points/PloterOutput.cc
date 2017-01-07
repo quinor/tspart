@@ -6,17 +6,16 @@
 #include <sstream>
 #include <fstream>
 
-PloterOutput::PloterOutput(Logger& log)
-: logger(log)
-, in(this)
+PloterOutput::PloterOutput()
+: in(this)
 , filename_input(this)
 {
+  name = "PloterOutput";
   filename_input.connect(filename_manual);
 }
 
 void PloterOutput::compute()
 {
-  logger.enter(Logger::Level::Info, "Saving ploter path to file");
   {
     std::ostringstream stream;
     stream<<"Filename: "<<filename_input.get_data();
@@ -44,6 +43,4 @@ void PloterOutput::compute()
   }
 
   out.close();
-
-  logger.exit();
 }

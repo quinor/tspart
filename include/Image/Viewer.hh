@@ -14,11 +14,8 @@ public:
   DataInput<std::string> window_name_input;
   DataPromiseManual<std::string> window_name_manual;
 
-  ImageViewer(Logger& log);
+  ImageViewer();
 
 protected:
   virtual void compute() override;
-
-private:
-  Logger& logger;
 };

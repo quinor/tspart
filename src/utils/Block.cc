@@ -1,3 +1,4 @@
+#include <sstream>
 #include "utils/Block.hh"
 
 namespace block_impl
@@ -30,11 +31,16 @@ namespace block_impl
 
 
   Block::Block()
-  : inputs()
+  : name("<UNCHANGED!> Generic block")
+  , logger(get_logger())
+  , inputs()
   , compute_timestamp(0)
   , query_timestamp(0)
   , dummy_in(this)
-  {}
+  {
+    static int id_counter = 0;
+    id = id_counter++;
+  }
 
   void Block::update(timestamp_t now)
   {
@@ -50,7 +56,13 @@ namespace block_impl
     }
     if (data_age > compute_timestamp)
     {
+      {
+        std::ostringstream stream;
+        stream<<"Block "<<name<<" ("<<id<<")";
+        logger.enter(Logger::Level::Info, stream.str().c_str());
+      }
       compute();
+      logger.exit();
       compute_timestamp = get_timestamp();
     }
   }

@@ -1,16 +1,15 @@
 #include "Image/Viewer.hh"
 
-ImageViewer::ImageViewer(Logger& log)
+ImageViewer::ImageViewer()
 : in(this)
 , window_name_input(this)
-, logger(log)
 {
+  name = "ImageViewer";
   window_name_input.connect(window_name_manual);
 }
 
 void ImageViewer::compute()
 {
-  logger.enter(Logger::Level::Info, "Viewing image");
   sf::Vector2u size = in.get_data().getSize();
   sf::RenderWindow window;
 
@@ -34,5 +33,4 @@ void ImageViewer::compute()
   }
   
   refresh(); //so that window appears every time we update this block
-  logger.exit();
 }

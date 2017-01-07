@@ -11,14 +11,11 @@ class ImageMaximizer : public Block
 {
 public:
 
-  ImageMaximizer(Logger& log);
+  ImageMaximizer();
 
 
 private:
   virtual void compute() override;
-
-private:
-  Logger& logger;
 
 public:
   DataInput<sf::Texture> in;

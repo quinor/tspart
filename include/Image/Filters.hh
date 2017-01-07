@@ -12,14 +12,12 @@
 class ImageFilter : public Block
 {
 public:
-  ImageFilter(Logger& log);
+  ImageFilter();
 
 protected:
   virtual void compute() override;
   virtual void prepare_shader();
-  std::string filter_name;
   sf::Shader frag;
-  Logger& logger;
 
 public:
   DataInput<sf::Texture> in;
@@ -29,20 +27,20 @@ public:
 class ImageFilterGrayscale : public ImageFilter
 {
 public:
-  ImageFilterGrayscale(Logger& log);
+  ImageFilterGrayscale();
 };
 
 class ImageFilterInverse : public ImageFilter
 {
 public:
-  ImageFilterInverse(Logger& log);
+  ImageFilterInverse();
 };
 
 
 class ImageFilterSigmoid : public ImageFilter
 {
 public:
-  ImageFilterSigmoid(Logger& log);
+  ImageFilterSigmoid();
 
 private:
   virtual void prepare_shader() override;
@@ -56,7 +54,7 @@ public:
 class ImageFilterGamma : public ImageFilter
 {
 public:
-  ImageFilterGamma(Logger& log);
+  ImageFilterGamma();
 
 private:
   virtual void prepare_shader() override;
@@ -70,7 +68,7 @@ public:
 class ImageFilterLogarithm : public ImageFilter
 {
 public:
-  ImageFilterLogarithm(Logger& log);
+  ImageFilterLogarithm();
 
 private:
   virtual void prepare_shader() override;
@@ -84,13 +82,12 @@ public:
 class ImageFilterBlur : public Block
 {
 public:
-  ImageFilterBlur(Logger& log);
+  ImageFilterBlur();
 
 private:
   virtual void compute() override;
   sf::Shader frag_x;
   sf::Shader frag_y;
-  Logger& logger;
 
 public:
   DataInput<sf::Texture> in;

@@ -12,14 +12,12 @@
 class ImageCompositor : public Block
 {
 public:
-  ImageCompositor(Logger& log);
+  ImageCompositor();
 
 protected:
   virtual void compute() override;
   virtual void prepare_shader();
-  std::string compositor_name;
   sf::Shader frag;
-  Logger& logger;
 
 public:
   DataInput<sf::Texture> in1;
@@ -30,7 +28,7 @@ public:
 class ImageCompositorAverage : public ImageCompositor
 {
 public:
-  ImageCompositorAverage(Logger& log);
+  ImageCompositorAverage();
 
   DataInput<float> ratio_input;
   DataPromiseManual<float> ratio_manual;
@@ -42,11 +40,11 @@ private:
 class ImageCompositorDifference : public ImageCompositor
 {
 public:
-  ImageCompositorDifference(Logger& log);
+  ImageCompositorDifference();
 };
 
 class ImageCompositorAbsoluteDifference : public ImageCompositor
 {
 public:
-  ImageCompositorAbsoluteDifference(Logger& log);
+  ImageCompositorAbsoluteDifference();
 };

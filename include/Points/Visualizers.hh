@@ -9,16 +9,12 @@
 class PolylineVisualizer : public Block
 {
 public:
-  PolylineVisualizer(Logger& log);
+  PolylineVisualizer();
 
 private:
   virtual void compute() override;
 
-private:
-  Logger& logger;
-
 public:
   DataInput<Polyline> in;
   DataPromise<sf::Texture> out;
-
 };

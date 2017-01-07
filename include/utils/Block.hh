@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <algorithm>
-
+#include <string>
+#include "utils/Logger.hh"
 
 
 namespace block_impl
@@ -159,6 +160,14 @@ namespace block_impl
     timestamp_t timestamp();
 
 
+  protected:
+
+    std::string name;
+    Logger& logger;
+
+  private:
+
+    int id;
     std::vector<DataInputMeta*> inputs;
     timestamp_t compute_timestamp;
     timestamp_t query_timestamp;

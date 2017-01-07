@@ -3,19 +3,18 @@
 
 #include <sstream>
 
-PointsGenerator::PointsGenerator(Logger& log)
-: logger(log)
-, in(this)
+PointsGenerator::PointsGenerator()
+: in(this)
 , out(this)
 , fill_input(this)
 {
+  name = "PointsGenerator";
   fill_manual.set_data(6);
   fill_input.connect(fill_manual);
 }
 
 void PointsGenerator::compute()
 {
-  logger.enter(Logger::Level::Info, "Generating basic polyline using Hilbert curve");
   {
     std::ostringstream stream;
     stream<<"Fill is "<<fill_input.get_data();
@@ -58,7 +57,4 @@ void PointsGenerator::compute()
     }
   }
   progress.finish();
-
-  logger.exit();
-
 }

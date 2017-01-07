@@ -4,12 +4,12 @@
 
 #include <iostream>
 
-ImageToScalarFieldConverter::ImageToScalarFieldConverter(Logger& log)
-: logger(log)
-, in(this)
+ImageToScalarFieldConverter::ImageToScalarFieldConverter()
+: in(this)
 , out(this)
 , scale_input(this)
 {
+  name = "ImageToScalarFieldConverter";
   scale_manual.set_data(2);
   scale_input.connect(scale_manual);
 }
@@ -17,7 +17,6 @@ ImageToScalarFieldConverter::ImageToScalarFieldConverter(Logger& log)
 void ImageToScalarFieldConverter::compute()
 {
   size_t scale = scale_input.get_data(); //for readability reasons
-  logger.enter(Logger::Level::Info, "Converting Image to ScalarField");
   {
     std::ostringstream stream;
     stream<<"Conversion scale is "<<scale;
@@ -56,6 +55,4 @@ void ImageToScalarFieldConverter::compute()
   }
 
   progress.finish();
-
-  logger.exit();
 }

@@ -7,15 +7,15 @@
 class PloterOutput : public Block
 {
 public:
-  PloterOutput(Logger& log);
+
+  PloterOutput();
 
 private:
+
   virtual void compute() override;
 
-private:
-  Logger& logger;
-
 public:
+
   DataInput<Polyline> in;
 
   DataInput<std::string> filename_input;

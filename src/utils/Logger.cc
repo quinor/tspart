@@ -16,8 +16,8 @@ int init()
   msg_headers[Logger::Level::Debug] =   "\033[1;37m[ Debug    ]\033[0m";
 
   msg_strings["enter"] = "\033[1;36m[ Entering ]\033[0m";
-  msg_strings["exit"]  = "\033[1;36m[ Exiting  ]\033[0m";
-  msg_strings["empty"] = "\033[1;36m            \033[0m";
+  msg_strings["exit"]  = "\033[1;35m[ Exiting  ]\033[0m";
+  msg_strings["empty"] =           "            ";
   return 0;
 }
 const int _ = init();

@@ -8,14 +8,16 @@
 class ImageToScalarFieldConverter : public Block
 {
 public:
-  ImageToScalarFieldConverter(Logger& log);
+
+  ImageToScalarFieldConverter();
 
 private:
+
   virtual void compute() override;
 
-private:
-  Logger& logger;
+
 public:
+
   DataInput<sf::Texture> in;
   DataPromise<ScalarField> out;
 

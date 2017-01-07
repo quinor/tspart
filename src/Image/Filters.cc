@@ -1,10 +1,10 @@
 #include "Image/Filters.hh"
 
-ImageFilter::ImageFilter(Logger& log)
-: logger(log)
-, in(this)
+ImageFilter::ImageFilter()
+: in(this)
 , out(this)
 {
+  name = "ImageFilter";
 }
 
 void ImageFilter::prepare_shader()
@@ -12,12 +12,6 @@ void ImageFilter::prepare_shader()
 
 void ImageFilter::compute()
 {
-  {
-    std::ostringstream stream;
-    stream<<"Applying filter: "<<filter_name;
-    logger.enter(Logger::Level::Info, stream.str().c_str());    
-  }
-
   prepare_shader();
 
   sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
@@ -29,15 +23,12 @@ void ImageFilter::compute()
   rtex.draw(rs, &frag);
   rtex.display();
   data_hook(out) = rtex.getTexture();
-
-  logger.exit();
 }
 
 
-ImageFilterGrayscale::ImageFilterGrayscale(Logger& log)
-: ImageFilter(log)
+ImageFilterGrayscale::ImageFilterGrayscale()
 {
-  filter_name = "Grayscale";
+  name = "ImageFilterGrayscale";
   if (!frag.loadFromFile("shaders/grayscale.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load grayscale shader");
@@ -45,10 +36,9 @@ ImageFilterGrayscale::ImageFilterGrayscale(Logger& log)
   }
 }
 
-ImageFilterInverse::ImageFilterInverse(Logger& log)
-: ImageFilter(log)
+ImageFilterInverse::ImageFilterInverse()
 {
-  filter_name = "Inverse";
+  name = "ImageFilterInverse";
   if (!frag.loadFromFile("shaders/inverse.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load inverse shader");
@@ -57,11 +47,10 @@ ImageFilterInverse::ImageFilterInverse(Logger& log)
 }
 
 
-ImageFilterSigmoid::ImageFilterSigmoid(Logger& log)
-: ImageFilter(log)
-, shape_input(this)
+ImageFilterSigmoid::ImageFilterSigmoid()
+: shape_input(this)
 {
-  filter_name = "Sigmoid";
+  name = "ImageFilterSigmoid";
   shape_input.connect(shape_manual);
   shape_manual.set_data({30, 128});
   if (!frag.loadFromFile("shaders/sigmoid.frag", sf::Shader::Fragment))
@@ -84,11 +73,10 @@ void ImageFilterSigmoid::prepare_shader()
 }
 
 
-ImageFilterGamma::ImageFilterGamma(Logger& log)
-: ImageFilter(log)
-, shape_input(this)
+ImageFilterGamma::ImageFilterGamma()
+: shape_input(this)
 {
-  filter_name = "Gamma";
+  name = "ImageFilterGamma";
   shape_input.connect(shape_manual);
   shape_manual.set_data(1/2.2);
   if (!frag.loadFromFile("shaders/gamma.frag", sf::Shader::Fragment))
@@ -110,11 +98,10 @@ void ImageFilterGamma::prepare_shader()
 }
 
 
-ImageFilterLogarithm::ImageFilterLogarithm(Logger& log)
-: ImageFilter(log)
-, shape_input(this)
+ImageFilterLogarithm::ImageFilterLogarithm()
+: shape_input(this)
 {
-  filter_name = "Logarithm";
+  name = "ImageFilterLogarithm";
   shape_input.connect(shape_manual);
   shape_manual.set_data(10);
   if (!frag.loadFromFile("shaders/logarithm.frag", sf::Shader::Fragment))
@@ -137,12 +124,12 @@ void ImageFilterLogarithm::prepare_shader()
 }
 
 
-ImageFilterBlur::ImageFilterBlur(Logger& log)
-: logger(log)
-, in(this)
+ImageFilterBlur::ImageFilterBlur()
+: in(this)
 , out(this)
 , radius_input(this)
 {
+  name = "ImageFilterBlur";
   radius_input.connect(radius_manual);
   if (!frag_x.loadFromFile("shaders/blur_x.frag", sf::Shader::Fragment))
   {
@@ -158,7 +145,6 @@ ImageFilterBlur::ImageFilterBlur(Logger& log)
 
 void ImageFilterBlur::compute()
 {
-  logger.enter(Logger::Level::Info, "Applying filter: Blur");
 
   {
     std::ostringstream stream;
@@ -200,6 +186,5 @@ void ImageFilterBlur::compute()
   rt2.display();
 
   data_hook(out) = rt2.getTexture();
-  logger.exit();
 }
 

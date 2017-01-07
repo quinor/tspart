@@ -2,10 +2,9 @@ bd = .build/${variation}
 wd = .
 
 cxx = clang++ -fcolor-diagnostics
-cxxflags = -Wall -Wextra -std=c++14 -fopenmp
-ldflags = -fopenmp
+cxxflags = -Wall -Wextra -std=c++14
 includedirs = include
-libs = sfml-system sfml-window sfml-graphics pthread
+libs = sfml-system sfml-window sfml-graphics
 libdirs = $bd/lib
 
 
@@ -19,28 +18,22 @@ filter variation: release
 rule copy
   command = cp $in $out
   description = copying $in to $out
+  expand = true
+
+rule link_prog
+  command = $cxx $ldflags $frameworks $libdirs $in -o $out $libs
+  description = link $out
+  expand = true
+
 
 
 build objects($bd/lib/**/*): auto src/**/*.cc
 build objects($bd/lib/**/*): auto src/**/*.cpp
 build library($bd/lib/tspart): auto objects($bd/lib/**/*)
-
-build objects($bd/*): auto tools/*.cc
-
-
-#build application($bd/build_tsp_art): auto objects($bd/build_tsp_art) | library($bd/lib/tspart)
-#  libs += tspart
-
-#build application($wd/build_tsp_art): copy application($bd/build_tsp_art)
+build objects($bd/tools/*): auto tools/*.cc
 
 
-build application($bd/block_test): auto objects($bd/block_test) | library($bd/lib/tspart)
+build application($bd/executables/*): link_prog objects($bd/tools/*) | library($bd/lib/tspart)
   libs += tspart
 
-build application($wd/block_test): copy application($bd/block_test)
-
-
-build application($bd/mid_pass): auto objects($bd/mid_pass) | library($bd/lib/tspart)
-  libs += tspart
-
-build application($wd/mid_pass): copy application($bd/mid_pass)
+build application($wd/*): copy application($bd/executables/*)

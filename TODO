@@ -3,3 +3,11 @@ refactor points ---(MST)--> points (ordering) block
 refactor Logger for more convinient (iostream or cstdio style) text input
 add more standard demos
 add packing block networks into single block
+
+Write filters with uniform non-parametric interface for twitterbot:
+  * b/w mid_pass
+  * color mid_pass
+  * hilbert path generator
+  * MST path generator
+  * <future> voronoi/delaunay colorful art
+  * composition of multiple gaussian band filters

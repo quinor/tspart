@@ -63,12 +63,11 @@ int main (int argc, char** argv)
 
   ImageFilterBlur bl3; //dirty trick for proper visualisation
   bl3.radius_manual.set_data(1);
-  bl3.in.connect(vis_poly.out); 
+  bl3.in.connect(vis_poly.out);
 
 
 
   ImageMultiViewer<3,2> view;
-  view.window_size_manual.set_data({1200,675});
 
   view.input(0, 0).connect(max.out);
   view.caption_manual(0, 0).set_data("Original image");

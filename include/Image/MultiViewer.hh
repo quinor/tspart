@@ -6,7 +6,6 @@
 #include <boost/optional.hpp>
 
 #include "utils/Block.hh"
-#include "utils/Logger.hh"
 
 namespace
 {
@@ -101,8 +100,6 @@ DataInput<sf::Texture>& ImageMultiViewer<W, H>::input(int x, int y)
 template<int W, int H>
 void ImageMultiViewer<W, H>::compute()
 {
-  logger.enter(Logger::Level::Info, "Viewing images");
-
   sf::RenderWindow window;
 
   window.create(
@@ -145,6 +142,4 @@ void ImageMultiViewer<W, H>::compute()
   }
   
   refresh(); //so that window appears every time we update this block*/
-
-  logger.exit();
 }

@@ -58,10 +58,12 @@ void Logger::enter(Logger::Level level, const char* block)
 
 void Logger::exit()
 {
+  if (stack.size() == 0)
+    throw "Too deep exits!";
   auto top = stack.back();
-  stack.pop_back();
   if (top.first <= loglevel)
     print(msg_headers[top.first], msg_strings["exit"], top.second.c_str());
+  stack.pop_back();
 }
 
 void Logger::log(Logger::Level level, const char* message)

@@ -4,7 +4,6 @@
 #include <SFML/Window.hpp>
 
 #include "utils/Block.hh"
-#include "utils/Logger.hh"
 
 class ImageViewer : public Block
 {

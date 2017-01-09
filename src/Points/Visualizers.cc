@@ -26,6 +26,4 @@ void PolylineVisualizer::compute()
   rtex.draw(array);
   rtex.display();
   data_hook(out) = rtex.getTexture();
-
-  logger.exit();
 }

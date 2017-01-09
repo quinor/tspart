@@ -4,7 +4,6 @@
 #include <string>
 
 #include "utils/Block.hh"
-#include "utils/Logger.hh"
 
 
 class ImageMaximizer : public Block

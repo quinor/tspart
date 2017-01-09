@@ -6,7 +6,6 @@
 #include <cstdlib>
 
 #include "utils/Block.hh"
-#include "utils/Logger.hh"
 
 
 class ImageFilter : public Block

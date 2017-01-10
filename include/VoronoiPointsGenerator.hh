@@ -1,10 +1,14 @@
 #pragma once
-#include "PointsGenerator.hh"
+#include <vector>
+#include <SFML/Graphics.hpp>
+#include "utils/Logger.hh"
+#include "Config.hh"
+//#include "PointsGenerator.hh"
 
-class VoronoiPointsGenerator : public PointsGenerator
+class VoronoiPointsGenerator// : public PointsGenerator
 {
 public:
-  using PointsGenerator::PointsGenerator;
+//  using PointsGenerator::PointsGenerator;
   virtual std::pair<sf::Vector2u, std::vector<sf::Vector2f>>
     generate(std::pair<sf::Vector2u, uint8_t*>);
 private:
@@ -13,6 +17,8 @@ private:
   sf::Vector2u img_size;
   uint8_t* img_ptr;
   MassElement* mass_ptr;
+  Logger logger;
+  Config config;
 
   std::vector<sf::Vector2f> initial_distribution();
   std::vector<sf::Vector2f> redistribute(const std::vector<sf::Vector2f>&);

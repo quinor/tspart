@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include "utils/Logger.hh"
+#include <boost/core/noncopyable.hpp>
 
 
 namespace block_impl
@@ -20,7 +21,7 @@ namespace block_impl
 
 
   template <typename Content>
-  class DataPromiseMeta
+  class DataPromiseMeta : private boost::noncopyable
   {
     friend class DataInput<Content>;
 
@@ -77,7 +78,7 @@ namespace block_impl
   };
 
 
-  class DataInputMeta
+  class DataInputMeta : private boost::noncopyable
   {
     friend class Block;
 
@@ -133,7 +134,7 @@ namespace block_impl
   };
 
 
-  class Block
+  class Block : private boost::noncopyable
   {
     template <typename Content>
     friend class DataInput;

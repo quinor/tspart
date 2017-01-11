@@ -4,6 +4,20 @@
 #include <vector>
 #include <algorithm>
 
+namespace
+{
+  struct Vector2f_cmp
+  {
+    bool operator ()(const sf::Vector2f& a, const sf::Vector2f& b)
+    {
+      if (a.x != b.x)
+        return a.x < b.x;
+      return a.y < b.y;
+    }
+  };
+}
+
+
 class Polyline
 {
 public:
@@ -49,3 +63,19 @@ public:
   uint8_t* data;
   size_t scale;
 };
+
+
+using VoronoiCells =
+  std::map<
+    sf::Vector2f,
+    std::vector<std::pair<sf::Vector2i, sf::Vector2i>>,
+    Vector2f_cmp
+  >;
+
+
+using DelaunayTriangulation =
+  std::map<
+    sf::Vector2f,
+    std::vector<sf::Vector2f>,
+    Vector2f_cmp
+  >;

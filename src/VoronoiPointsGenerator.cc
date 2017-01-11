@@ -1,5 +1,5 @@
 #include "VoronoiPointsGenerator.hh"
-#include "VoronoiDiagramGenerator.h"
+#include "utils/VoronoiDiagramGenerator.h"
 #include "utils/HilbertGenerator.hh"
 
 #include <map>
@@ -312,9 +312,6 @@ sf::Vector2f VoronoiPointsGenerator::make_centroid(
       std::swap(p, k);
       sgn*=-1;
     }
-//    printf ("edge (%s) from (%d, %d) to (%d, %d)\n", sgn == 1 ? "down" : " up ", e.first.x, e.first.y, e.second.x, e.second.y);
-//    m = mass_ptr[p.y*img_size.x+p.x]-mass_ptr[p.y*img_size.x+p.x-1];
-//    printf("mass element (%lld, %lld) %lld\n", m.wx, m.wy, m.ws);
     auto shift = k-p;
     for (int i = 0; i < shift.y; i++)
     {
@@ -324,27 +321,8 @@ sf::Vector2f VoronoiPointsGenerator::make_centroid(
     }
   }
 
-//  exit(0);
-
   if (m.ws == 0)
     return p;
   else
     return m.middle();
-
-/*  for (auto e : perimeter)
-  {
-    auto tmp = (sf::Vector2f(e.first+e.second)+p)/3.f;
-    auto l1 = sf::Vector2f(e.first)-p;
-    auto l2 = sf::Vector2f(e.second)-p;
-    float w = (l1.x*l2.y-l1.y*l2.x);
-    m+=MassElement(
-      tmp.x,
-      tmp.y
-    )*w;
-  }
-
-  if (m.ws == 0)
-    return p;
-  else
-    return m.middle();*/
 }

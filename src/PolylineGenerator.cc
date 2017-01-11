@@ -1,5 +1,5 @@
 #include "PolylineGenerator.hh"
-#include "VoronoiDiagramGenerator.h"
+#include "utils/VoronoiDiagramGenerator.h"
 #include <algorithm>
 #include <sstream>
 #include <cmath>

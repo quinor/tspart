@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utils/Logger.hh"
 #include "utils/Block.hh"
 #include "DataTypes.hh"
 

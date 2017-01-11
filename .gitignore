@@ -6,7 +6,9 @@ venv/
 build_tsp_art
 block_test
 mid_pass
-out.jpg
+voronoi_test
+*.jpg
+*.plt
 res/
 *.sublime*
 activate

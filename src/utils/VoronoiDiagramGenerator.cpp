@@ -32,7 +32,7 @@
 * as autor did some modifications to the original code
 */
 
-#include "VoronoiDiagramGenerator.h"
+#include "utils/VoronoiDiagramGenerator.h"
 
 #include <limits>
 

@@ -19,12 +19,12 @@ int main (int argc, char** argv)
   ImageFilterGrayscale gray;
   gray.in.connect(max.out);
 
-  ImageFilterBlur bl1;
-  bl1.radius_manual.set_data(1);
+  ImageFilterGaussianBlur bl1;
+  bl1.sigma_manual.set_data(1);
   bl1.in.connect(gray.out);
 
-  ImageFilterBlur bl2;
-  bl2.radius_manual.set_data(60);
+  ImageFilterGaussianBlur bl2;
+  bl2.sigma_manual.set_data(60);
   bl2.in.connect(gray.out);
 
   ImageCompositorDifference diff;

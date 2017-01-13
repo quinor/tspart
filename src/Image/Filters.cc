@@ -124,13 +124,13 @@ void ImageFilterLogarithm::prepare_shader()
 }
 
 
-ImageFilterBlur::ImageFilterBlur()
+ImageFilterGaussianBlur::ImageFilterGaussianBlur()
 : in(this)
 , out(this)
-, radius_input(this)
+, sigma_input(this)
 {
-  name = "ImageFilterBlur";
-  radius_input.connect(radius_manual);
+  name = "ImageFilterGaussianBlur";
+  sigma_input.connect(sigma_manual);
   if (!frag_x.loadFromFile("shaders/blur_x.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load X shader");
@@ -143,44 +143,31 @@ ImageFilterBlur::ImageFilterBlur()
   }
 }
 
-void ImageFilterBlur::compute()
+void ImageFilterGaussianBlur::compute()
 {
 
   {
     std::ostringstream stream;
-    stream<<"Blur radius: "<<radius_input.get_data();
+    stream<<"Gaussian blur sigma: "<<sigma_input.get_data();
     logger.log(Logger::Level::Verbose, stream.str().c_str());    
   }
 
   sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
 
   sf::RenderTexture rt1, rt2;
-  sf::Texture tex;
   rt1.create(s.x, s.y);
   rt2.create(s.x, s.y);
-  frag_x.setUniform("radius", (int)radius_input.get_data());
-  frag_y.setUniform("radius", (int)radius_input.get_data());
   sf::RectangleShape rs(s);
   rs.setTextureRect(sf::IntRect(0, 0, 1, 1));
   
+  frag_x.setUniform("sigma", (float)sigma_input.get_data());
   frag_x.setUniform("tex", in.get_data());
   rt1.draw(rs, &frag_x);
   rt1.display();
 
-  tex = rt1.getTexture();
+  sf::Texture tex = rt1.getTexture();
 
-  frag_y.setUniform("tex", tex);
-  rt2.draw(rs, &frag_y);
-  rt2.display();
-
-  tex = rt2.getTexture();
-
-  frag_x.setUniform("tex", tex);
-  rt1.draw(rs, &frag_x);
-  rt1.display();
-
-  tex = rt1.getTexture();
-
+  frag_y.setUniform("sigma", (float)sigma_input.get_data());
   frag_y.setUniform("tex", tex);
   rt2.draw(rs, &frag_y);
   rt2.display();

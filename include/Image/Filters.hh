@@ -78,10 +78,10 @@ public:
 };
 
 
-class ImageFilterBlur : public Block
+class ImageFilterGaussianBlur : public Block
 {
 public:
-  ImageFilterBlur();
+  ImageFilterGaussianBlur();
 
 private:
   virtual void compute() override;
@@ -92,6 +92,6 @@ public:
   DataInput<sf::Texture> in;
   DataPromise<sf::Texture> out;
 
-  DataInput<size_t> radius_input;
-  DataPromiseManual<size_t> radius_manual;
+  DataInput<size_t> sigma_input;
+  DataPromiseManual<size_t> sigma_manual;
 };

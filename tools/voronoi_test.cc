@@ -20,12 +20,12 @@ int main (int argc, char** argv)
   ImageFilterGrayscale gray;
   gray.in.connect(max.out);
 
-  ImageFilterBlur bl1;
-  bl1.radius_manual.set_data(1);
+  ImageFilterGaussianBlur bl1;
+  bl1.sigma_manual.set_data(1);
   bl1.in.connect(gray.out);
 
-  ImageFilterBlur bl2;
-  bl2.radius_manual.set_data(30);
+  ImageFilterGaussianBlur bl2;
+  bl2.sigma_manual.set_data(30);
   bl2.in.connect(gray.out);
 
   ImageCompositorDifference diff;
@@ -64,8 +64,8 @@ int main (int argc, char** argv)
   vis_voronoi.polyline.connect(gen.out);
   vis_voronoi.cells.connect(voronoi.voronoi);
 
-  ImageFilterBlur bl3; //dirty trick for proper visualisation
-  bl3.radius_manual.set_data(1);
+  ImageFilterGaussianBlur bl3; //dirty trick for proper visualisation
+  bl3.sigma_manual.set_data(1);
   bl3.in.connect(vis_voronoi.out);
 
 
@@ -73,8 +73,8 @@ int main (int argc, char** argv)
   vis_delaunay.polyline.connect(gen.out);
   vis_delaunay.neighbours.connect(voronoi.delaunay);
 
-  ImageFilterBlur bl4; //dirty trick for proper visualisation
-  bl4.radius_manual.set_data(1);
+  ImageFilterGaussianBlur bl4; //dirty trick for proper visualisation
+  bl4.sigma_manual.set_data(1);
   bl4.in.connect(vis_delaunay.out);
 
 

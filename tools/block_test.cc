@@ -20,12 +20,12 @@ int main (int argc, char** argv)
   ImageFilterGrayscale gray;
   gray.in.connect(max.out);
 
-  ImageFilterBlur bl1;
-  bl1.radius_manual.set_data(1);
+  ImageFilterGaussianBlur bl1;
+  bl1.sigma_manual.set_data(1);
   bl1.in.connect(gray.out);
 
-  ImageFilterBlur bl2;
-  bl2.radius_manual.set_data(30);
+  ImageFilterGaussianBlur bl2;
+  bl2.sigma_manual.set_data(30);
   bl2.in.connect(gray.out);
 
   ImageCompositorDifference diff;
@@ -61,8 +61,8 @@ int main (int argc, char** argv)
   vis_poly.in.connect(gen.out);
 
 
-  ImageFilterBlur bl3; //dirty trick for proper visualisation
-  bl3.radius_manual.set_data(1);
+  ImageFilterGaussianBlur bl3; //dirty trick for proper visualisation
+  bl3.sigma_manual.set_data(1);
   bl3.in.connect(vis_poly.out);
 
 

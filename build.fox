@@ -30,10 +30,10 @@ rule link_prog
 build objects($bd/lib/**/*): auto src/**/*.cc
 build objects($bd/lib/**/*): auto src/**/*.cpp
 build library($bd/lib/tspart): auto objects($bd/lib/**/*)
-build objects($bd/tools/*): auto tools/*.cc
+build objects($bd/tools/**/*): auto tools/**/*.cc
 
 
-build application($bd/executables/*): link_prog objects($bd/tools/*) | library($bd/lib/tspart)
+build application($bd/executables/**/*): link_prog objects($bd/tools/**/*) | library($bd/lib/tspart)
   libs += tspart
 
-build application($wd/*): copy application($bd/executables/*)
+build application($wd/**/*): copy application($bd/executables/**/*)

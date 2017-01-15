@@ -13,3 +13,5 @@ res/
 *.sublime*
 activate
 .clang_complete
+/twitterbot_apps/
+

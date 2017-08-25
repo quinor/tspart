@@ -1,4 +1,3 @@
-#include <sstream>
 #include "Image/Loader.hh"
 
 ImageLoader::ImageLoader()
@@ -11,15 +10,11 @@ ImageLoader::ImageLoader()
 
 void ImageLoader::compute()
 {
-  {
-    std::ostringstream stream;
-    stream<<"Filename: "<<filename_input.get_data();
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
+  logger.log(Logger::Level::Verbose)<<"Filename: "<<filename_input.get_data();
   sf::Image tmp;
   if(!tmp.loadFromFile(filename_input.get_data()))
   {
-    logger.log(Logger::Level::Error, "Invalid image file!");
+    logger.log(Logger::Level::Error)<<"Invalid image file!";
     exit(-1);
   }
   data_hook(out).loadFromImage(tmp);

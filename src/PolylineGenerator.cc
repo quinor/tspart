@@ -1,7 +1,6 @@
 #include "PolylineGenerator.hh"
 #include "utils/VoronoiDiagramGenerator.h"
 #include <algorithm>
-#include <sstream>
 #include <cmath>
 
 std::pair<sf::Vector2u, std::vector<sf::Vector2f>>
@@ -127,12 +126,10 @@ void MSTPolylineGenerator::u(int a, int b)
 
 void MSTPolylineGenerator::GenerateMST()
 {
-  std::ostringstream stream;
-  stream <<"There are " <<edges.size() <<" edges and " <<intv.size() <<" vertices";
-  logger.log(Logger::Level::Verbose, stream.str().c_str());
+  logger.log(Logger::Level::Verbose)<<"There are " <<edges.size() <<" edges and " <<intv.size() <<" vertices";
   sort(edges.begin(), edges.end(), EdgCmp(intv));
-  logger.log(Logger::Level::Debug, "Edges Soreted");
-  auto progress = logger.progress(Logger::Level::Verbose,"MST walk through edges", edges.size()); 
+  logger.log(Logger::Level::Debug)<<"Edges Soreted";
+  auto progress = logger.progress(Logger::Level::Verbose,"MST walk through edges", edges.size());
   for (size_t i=0; i<edges.size(); ++i)
     F.push_back(i);
   int i=0;
@@ -167,11 +164,10 @@ std::pair<sf::Vector2u, std::vector<sf::Vector2f>> MSTPolylineGenerator::generat
   auto img_size = input.first;
   auto pts = input.second;
   std::ostringstream stream;
-  stream <<"There are " <<pts.size() <<" points ";
-  logger.log(Logger::Level::Verbose, stream.str().c_str());
-  logger.log(Logger::Level::Debug, "Generating Graph");
+  logger.log(Logger::Level::Verbose)<<"There are " <<pts.size() <<" points ";
+  logger.log(Logger::Level::Debug)<<"Generating Graph";
   MSTPolylineGenerator::GenerateGraph(input);
-  logger.log(Logger::Level::Debug, "Generating MST");
+  logger.log(Logger::Level::Debug)<<"Generating MST";
   MSTPolylineGenerator::GenerateMST();
   std::vector<int> empty;
   for (size_t i=0; i<=pts.size(); ++i)
@@ -179,26 +175,24 @@ std::pair<sf::Vector2u, std::vector<sf::Vector2f>> MSTPolylineGenerator::generat
     graph.push_back(empty);
     visited.push_back(0);
   }
-  logger.log(Logger::Level::Debug, "After Loop 1");
+  logger.log(Logger::Level::Debug)<<"After Loop 1";
   for (auto it: tree)
   {
     graph[it.x].push_back(it.y);
     graph[it.y].push_back(it.x);
   }
-  logger.log(Logger::Level::Debug, "After Loop 2");
+  logger.log(Logger::Level::Debug)<<"After Loop 2";
   int b=1;
   for (size_t i=1; i<intv.size(); ++i)
   {
     if (intv[i].x*intv[i].x+intv[i].y*intv[i].y<intv[b].x*intv[b].x+intv[b].y*intv[b].y)
       b=i;
   }
-  logger.log(Logger::Level::Debug, "After Loop 3");
+  logger.log(Logger::Level::Debug)<<"After Loop 3";
   std::vector<sf::Vector2f> output;
   MSTPolylineGenerator::DFS(b, output);
-  logger.log(Logger::Level::Debug, "After DFS");
-  stream.clear();
-  stream <<output.size() <<" edges!";
-  logger.log(Logger::Level::Verbose, stream.str().c_str());
+  logger.log(Logger::Level::Debug)<<"After DFS";
+  logger.log(Logger::Level::Verbose)<<output.size() <<" edges!";
   auto w=make_pair(img_size, output);
   return w;
 }

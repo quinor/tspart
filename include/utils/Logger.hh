@@ -2,7 +2,9 @@
 
 #include <cstdio>
 #include <vector>
+#include <utility>
 #include <string>
+#include <sstream>
 #include <SFML/System.hpp>
 
 
@@ -36,6 +38,24 @@ public:
     void finish ();
   };
 
+  class LogStream
+  {
+    std::ostringstream *stream;
+    Logger* parent;
+    Level level;
+    bool copied;
+  public:
+    LogStream(Logger* log, Level level);
+    LogStream(LogStream&& other);
+    ~LogStream();
+    template <typename Type>
+    std::ostringstream& operator<<(Type x)
+    {
+      (*stream) << x;
+      return (*stream);
+    }
+  };
+
 private:
   Level loglevel;
   std::vector<std::pair<Level, std::string> > stack;
@@ -48,7 +68,8 @@ public:
   void set_log_level (Level level);
   void enter (Level level, const char* block);
   void exit ();
-  void log (Level level, const char* message);
+  LogStream log (Level level);
+  void log_str (Level level, const char* message);
   Progress progress(Level level, const char* desc, int max);
 };
 

@@ -32,7 +32,7 @@ ImageFilterGrayscale::ImageFilterGrayscale()
   name = "ImageFilterGrayscale";
   if (!frag.loadFromFile(config.shader_pwd+"grayscale.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load grayscale shader");
+    logger.log(Logger::Level::Error)<<"Failed to load grayscale shader";
     exit(-1);
   }
 }
@@ -42,7 +42,7 @@ ImageFilterInverse::ImageFilterInverse()
   name = "ImageFilterInverse";
   if (!frag.loadFromFile(config.shader_pwd+"inverse.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load inverse shader");
+    logger.log(Logger::Level::Error)<<"Failed to load inverse shader";
     exit(-1);
   }
 }
@@ -56,19 +56,15 @@ ImageFilterSigmoid::ImageFilterSigmoid()
   shape_manual.set_data({30, 128});
   if (!frag.loadFromFile(config.shader_pwd+"sigmoid.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load sigmoid shader");
+    logger.log(Logger::Level::Error)<<"Failed to load sigmoid shader";
     exit(-1);
   }
 }
 
 void ImageFilterSigmoid::prepare_shader()
 {
-  {
-    std::ostringstream stream;
-    stream<<"Sigmoid function: "
-      <<"atan((x + "<<shape_input.get_data().second<<") * "<<shape_input.get_data().first<<")";
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
+  logger.log(Logger::Level::Verbose)<<"Sigmoid function: "<<"atan((x + "
+    <<shape_input.get_data().second<<") * "<<shape_input.get_data().first<<")";
   frag.setUniform("alpha", shape_input.get_data().first);
   frag.setUniform("beta", shape_input.get_data().second);
 }
@@ -82,19 +78,14 @@ ImageFilterGamma::ImageFilterGamma()
   shape_manual.set_data(1/2.2);
   if (!frag.loadFromFile(config.shader_pwd+"gamma.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load gamma shader");
+    logger.log(Logger::Level::Error)<<"Failed to load gamma shader";
     exit(-1);
   }
 }
 
 void ImageFilterGamma::prepare_shader()
 {
-  {
-    std::ostringstream stream;
-    stream<<"Gamma correction: x^"<<shape_input.get_data();
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
-
+  logger.log(Logger::Level::Verbose)<<"Gamma correction: x^"<<shape_input.get_data();
   frag.setUniform("power", shape_input.get_data());
 }
 
@@ -107,20 +98,15 @@ ImageFilterLogarithm::ImageFilterLogarithm()
   shape_manual.set_data(10);
   if (!frag.loadFromFile(config.shader_pwd+"logarithm.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load logarithm shader");
+    logger.log(Logger::Level::Error)<<"Failed to load logarithm shader";
     exit(-1);
   }
 }
 
 void ImageFilterLogarithm::prepare_shader()
 {
-  {
-    std::ostringstream stream;
-    stream<<"Log brightness correction: log(1+x/256*"
-      <<shape_input.get_data()<<")/log(1+"<<shape_input.get_data()<<")";
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
-
+  logger.log(Logger::Level::Verbose)<<"Log brightness correction: log(1+x/256*"
+    <<shape_input.get_data()<<")/log(1+"<<shape_input.get_data()<<")";
   frag.setUniform("scale", shape_input.get_data());
 }
 
@@ -134,24 +120,19 @@ ImageFilterGaussianBlur::ImageFilterGaussianBlur()
   sigma_input.connect(sigma_manual);
   if (!frag_x.loadFromFile(config.shader_pwd+"blur_x.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load X shader");
+    logger.log(Logger::Level::Error)<<"Failed to load X shader";
     exit(-1);
   }
   if (!frag_y.loadFromFile(config.shader_pwd+"blur_y.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load Y shader");
+    logger.log(Logger::Level::Error)<<"Failed to load Y shader";
     exit(-1);
   }
 }
 
 void ImageFilterGaussianBlur::compute()
 {
-
-  {
-    std::ostringstream stream;
-    stream<<"Gaussian blur sigma: "<<sigma_input.get_data();
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
+  logger.log(Logger::Level::Verbose)<<"Gaussian blur sigma: "<<sigma_input.get_data();
 
   sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
 

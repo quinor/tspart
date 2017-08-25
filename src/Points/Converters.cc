@@ -1,7 +1,4 @@
 #include "Points/Converters.hh"
-
-#include <sstream>
-
 #include <iostream>
 
 ImageToScalarFieldConverter::ImageToScalarFieldConverter()
@@ -17,11 +14,8 @@ ImageToScalarFieldConverter::ImageToScalarFieldConverter()
 void ImageToScalarFieldConverter::compute()
 {
   size_t scale = scale_input.get_data(); //for readability reasons
-  {
-    std::ostringstream stream;
-    stream<<"Conversion scale is "<<scale;
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
+
+  logger.log(Logger::Level::Verbose)<<"Conversion scale is "<<scale;
 
   auto img = in.get_data().copyToImage();
   auto img_size = img.getSize(); //I use it alot

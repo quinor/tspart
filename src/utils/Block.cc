@@ -1,4 +1,3 @@
-#include <sstream>
 #include "utils/Block.hh"
 
 namespace block_impl
@@ -7,7 +6,7 @@ namespace block_impl
   {
     static timestamp_t now = 1;
     return now++;
-  }  
+  }
 
 
   DataInputDummy::DataInputDummy(Block* m)

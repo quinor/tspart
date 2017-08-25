@@ -13,7 +13,7 @@ void ImageCompositor::compute()
 {
   if (in1.get_data().getSize() != in2.get_data().getSize())
   {
-    logger.log(Logger::Level::Error, "Inputs differ in size!");
+    logger.log(Logger::Level::Error)<<"Inputs differ in size!";
     exit(-1);
   }
 
@@ -44,7 +44,7 @@ ImageCompositorAverage::ImageCompositorAverage()
   ratio_input.connect(ratio_manual);
   if (!frag.loadFromFile(config.shader_pwd+"average.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load shader");
+    logger.log(Logger::Level::Error)<<"Failed to load shader";
     exit(-1);
   }
 }
@@ -56,7 +56,7 @@ ImageCompositorDifference::ImageCompositorDifference()
   name = "ImageCompositorDifference";
   if (!frag.loadFromFile(config.shader_pwd+"difference.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load shader");
+    logger.log(Logger::Level::Error)<<"Failed to load shader";
     exit(-1);
   }
 }
@@ -68,7 +68,7 @@ ImageCompositorAbsoluteDifference::ImageCompositorAbsoluteDifference()
   name = "ImageCompositorAbsoluteDifference";
   if (!frag.loadFromFile(config.shader_pwd+"abs_difference.frag", sf::Shader::Fragment))
   {
-    logger.log(Logger::Level::Error, "Failed to load shader");
+    logger.log(Logger::Level::Error)<<"Failed to load shader";
     exit(-1);
   }
 }

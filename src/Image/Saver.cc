@@ -1,4 +1,3 @@
-#include <sstream>
 #include "Image/Saver.hh"
 
 ImageSaver::ImageSaver()
@@ -11,15 +10,11 @@ ImageSaver::ImageSaver()
 
 void ImageSaver::compute()
 {
-  {
-    std::ostringstream stream;
-    stream<<"Filename: "<<filename_input.get_data();
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
+  logger.log(Logger::Level::Verbose)<<"Filename: "<<filename_input.get_data();
   sf::Image tmp = in.get_data().copyToImage();
   if(!tmp.saveToFile(filename_input.get_data()))
   {
-    logger.log(Logger::Level::Error, "Couldn't save image!");
+    logger.log(Logger::Level::Error)<<"Couldn't save image!";
     exit(-1);
   }
 }

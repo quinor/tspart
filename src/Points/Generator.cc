@@ -1,8 +1,6 @@
 #include "Points/Generator.hh"
 #include "utils/HilbertGenerator.hh"
 
-#include <sstream>
-
 PointsGenerator::PointsGenerator()
 : in(this)
 , out(this)
@@ -15,11 +13,7 @@ PointsGenerator::PointsGenerator()
 
 void PointsGenerator::compute()
 {
-  {
-    std::ostringstream stream;
-    stream<<"Fill is "<<fill_input.get_data();
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
+  logger.log(Logger::Level::Verbose)<<"Fill is "<<fill_input.get_data();
 
   auto& input = in.get_data();
 

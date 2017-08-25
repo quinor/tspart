@@ -1,4 +1,3 @@
-#include <sstream>
 #include "Image/Maximizer.hh"
 
 ImageMaximizer::ImageMaximizer()
@@ -14,17 +13,10 @@ void ImageMaximizer::compute()
 {
   sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
   float scale = max_size_input.get_data()/std::max(s.x, s.y);
-  {
-    std::ostringstream stream;
-    stream<<"Size before maximizing: ("<<s.x<<", "<<s.y<<")";
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
+
+  logger.log(Logger::Level::Verbose)<<"Size before maximizing: ("<<s.x<<", "<<s.y<<")";
   s*=scale;
-  {
-    std::ostringstream stream;
-    stream<<"Size after maximizing: ("<<s.x<<", "<<s.y<<")";
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
+  logger.log(Logger::Level::Verbose)<<"Size after maximizing: ("<<s.x<<", "<<s.y<<")";
 
   sf::RenderTexture rtex;
   rtex.create(s.x, s.y);

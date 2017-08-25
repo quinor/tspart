@@ -1,9 +1,6 @@
 #include "Points/PloterOutput.hh"
-
 #include "Points/Generator.hh"
 #include "utils/HilbertGenerator.hh"
-
-#include <sstream>
 #include <fstream>
 
 PloterOutput::PloterOutput()
@@ -16,11 +13,7 @@ PloterOutput::PloterOutput()
 
 void PloterOutput::compute()
 {
-  {
-    std::ostringstream stream;
-    stream<<"Filename: "<<filename_input.get_data();
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
+  logger.log(Logger::Level::Verbose)<<"Filename: "<<filename_input.get_data();
 
   std::ofstream out;
   out.open(filename_input.get_data());
@@ -28,12 +21,7 @@ void PloterOutput::compute()
   auto& input = in.get_data();
   sf::Vector2f size = sf::Vector2f(input.size);
 
-  {
-    std::ostringstream stream;
-    stream<<"Number of points saved: "<<input.pts.size();
-    logger.log(Logger::Level::Verbose, stream.str().c_str());
-  }
-
+  logger.log(Logger::Level::Verbose)<<"Number of points saved: "<<input.pts.size();
 
   for (auto e : input.pts)
   {

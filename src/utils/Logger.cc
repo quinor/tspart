@@ -66,10 +66,15 @@ void Logger::exit()
   stack.pop_back();
 }
 
-void Logger::log(Logger::Level level, const char* message)
+void Logger::log_str(Logger::Level level, const char* message)
 {
   if (level <= loglevel)
     print(msg_headers[level], msg_strings["empty"], message);
+}
+
+Logger::LogStream Logger::log(Logger::Level level)
+{
+  return LogStream(this, level);
 }
 
 Logger::Progress Logger::progress(Logger::Level level, const char* desc, int max)
@@ -107,11 +112,35 @@ void Logger::Progress::update(int amount)
     );
   parent->print(msg_headers[level], msg_strings["empty"], buffer);
 }
+
 void Logger::Progress::finish()
 {
   if (level > parent->loglevel)
     return;
 //  parent->print(msg_headers[level], msg_strings["empty"], "");
+}
+
+Logger::LogStream::LogStream(Logger* parent_, Logger::Level level_)
+: stream(new std::ostringstream)
+, parent(parent_)
+, level(level_)
+, copied(false)
+{}
+
+Logger::LogStream::LogStream(Logger::LogStream&& other)
+: stream(other.stream)
+, parent(other.parent)
+, level(other.level)
+, copied(true)
+{
+  other.stream = nullptr;
+}
+
+Logger::LogStream::~LogStream()
+{
+  if (!copied)
+    parent->log_str(level, stream->str().c_str());
+  delete stream;
 }
 
 Logger& get_logger()

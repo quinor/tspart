@@ -1,4 +1,5 @@
 #include "Image/Filters.hh"
+#include "utils/Config.hh"
 
 ImageFilter::ImageFilter()
 : in(this)
@@ -29,7 +30,7 @@ void ImageFilter::compute()
 ImageFilterGrayscale::ImageFilterGrayscale()
 {
   name = "ImageFilterGrayscale";
-  if (!frag.loadFromFile("shaders/grayscale.frag", sf::Shader::Fragment))
+  if (!frag.loadFromFile(config.shader_pwd+"grayscale.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load grayscale shader");
     exit(-1);
@@ -39,7 +40,7 @@ ImageFilterGrayscale::ImageFilterGrayscale()
 ImageFilterInverse::ImageFilterInverse()
 {
   name = "ImageFilterInverse";
-  if (!frag.loadFromFile("shaders/inverse.frag", sf::Shader::Fragment))
+  if (!frag.loadFromFile(config.shader_pwd+"inverse.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load inverse shader");
     exit(-1);
@@ -53,7 +54,7 @@ ImageFilterSigmoid::ImageFilterSigmoid()
   name = "ImageFilterSigmoid";
   shape_input.connect(shape_manual);
   shape_manual.set_data({30, 128});
-  if (!frag.loadFromFile("shaders/sigmoid.frag", sf::Shader::Fragment))
+  if (!frag.loadFromFile(config.shader_pwd+"sigmoid.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load sigmoid shader");
     exit(-1);
@@ -66,7 +67,7 @@ void ImageFilterSigmoid::prepare_shader()
     std::ostringstream stream;
     stream<<"Sigmoid function: "
       <<"atan((x + "<<shape_input.get_data().second<<") * "<<shape_input.get_data().first<<")";
-    logger.log(Logger::Level::Verbose, stream.str().c_str());    
+    logger.log(Logger::Level::Verbose, stream.str().c_str());
   }
   frag.setUniform("alpha", shape_input.get_data().first);
   frag.setUniform("beta", shape_input.get_data().second);
@@ -79,7 +80,7 @@ ImageFilterGamma::ImageFilterGamma()
   name = "ImageFilterGamma";
   shape_input.connect(shape_manual);
   shape_manual.set_data(1/2.2);
-  if (!frag.loadFromFile("shaders/gamma.frag", sf::Shader::Fragment))
+  if (!frag.loadFromFile(config.shader_pwd+"gamma.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load gamma shader");
     exit(-1);
@@ -91,7 +92,7 @@ void ImageFilterGamma::prepare_shader()
   {
     std::ostringstream stream;
     stream<<"Gamma correction: x^"<<shape_input.get_data();
-    logger.log(Logger::Level::Verbose, stream.str().c_str());    
+    logger.log(Logger::Level::Verbose, stream.str().c_str());
   }
 
   frag.setUniform("power", shape_input.get_data());
@@ -104,7 +105,7 @@ ImageFilterLogarithm::ImageFilterLogarithm()
   name = "ImageFilterLogarithm";
   shape_input.connect(shape_manual);
   shape_manual.set_data(10);
-  if (!frag.loadFromFile("shaders/logarithm.frag", sf::Shader::Fragment))
+  if (!frag.loadFromFile(config.shader_pwd+"logarithm.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load logarithm shader");
     exit(-1);
@@ -117,7 +118,7 @@ void ImageFilterLogarithm::prepare_shader()
     std::ostringstream stream;
     stream<<"Log brightness correction: log(1+x/256*"
       <<shape_input.get_data()<<")/log(1+"<<shape_input.get_data()<<")";
-    logger.log(Logger::Level::Verbose, stream.str().c_str());    
+    logger.log(Logger::Level::Verbose, stream.str().c_str());
   }
 
   frag.setUniform("scale", shape_input.get_data());
@@ -131,12 +132,12 @@ ImageFilterGaussianBlur::ImageFilterGaussianBlur()
 {
   name = "ImageFilterGaussianBlur";
   sigma_input.connect(sigma_manual);
-  if (!frag_x.loadFromFile("shaders/blur_x.frag", sf::Shader::Fragment))
+  if (!frag_x.loadFromFile(config.shader_pwd+"blur_x.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load X shader");
     exit(-1);
   }
-  if (!frag_y.loadFromFile("shaders/blur_y.frag", sf::Shader::Fragment))
+  if (!frag_y.loadFromFile(config.shader_pwd+"blur_y.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load Y shader");
     exit(-1);
@@ -149,7 +150,7 @@ void ImageFilterGaussianBlur::compute()
   {
     std::ostringstream stream;
     stream<<"Gaussian blur sigma: "<<sigma_input.get_data();
-    logger.log(Logger::Level::Verbose, stream.str().c_str());    
+    logger.log(Logger::Level::Verbose, stream.str().c_str());
   }
 
   sf::Vector2f s = sf::Vector2f(in.get_data().getSize());
@@ -159,7 +160,7 @@ void ImageFilterGaussianBlur::compute()
   rt2.create(s.x, s.y);
   sf::RectangleShape rs(s);
   rs.setTextureRect(sf::IntRect(0, 0, 1, 1));
-  
+
   frag_x.setUniform("sigma", (float)sigma_input.get_data());
   frag_x.setUniform("tex", in.get_data());
   rt1.draw(rs, &frag_x);

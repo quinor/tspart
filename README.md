@@ -14,9 +14,9 @@ Build system:
 
 BUILD INSTRUCTIONS
 
-Run command "bf variation=release" to generate ninja files
+Run command `bf variation=release` to generate ninja files
 
-Run command "ninja" to build the project
+Run command `ninja` to build the project
 
 The binaries will be copied to project's main directory.
 
@@ -24,4 +24,4 @@ The binaries will be copied to project's main directory.
 
 USAGE INSTRUCTIONS
 
-Run any of binaries with --help option. Sources are available in "tools" directory.
+Run any of binaries with --help option. Sources are available in `tools` directory.

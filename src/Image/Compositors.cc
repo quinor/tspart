@@ -1,4 +1,5 @@
 #include "Image/Compositors.hh"
+#include "utils/Config.hh"
 
 ImageCompositor::ImageCompositor()
 : in1(this)
@@ -41,7 +42,7 @@ ImageCompositorAverage::ImageCompositorAverage()
   name = "ImageCompositorAverage";
   ratio_manual.set_data(0.5);
   ratio_input.connect(ratio_manual);
-  if (!frag.loadFromFile("shaders/average.frag", sf::Shader::Fragment))
+  if (!frag.loadFromFile(config.shader_pwd+"average.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load shader");
     exit(-1);
@@ -53,7 +54,7 @@ ImageCompositorDifference::ImageCompositorDifference()
 : ImageCompositor()
 {
   name = "ImageCompositorDifference";
-  if (!frag.loadFromFile("shaders/difference.frag", sf::Shader::Fragment))
+  if (!frag.loadFromFile(config.shader_pwd+"difference.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load shader");
     exit(-1);
@@ -65,7 +66,7 @@ ImageCompositorAbsoluteDifference::ImageCompositorAbsoluteDifference()
 : ImageCompositor()
 {
   name = "ImageCompositorAbsoluteDifference";
-  if (!frag.loadFromFile("shaders/abs_difference.frag", sf::Shader::Fragment))
+  if (!frag.loadFromFile(config.shader_pwd+"abs_difference.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error, "Failed to load shader");
     exit(-1);

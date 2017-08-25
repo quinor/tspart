@@ -14,13 +14,17 @@ int main (int argc, char** argv)
   ImageLoader load;
   load.filename_manual.set_data(argv[1]);
 
+  ImageMaximizer max;
+  max.max_size_manual.set_data(1536);
+  max.in.connect(load.out);
+
   ImageFilterGaussianBlur bl1;
   bl1.sigma_manual.set_data(1);
-  bl1.in.connect(load.out);
+  bl1.in.connect(max.out);
 
   ImageFilterGaussianBlur bl2;
   bl2.sigma_manual.set_data(60);
-  bl2.in.connect(load.out);
+  bl2.in.connect(max.out);
 
   ImageCompositorDifference diff;
   diff.in1.connect(bl1.out);
@@ -38,7 +42,7 @@ int main (int argc, char** argv)
 
 #ifdef DEBUG
   ImageMultiViewer<3,2> view;
-  view.input(0, 0).connect(load.out);
+  view.input(0, 0).connect(max.out);
   view.caption_manual(0, 0).set_data("Original image");
   view.input(0, 1).connect(bl1.out);
   view.caption_manual(0, 1).set_data("Low blur");

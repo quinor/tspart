@@ -16,7 +16,7 @@ int main (int argc, char** argv)
   ImageMaximizer max;
   max.max_size_manual.set_data(1536);
   max.in.connect(load.out);
-  
+
   ImageFilterGrayscale gray;
   gray.in.connect(max.out);
 
@@ -44,7 +44,7 @@ int main (int argc, char** argv)
 
   ImageFilterLogarithm gam;
   gam.in.connect(sigm2.out);
-  gam.shape_manual.set_data(0.1);
+  gam.shape_manual.set_data(10);
 
 
   ImageFilterInverse inv;
@@ -83,7 +83,7 @@ int main (int argc, char** argv)
   view.caption_manual(2, 0).set_data("Sigmoid of blurs difference");
   view.input(2, 1).connect(bl3.out);
   view.caption_manual(2, 1).set_data("Polyline visualization");
-  
+
   ImageSaver save;
   save.in.connect(vis_poly.out);
   save.filename_manual.set_data("out.jpg");

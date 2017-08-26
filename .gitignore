@@ -9,6 +9,7 @@ mid_pass
 voronoi_test
 *.jpg
 *.plt
+/out*
 res/
 *.sublime*
 activate

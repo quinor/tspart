@@ -22,6 +22,7 @@ public:
   DataPromise<sf::Texture> out;
 };
 
+
 class ImageFilterGrayscale : public ImageFilter
 {
 public:

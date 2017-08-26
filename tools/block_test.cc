@@ -8,7 +8,7 @@ int main (int argc, char** argv)
   if (argc != 2)
     return 0;
 
-  get_logger().set_log_level(Logger::Level::Verbose);
+  get_logger().set_log_level(Logger::Level::Debug);
 
   ImageLoader load;
   load.filename_manual.set_data(argv[1]);
@@ -53,9 +53,16 @@ int main (int argc, char** argv)
   ImageToScalarFieldConverter im_to_sc;
   im_to_sc.in.connect(inv.out);
 
-  PointsGenerator gen;
-  gen.in.connect(im_to_sc.out);
-  gen.fill_manual.set_data(6);
+  PointsGenerator p_gen;
+  p_gen.in.connect(im_to_sc.out);
+  p_gen.fill_manual.set_data(6);
+
+  PointsVoronoiDelaunay voronoi;
+  voronoi.in.connect(p_gen.out);
+
+  MSTPointsOrderer gen;
+  gen.in.connect(p_gen.out);
+  gen.graph.connect(voronoi.delaunay);
 
   PolylineVisualizer vis_poly;
   vis_poly.in.connect(gen.out);

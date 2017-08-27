@@ -21,8 +21,8 @@ void ImageToScalarFieldConverter::compute()
   auto img_size = img.getSize(); //I use it alot
   const uint8_t* img_data = img.getPixelsPtr();
 
-  ScalarField& output = data_hook(out);
-  output = ScalarField(img_size, scale);
+  auto& output = data_hook(out);
+  output = ScalarField<uint8_t>(img_size, scale);
 
   auto progress = get_logger().progress(Logger::Level::Verbose, "Upscale", output.size.y);
   for (size_t y = 0; y<output.size.y; y++)
@@ -49,4 +49,27 @@ void ImageToScalarFieldConverter::compute()
   }
 
   progress.finish();
+}
+
+
+ScalarFieldMassPrefixSum::ScalarFieldMassPrefixSum()
+: in(this)
+, out(this)
+{
+  name = "ScalarFieldMassPrefixSum";
+}
+
+void ScalarFieldMassPrefixSum::compute()
+{
+  auto& input = in.get_data();
+  auto& output = data_hook(out);
+  output = ScalarField<MassElement>(input.size, input.scale);
+
+  output.data[-1] = {0,0,0};
+  for (size_t y=0; y<input.size.y; y++)
+    for (size_t x=0; x<input.size.x; x++)
+    {
+      size_t pos = y*input.size.x+x;
+      output.data[pos] = output.data[pos-1] + MassElement(x, y)*input.data[pos];
+    }
 }

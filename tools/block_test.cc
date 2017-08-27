@@ -53,16 +53,28 @@ int main (int argc, char** argv)
   ImageToScalarFieldConverter im_to_sc;
   im_to_sc.in.connect(inv.out);
 
+  ScalarFieldMassPrefixSum mass;
+  mass.in.connect(im_to_sc.out);
+
   PointsGenerator p_gen;
   p_gen.in.connect(im_to_sc.out);
-  p_gen.fill_manual.set_data(6);
+  p_gen.fill_manual.set_data(12);
 
   PointsVoronoiDelaunay voronoi;
   voronoi.in.connect(p_gen.out);
 
+  PointsRelaxator relax;
+  relax.mass_field.connect(mass.out);
+  relax.voronoi_cells.connect(voronoi.voronoi);
+  relax.in.connect(p_gen.out);
+
+
+  PointsVoronoiDelaunay voronoi2;
+  voronoi2.in.connect(relax.out);
+
   MSTPointsOrderer gen;
-  gen.in.connect(p_gen.out);
-  gen.graph.connect(voronoi.delaunay);
+  gen.in.connect(relax.out);
+  gen.graph.connect(voronoi2.delaunay);
 
   PolylineVisualizer vis_poly;
   vis_poly.in.connect(gen.out);
@@ -103,6 +115,7 @@ int main (int argc, char** argv)
 
   save.update();
 
-  view.update();
+//  view.update();
+  mass.update();
   return 0;
 }

@@ -15,7 +15,7 @@ private:
 
 public:
 
-  DataInput<ScalarField> in;
+  DataInput<ScalarField<uint8_t>> in;
   DataPromise<Polyline> out;
 
   DataInput<size_t> fill_input;

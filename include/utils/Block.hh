@@ -104,7 +104,7 @@ namespace block_impl
     virtual timestamp_t timestamp() override;
 
   private:
-    
+
     timestamp_t force_update_timestamp;
   };
 
@@ -145,6 +145,7 @@ namespace block_impl
   public:
 
     Block();
+    virtual ~Block();
 
     void update(timestamp_t now = get_timestamp());
     void refresh();

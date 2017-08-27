@@ -1,6 +1,7 @@
 #include "Image/ImageTools.hh"
 #include "Points/PointsTools.hh"
 #include "utils/Logger.hh"
+#include "utils/UtilityBlocks.hh"
 
 
 int main (int argc, char** argv)
@@ -10,8 +11,11 @@ int main (int argc, char** argv)
 
   get_logger().set_log_level(Logger::Level::Debug);
 
+  Input<std::string> in;
+  in.set_data(argv[1]);
+
   ImageLoader load;
-  load.filename_manual.set_data(argv[1]);
+  load.filename_input.connect(in.out);
 
   ImageMaximizer max;
   max.max_size_manual.set_data(1536);

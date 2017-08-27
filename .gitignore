@@ -7,6 +7,7 @@ build_tsp_art
 block_test
 mid_pass
 voronoi_test
+graph_test
 *.jpg
 *.plt
 /out*
@@ -15,4 +16,4 @@ res/
 activate
 .clang_complete
 /twitterbot_apps/
-
+TODO

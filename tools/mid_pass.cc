@@ -15,7 +15,7 @@ int main (int argc, char** argv)
   ImageMaximizer max;
   max.max_size_manual.set_data(1500);
   max.in.connect(load);
-  
+
   ImageFilterGrayscale gray;
   gray.in.connect(max);
 
@@ -55,7 +55,7 @@ int main (int argc, char** argv)
   view.caption_manual(2, 0).set_data("Low and high blur difference");
   view.input(2, 1).connect(sigm);
   view.caption_manual(2, 1).set_data("Sigmoid of difference");
-  
+
 
   ImageSaver save;
   save.in.connect(sigm);

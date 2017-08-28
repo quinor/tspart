@@ -73,6 +73,19 @@ ImageCompositorAbsoluteDifference::ImageCompositorAbsoluteDifference()
   }
 }
 
+
+ImageCompositorRatio::ImageCompositorRatio()
+: ImageCompositor()
+{
+  name = "ImageCompositorRatio";
+  if (!frag.loadFromFile(config.shader_pwd+"ratio.frag", sf::Shader::Fragment))
+  {
+    logger.log(Logger::Level::Error)<<"Failed to load shader";
+    exit(-1);
+  }
+}
+
+
 void ImageCompositorAverage::prepare_shader()
 {
   frag.setUniform("ratio", ratio_input.get_data());

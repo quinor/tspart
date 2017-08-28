@@ -34,4 +34,7 @@ public:
   ImageCompositorAbsoluteDifference& image_compositor_absolute_difference(
     DataPromise<sf::Texture>& left,
     DataPromise<sf::Texture>& right);
+  ImageCompositorRatio& image_compositor_ratio(
+    DataPromise<sf::Texture>& left,
+    DataPromise<sf::Texture>& right);
 };

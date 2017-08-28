@@ -7,15 +7,15 @@ int main (int argc, char** argv)
 
   auto& ld = gr.image_loader();
 
-  auto& in = gr.image_filter_grayscale(gr.image_maximizer(ld, 1500));
+  auto& in = gr.image_filter_grayscale(ld);
 
   auto& diff = gr.image_filter_sigmoid(
-    gr.image_compositor_difference(
+    gr.image_compositor_ratio(
       gr.image_filter_gaussian_blur(in, 1),
-      gr.image_filter_gaussian_blur(in, 60)),
-    {10,128});
+      gr.image_filter_grayscale(gr.image_filter_gaussian_blur(in, 40))),
+    {10, 128});
 
-  auto& view = gr.image_viewer(diff);
+  auto& view = gr.image_viewer(gr.image_maximizer(diff, 800));
 
   for (int i=1; i<argc; i++)
   {

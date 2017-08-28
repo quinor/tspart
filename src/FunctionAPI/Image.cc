@@ -115,7 +115,9 @@ ImageCompositorAverage& ImageMixin::image_compositor_average(
   return *ret;
 }
 
-ImageCompositorDifference& ImageMixin::image_compositor_difference(DataPromise<sf::Texture>& left, DataPromise<sf::Texture>& right)
+ImageCompositorDifference& ImageMixin::image_compositor_difference(
+  DataPromise<sf::Texture>& left,
+  DataPromise<sf::Texture>& right)
 {
   auto ret = new ImageCompositorDifference();
   blocks.push_back(ret);
@@ -124,9 +126,22 @@ ImageCompositorDifference& ImageMixin::image_compositor_difference(DataPromise<s
   return *ret;
 }
 
-ImageCompositorAbsoluteDifference& ImageMixin::image_compositor_absolute_difference(DataPromise<sf::Texture>& left, DataPromise<sf::Texture>& right)
+ImageCompositorAbsoluteDifference& ImageMixin::image_compositor_absolute_difference(
+  DataPromise<sf::Texture>& left,
+  DataPromise<sf::Texture>& right)
 {
   auto ret = new ImageCompositorAbsoluteDifference();
+  blocks.push_back(ret);
+  ret->in1.connect(left);
+  ret->in2.connect(right);
+  return *ret;
+}
+
+ImageCompositorRatio& ImageMixin::image_compositor_ratio(
+  DataPromise<sf::Texture>& left,
+  DataPromise<sf::Texture>& right)
+{
+  auto ret = new ImageCompositorRatio();
   blocks.push_back(ret);
   ret->in1.connect(left);
   ret->in2.connect(right);

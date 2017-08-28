@@ -13,7 +13,8 @@ float gauss_weight(int d)
 void main()
 {
   vec3 sum = vec3(0.0);
-  float delta = 1.0/textureSize(tex, 0).x;
+  vec2 size = textureSize(tex, 0);
+  float delta = 0.001*max(size.x, size.y)*1.0/size.x;
   float div = 0;
   sum += gauss_weight(0)*texture(tex, gl_TexCoord[0].xy).rgb;
   div += gauss_weight(0);

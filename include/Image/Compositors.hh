@@ -47,3 +47,9 @@ class ImageCompositorAbsoluteDifference : public ImageCompositor
 public:
   ImageCompositorAbsoluteDifference();
 };
+
+class ImageCompositorRatio : public ImageCompositor
+{
+public:
+  ImageCompositorRatio();
+};

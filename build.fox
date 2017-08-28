@@ -3,10 +3,9 @@ wd = .
 
 cxx = clang++ -fcolor-diagnostics
 cxxflags = -Wall -Wextra -std=c++14
-includedirs = include
-libs = sfml-system sfml-window sfml-graphics
-libdirs = $bd/lib
-
+includedirs = deps/include include
+libs = sfml-graphics sfml-window sfml-system
+libdirs = $bd/lib deps/lib
 
 filter variation: debug
   cxxflags += -g -O0 -DDEBUG

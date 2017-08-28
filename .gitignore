@@ -3,6 +3,7 @@ build.ninja
 .ninja_deps
 .ninja_log
 venv/
+deps/
 normalization
 tsp_art
 /*.jpg

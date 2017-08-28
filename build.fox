@@ -2,6 +2,7 @@ bd = .build/${variation}
 wd = .
 
 cxx = clang++ -fcolor-diagnostics
+#cxx = g++
 cxxflags = -Wall -Wextra -std=c++14
 includedirs = deps/include include
 libs = sfml-graphics sfml-window sfml-system

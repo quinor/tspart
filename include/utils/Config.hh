@@ -2,7 +2,7 @@
 
 struct cfg
 {
-  std::string shader_pwd = "/home/quinor/kody/tspart/shaders/";
+  std::string shader_pwd = "./shaders/";
 };
 
 extern cfg config;

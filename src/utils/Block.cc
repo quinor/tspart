@@ -75,6 +75,11 @@ namespace block_impl
     dummy_in.force_update();
   }
 
+  void Block::set_logger(Logger& new_logger)
+  {
+    logger = new_logger;
+  }
+
   timestamp_t Block::timestamp()
   {
     return compute_timestamp;

@@ -17,7 +17,7 @@ public:
   DataPromise<T>& input()
   {
     auto ret = new Input<T>();
-    blocks.push_back(ret);
+    register_block(ret);
     return ret->out;
   }
 
@@ -26,15 +26,18 @@ public:
   {
     auto ret = new Output<T>();
     ret->in.connect(src);
-    blocks.push_back(ret);
+    register_block(ret);
     return *ret;
   }
+
+protected:
+  void register_block(Block* bl);
 
 public:
 
   Logger logger;
 
-protected:
+private:
 
   std::vector<Block*> blocks;
 };

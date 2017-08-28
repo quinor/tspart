@@ -63,7 +63,7 @@ void ScalarFieldMassPrefixSum::compute()
 {
   auto& input = in.get_data();
   auto& output = data_hook(out);
-  output = ScalarField<MassElement>(input.size, input.scale);
+  output = ScalarField<MassElement>(input.size/(unsigned int)(input.scale), input.scale);
 
   output.data[-1] = {0,0,0};
   for (size_t y=0; y<input.size.y; y++)

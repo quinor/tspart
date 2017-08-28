@@ -5,9 +5,9 @@ ImageToScalarField& PointsMixin::image_to_scalar_field(
   DataPromise<sf::Texture>& data, int scale)
 {
   auto ret = new ImageToScalarField();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->in.connect(data);
-  if (scale != 0)
+  if (scale != 2)
     ret->scale_manual.set_data(scale);
   return *ret;
 }
@@ -16,8 +16,18 @@ ScalarFieldMassPrefixSum& PointsMixin::scalar_field_mass_prefix_sum(
   DataPromise<ScalarField<uint8_t>>& data)
 {
   auto ret = new ScalarFieldMassPrefixSum();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->in.connect(data);
+  return *ret;
+}
+
+PloterOutput& PointsMixin::points_saver(DataPromise<Polyline>& data, std::string name)
+{
+  auto ret = new PloterOutput();
+  register_block(ret);
+  ret->in.connect(data);
+  if (name != "")
+    ret->filename_manual.set_data(name);
   return *ret;
 }
 
@@ -25,9 +35,9 @@ PointsGenerator& PointsMixin::points_generator(
   DataPromise<ScalarField<uint8_t>>& data, int fill)
 {
   auto ret = new PointsGenerator();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->in.connect(data);
-  if (fill != 0)
+  if (fill != 12)
     ret->fill_manual.set_data(fill);
   return *ret;
 }
@@ -35,7 +45,7 @@ PointsGenerator& PointsMixin::points_generator(
 PointsVoronoiDelaunay& PointsMixin::points_voronoi_delaunay(DataPromise<Polyline>& data)
 {
   auto ret = new PointsVoronoiDelaunay();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->in.connect(data);
   return *ret;
 }
@@ -46,7 +56,7 @@ PointsRelaxator& PointsMixin::points_relaxator(
   DataPromise<ScalarField<MassElement>>& mass_field)
 {
   auto ret = new PointsRelaxator();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->in.connect(data);
   ret->voronoi_cells.connect(cells);
   ret->mass_field.connect(mass_field);
@@ -56,7 +66,7 @@ PointsRelaxator& PointsMixin::points_relaxator(
 HilbertPointsOrderer& PointsMixin::hilbert_points_orderer(DataPromise<Polyline>& data)
 {
   auto ret = new HilbertPointsOrderer();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->in.connect(data);
   return *ret;
 }
@@ -66,7 +76,7 @@ MSTPointsOrderer& PointsMixin::mst_points_orderer(
   DataPromise<DelaunayTriangulation>& graph)
 {
   auto ret = new MSTPointsOrderer();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->in.connect(data);
   ret->graph.connect(graph);
   return *ret;
@@ -75,7 +85,7 @@ MSTPointsOrderer& PointsMixin::mst_points_orderer(
 PolylineVisualizer& PointsMixin::polyline_visualizer(DataPromise<Polyline>& data)
 {
   auto ret = new PolylineVisualizer();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->in.connect(data);
   return *ret;
 }
@@ -85,7 +95,7 @@ VoronoiCellsVisualizer& PointsMixin::voronoi_cells_visualizer(
   DataPromise<VoronoiCells>& voronoi)
 {
   auto ret = new VoronoiCellsVisualizer();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->polyline.connect(data);
   ret->cells.connect(voronoi);
   return *ret;
@@ -96,8 +106,26 @@ DelaunayTriangulationVisualizer& PointsMixin::delaunay_triangulation_visualizer(
   DataPromise<DelaunayTriangulation>& delaunay)
 {
   auto ret = new DelaunayTriangulationVisualizer();
-  blocks.push_back(ret);
+  register_block(ret);
   ret->polyline.connect(data);
   ret->neighbours.connect(delaunay);
   return *ret;
+}
+
+DataPromise<Polyline>& PointsMixin::n_voronoi_relaxation(
+  DataPromise<Polyline>& data,
+  DataPromise<ScalarField<MassElement>>& field,
+  int n)
+{
+  if (n == 0)
+    return data;
+  return n_voronoi_relaxation(
+    points_relaxator(data, points_voronoi_delaunay(data).voronoi, field),
+    field,
+    n-1);
+}
+
+DataPromise<Polyline>& PointsMixin::mst_ordering(DataPromise<Polyline>& data)
+{
+  return mst_points_orderer(data, points_voronoi_delaunay(data).delaunay);
 }

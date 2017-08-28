@@ -3,7 +3,7 @@
 #include "API.hh"
 
 
-class General : public API
+class General : public virtual API
 {
 public:
 
@@ -11,7 +11,7 @@ public:
   DataPromise<T>& input()
   {
     auto ret = new Input<T>();
-    blocks.push_back(ret);
+    register_block(ret);
     return *ret;
   }
 
@@ -20,7 +20,7 @@ public:
   {
     auto ret = new Output<T>();
     ret->in.connect(src);
-    blocks.push_back(ret);
+    register_block(ret);
     return *ret;
   }
 };

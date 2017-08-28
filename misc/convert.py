@@ -8,7 +8,7 @@ s = """<?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
 "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg height="{}" width="{}" xmlns="http://www.w3.org/2000/svg" version="1.1"><polyline
-points="{}" style="fill:none;stroke:#4b2877;stroke-width:4" />
+points="{}" style="fill:none;stroke:#000000;stroke-width:4" />
 </svg>"""
 
 xs = [e[0] for e in l]

@@ -130,6 +130,7 @@ namespace block_impl
 
     void update(timestamp_t now = get_timestamp());
     void refresh();
+    void set_logger(Logger& new_logger);
 
   protected:
 

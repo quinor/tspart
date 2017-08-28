@@ -4,7 +4,7 @@
 #include "Image/ImageTools.hh"
 #include <string>
 
-class ImageMixin : public API
+class ImageMixin : public virtual API
 {
 public:
 
@@ -37,4 +37,15 @@ public:
   ImageCompositorRatio& image_compositor_ratio(
     DataPromise<sf::Texture>& left,
     DataPromise<sf::Texture>& right);
+  DataPromise<sf::Texture>& image_normalization(
+    DataPromise<sf::Texture>& data,
+    float steepness=30);
 };
+
+template<int W, int H>
+ImageMultiViewer<W, H>& ImageMixin::image_multi_viewer()
+{
+  auto ret = new ImageMultiViewer<W, H>();
+  register_block(ret);
+  return *ret;
+}

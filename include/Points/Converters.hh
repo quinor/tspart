@@ -6,12 +6,12 @@
 #include "DataTypes.hh"
 
 
-class ImageToScalarFieldConverter : public Block,
-  public AsOutput<ScalarField<uint8_t>, ImageToScalarFieldConverter>
+class ImageToScalarField : public Block,
+  public AsOutput<ScalarField<uint8_t>, ImageToScalarField>
 {
 public:
 
-  ImageToScalarFieldConverter();
+  ImageToScalarField();
 
 protected:
 

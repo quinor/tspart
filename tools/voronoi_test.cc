@@ -16,7 +16,7 @@ int main (int argc, char** argv)
   ImageMaximizer max;
   max.max_size_manual.set_data(1536);
   max.in.connect(load);
-  
+
   ImageFilterGrayscale gray;
   gray.in.connect(max);
 
@@ -49,7 +49,7 @@ int main (int argc, char** argv)
   ImageFilterInverse inv;
   inv.in.connect(gam);
 
-  ImageToScalarFieldConverter im_to_sc;
+  ImageToScalarField im_to_sc;
   im_to_sc.in.connect(inv);
 
   PointsGenerator gen;
@@ -92,7 +92,7 @@ int main (int argc, char** argv)
 
   view.input(3, 0).connect(bl4);
   view.caption_manual(3, 0).set_data("Delaunay visualization");
-  
+
   ImageSaver save1;
   save1.in.connect(vis_voronoi);
   save1.filename_manual.set_data("out1.jpg");

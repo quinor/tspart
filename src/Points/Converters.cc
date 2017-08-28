@@ -1,17 +1,17 @@
 #include "Points/Converters.hh"
 #include <iostream>
 
-ImageToScalarFieldConverter::ImageToScalarFieldConverter()
+ImageToScalarField::ImageToScalarField()
 : in(this)
 , out(this)
 , scale_input(this)
 {
-  name = "ImageToScalarFieldConverter";
+  name = "ImageToScalarField";
   scale_manual.set_data(2);
   scale_input.connect(scale_manual);
 }
 
-void ImageToScalarFieldConverter::compute()
+void ImageToScalarField::compute()
 {
   size_t scale = scale_input.get_data(); //for readability reasons
 

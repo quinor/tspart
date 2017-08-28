@@ -54,7 +54,7 @@ int main (int argc, char** argv)
   ImageFilterInverse inv;
   inv.in.connect(gam);
 
-  ImageToScalarFieldConverter im_to_sc;
+  ImageToScalarField im_to_sc;
   im_to_sc.in.connect(inv);
 
   ScalarFieldMassPrefixSum mass;

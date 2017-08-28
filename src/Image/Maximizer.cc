@@ -7,6 +7,7 @@ ImageMaximizer::ImageMaximizer()
 {
   name = "ImageMaximizer";
   max_size_input.connect(max_size_manual);
+  max_size_manual.set_data(1024);
 }
 
 void ImageMaximizer::compute()

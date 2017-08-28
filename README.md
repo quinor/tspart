@@ -24,4 +24,7 @@ The binaries will be copied to project's main directory.
 
 USAGE INSTRUCTIONS
 
-Run any of binaries with --help option. Sources are available in `tools` directory.
+Not available yet, sorry. Most of the binaries receive path to one image as the commandline input
+and produce some files and windows with preview as the result.
+Example:
+`./block_test res/photo.jpg`

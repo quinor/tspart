@@ -26,6 +26,7 @@ sfml:
 	unzip -n SFML.zip;\
 	cd SFML-2.4.2;\
 	cmake .;\
+	make;\
 	cp -r include lib ../..
 
 ninja:

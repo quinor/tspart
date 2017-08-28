@@ -25,7 +25,7 @@ int main (int argc, char** argv)
   auto& inv = gr.image_to_scalar_field(gr.image_filter_inverse(pre), 2);
   auto& pref = gr.scalar_field_mass_prefix_sum(inv);
 
-  auto& pts = gr.points_generator(inv, 18);
+  auto& pts = gr.points_generator(inv, 24);
   auto& relaxed = gr.n_voronoi_relaxation(pts, pref, 5);
   auto& path = gr.mst_ordering(relaxed);
 

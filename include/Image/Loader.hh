@@ -1,18 +1,19 @@
 #pragma once
 
+#include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
+
 #include <SFML/Graphics.hpp>
 #include <string>
 
-#include "utils/Block.hh"
 
-
-class ImageLoader : public Block
+class ImageLoader : public Block, public AsOutput<sf::Texture, ImageLoader>
 {
 public:
   DataPromise<sf::Texture> out;
 
   DataInput<std::string> filename_input;
-  DataPromiseManual<std::string> filename_manual;
+  Input<std::string> filename_manual;
 
   ImageLoader();
 

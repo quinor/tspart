@@ -1,12 +1,13 @@
 #pragma once
 
+#include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
+
 #include <SFML/Graphics.hpp>
 #include <string>
 
-#include "utils/Block.hh"
 
-
-class ImageMaximizer : public Block
+class ImageMaximizer : public Block, public AsOutput<sf::Texture, ImageMaximizer>
 {
 public:
 
@@ -21,5 +22,5 @@ public:
   DataPromise<sf::Texture> out;
 
   DataInput<size_t> max_size_input;
-  DataPromiseManual<size_t> max_size_manual;
+  Input<size_t> max_size_manual;
 };

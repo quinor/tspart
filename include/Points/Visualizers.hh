@@ -4,10 +4,11 @@
 
 #include "utils/Logger.hh"
 #include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
 #include "DataTypes.hh"
 
 
-class PolylineVisualizer : public Block
+class PolylineVisualizer : public Block, public AsOutput<sf::Texture, PolylineVisualizer>
 {
 public:
   PolylineVisualizer();
@@ -21,7 +22,7 @@ public:
 };
 
 
-class VoronoiCellsVisualizer : public Block
+class VoronoiCellsVisualizer : public Block, public AsOutput<sf::Texture, VoronoiCellsVisualizer>
 {
 public:
   VoronoiCellsVisualizer();
@@ -36,7 +37,8 @@ public:
 };
 
 
-class DelaunayTriangulationVisualizer : public Block
+class DelaunayTriangulationVisualizer : public Block,
+  public AsOutput<sf::Texture, DelaunayTriangulationVisualizer>
 {
 public:
   DelaunayTriangulationVisualizer();

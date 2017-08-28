@@ -1,9 +1,10 @@
 #pragma once
 
 #include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
 #include "DataTypes.hh"
 
-class PointsGenerator : public Block
+class PointsGenerator : public Block, public AsOutput<Polyline, PointsGenerator>
 {
 public:
 
@@ -19,5 +20,5 @@ public:
   DataPromise<Polyline> out;
 
   DataInput<size_t> fill_input;
-  DataPromiseManual<size_t> fill_manual;
+  Input<size_t> fill_manual;
 };

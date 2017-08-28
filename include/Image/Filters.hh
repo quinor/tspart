@@ -1,13 +1,14 @@
 #pragma once
 
+#include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
+
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <cstdlib>
 
-#include "utils/Block.hh"
 
-
-class ImageFilter : public Block
+class ImageFilter : public Block, public AsOutput<sf::Texture, ImageFilter>
 {
 public:
   ImageFilter();
@@ -46,7 +47,7 @@ private:
 
 public:
   DataInput<std::pair<float, float>> shape_input;
-  DataPromiseManual<std::pair<float, float>> shape_manual;
+  Input<std::pair<float, float>> shape_manual;
 };
 
 
@@ -60,7 +61,7 @@ private:
 
 public:
   DataInput<float> shape_input;
-  DataPromiseManual<float> shape_manual;
+  Input<float> shape_manual;
 };
 
 
@@ -74,11 +75,11 @@ private:
 
 public:
   DataInput<float> shape_input;
-  DataPromiseManual<float> shape_manual;
+  Input<float> shape_manual;
 };
 
 
-class ImageFilterGaussianBlur : public Block
+class ImageFilterGaussianBlur : public Block, public AsOutput<sf::Texture, ImageFilterGaussianBlur>
 {
 public:
   ImageFilterGaussianBlur();
@@ -93,5 +94,5 @@ public:
   DataPromise<sf::Texture> out;
 
   DataInput<size_t> sigma_input;
-  DataPromiseManual<size_t> sigma_manual;
+  Input<size_t> sigma_manual;
 };

@@ -3,8 +3,19 @@
 #include "utils/Block.hh"
 
 
+template <typename T, typename X>
+class AsOutput
+{
+public:
+  operator DataPromise<T>& ()
+  {
+    return static_cast<X*>(this)->out;
+  }
+};
+
+
 template <typename T>
-class Input : public Block
+class Input : public Block, public AsOutput<T, Input<T>>
 {
 public:
 
@@ -19,6 +30,8 @@ public:
     data_hook(out) = data;
     refresh();
   }
+
+protected:
 
   virtual void compute () override
   {}
@@ -45,6 +58,8 @@ public:
     update();
     return in.get_data();
   }
+
+protected:
 
   virtual void compute () override
   {}

@@ -1,24 +1,18 @@
 #pragma once
 
-#include "utils/Block.hh"
-#include "utils/Logger.hh"
-#include "utils/UtilityBlocks.hh"
-#include <vector>
+#include "API.hh"
 
 
-class API
+class General : public API
 {
 public:
-
-  API();
-  ~API();
 
   template<typename T>
   DataPromise<T>& input()
   {
     auto ret = new Input<T>();
     blocks.push_back(ret);
-    return ret->out;
+    return *ret;
   }
 
   template<typename T>
@@ -29,12 +23,4 @@ public:
     blocks.push_back(ret);
     return *ret;
   }
-
-public:
-
-  Logger logger;
-
-protected:
-
-  std::vector<Block*> blocks;
 };

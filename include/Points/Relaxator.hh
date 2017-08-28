@@ -1,9 +1,10 @@
 #pragma once
 
 #include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
 #include "DataTypes.hh"
 
-class PointsRelaxator : public Block
+class PointsRelaxator : public Block, public AsOutput<Polyline, PointsRelaxator>
 {
 public:
 

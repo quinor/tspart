@@ -1,2 +1,2 @@
-buildfox
+git+https://github.com/beardsvibe/buildfox.git@master
 pyserial

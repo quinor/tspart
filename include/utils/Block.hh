@@ -58,25 +58,6 @@ namespace block_impl
     Block* creator;
   };
 
-  template <typename Content>
-  class DataPromiseManual : public DataPromiseMeta<Content>
-  {
-  public:
-    DataPromiseManual();
-    virtual const Content& get_data();
-
-    void set_data(const Content&);
-
-  private:
-
-    virtual void update(timestamp_t now = get_timestamp());
-
-    virtual timestamp_t timestamp();
-
-    Content data;
-    timestamp_t change_timestamp;
-  };
-
 
   class DataInputMeta : private boost::noncopyable
   {
@@ -162,6 +143,10 @@ namespace block_impl
     timestamp_t timestamp();
 
 
+  public:
+
+    DataPromise<int> done;
+
   protected:
 
     std::string name;
@@ -200,35 +185,6 @@ namespace block_impl
   {
     return creator->timestamp();
   }
-
-
-  template <typename Content>
-  DataPromiseManual<Content>::DataPromiseManual()
-  : change_timestamp(get_timestamp())
-  {}
-
-  template <typename Content>
-  const Content& DataPromiseManual<Content>::get_data()
-  {
-    return data;
-  }
-
-  template <typename Content>
-  void DataPromiseManual<Content>::set_data(const Content& d)
-  {
-    data = d;
-    change_timestamp = get_timestamp();
-  }
-
-  template <typename Content>
-  timestamp_t DataPromiseManual<Content>::timestamp()
-  {
-    return change_timestamp;
-  }
-
-  template <typename Content>
-  void DataPromiseManual<Content>::update(timestamp_t)
-  {}
 
 
   template <typename Content>
@@ -283,9 +239,6 @@ using Block = block_impl::Block;
 
 template<typename Content>
 using DataPromise = block_impl::DataPromise<Content>;
-
-template<typename Content>
-using DataPromiseManual = block_impl::DataPromiseManual<Content>;
 
 template<typename Content>
 using DataInput = block_impl::DataInput<Content>;

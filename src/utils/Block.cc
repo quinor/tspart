@@ -30,7 +30,8 @@ namespace block_impl
 
 
   Block::Block()
-  : name("<UNCHANGED!> Generic block")
+  : done(this)
+  , name("<UNCHANGED!> Generic block")
   , logger(get_logger())
   , inputs()
   , compute_timestamp(0)
@@ -40,6 +41,9 @@ namespace block_impl
     static int id_counter = 0;
     id = id_counter++;
   }
+
+  Block::~Block()
+  {}
 
   void Block::update(timestamp_t now)
   {

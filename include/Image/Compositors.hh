@@ -5,9 +5,10 @@
 #include <cstdlib>
 
 #include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
 
 
-class ImageCompositor : public Block
+class ImageCompositor : public Block, public AsOutput<sf::Texture, ImageCompositor>
 {
 public:
   ImageCompositor();
@@ -29,7 +30,7 @@ public:
   ImageCompositorAverage();
 
   DataInput<float> ratio_input;
-  DataPromiseManual<float> ratio_manual;
+  Input<float> ratio_manual;
 private:
   virtual void prepare_shader() override;
 

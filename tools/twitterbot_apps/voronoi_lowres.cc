@@ -17,60 +17,60 @@ int main (int argc, char** argv)
 
   ImageMaximizer max;
   max.max_size_manual.set_data(1536);
-  max.in.connect(load.out);
+  max.in.connect(load);
 
   ImageFilterGaussianBlur bl1;
   bl1.sigma_manual.set_data(1);
-  bl1.in.connect(max.out);
+  bl1.in.connect(max);
 
   ImageFilterGaussianBlur bl2;
   bl2.sigma_manual.set_data(60);
-  bl2.in.connect(max.out);
+  bl2.in.connect(max);
 
   ImageCompositorDifference diff;
-  diff.in1.connect(bl1.out);
-  diff.in2.connect(bl2.out);
+  diff.in1.connect(bl1);
+  diff.in2.connect(bl2);
 
   ImageFilterSigmoid sigm;
   sigm.shape_manual.set_data({10,128});
-  sigm.in.connect(diff.out);
+  sigm.in.connect(diff);
 
 
 
   ImageFilterSigmoid sigm2;
-  sigm2.in.connect(sigm.out);
+  sigm2.in.connect(sigm);
   sigm2.shape_manual.set_data({10,128});
 
   ImageFilterLogarithm gam;
-  gam.in.connect(sigm2.out);
+  gam.in.connect(sigm2);
   gam.shape_manual.set_data(100);
 
   ImageFilterGrayscale gray;
-  gray.in.connect(gam.out);
+  gray.in.connect(gam);
 
   ImageFilterInverse inv;
-  inv.in.connect(gray.out);
+  inv.in.connect(gray);
 
 
 
   ImageToScalarFieldConverter im_to_sc;
-  im_to_sc.in.connect(inv.out);
+  im_to_sc.in.connect(inv);
 
   PointsGenerator gen;
-  gen.in.connect(im_to_sc.out);
+  gen.in.connect(im_to_sc);
   gen.fill_manual.set_data(200);
 
   PointsVoronoiDelaunay voronoi;
-  voronoi.in.connect(gen.out);
+  voronoi.in.connect(gen);
 
   VoronoiCellsVisualizer vis_voronoi;
-  vis_voronoi.polyline.connect(gen.out);
+  vis_voronoi.polyline.connect(gen);
   vis_voronoi.cells.connect(voronoi.voronoi);
 
 
 
   ImageSaver save;
-  save.in.connect(vis_voronoi.out);
+  save.in.connect(vis_voronoi);
   save.filename_manual.set_data(argv[2]);
 
   save.update();
@@ -78,23 +78,23 @@ int main (int argc, char** argv)
 #ifdef DEBUG
   ImageFilterGaussianBlur bl3; //dirty trick for proper visualisation
   bl3.sigma_manual.set_data(1);
-  bl3.in.connect(vis_voronoi.out);
+  bl3.in.connect(vis_voronoi);
 
 
   ImageMultiViewer<3,2> view;
-  view.input(0, 0).connect(max.out);
+  view.input(0, 0).connect(max);
   view.caption_manual(0, 0).set_data("Original image");
-  view.input(0, 1).connect(sigm.out);
+  view.input(0, 1).connect(sigm);
   view.caption_manual(0, 1).set_data("Processed");
 
-  view.input(1, 0).connect(sigm2.out);
+  view.input(1, 0).connect(sigm2);
   view.caption_manual(1, 0).set_data("2nd sigmoid");
-  view.input(1, 1).connect(gam.out);
+  view.input(1, 1).connect(gam);
   view.caption_manual(1, 1).set_data("After gamma correction");
 
-  view.input(2, 0).connect(gray.out);
+  view.input(2, 0).connect(gray);
   view.caption_manual(2, 0).set_data("Grayscale'd");
-  view.input(2, 1).connect(bl3.out);
+  view.input(2, 1).connect(bl3);
   view.caption_manual(2, 1).set_data("Final voronoi");
 
   view.update();

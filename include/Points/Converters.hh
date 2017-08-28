@@ -2,10 +2,12 @@
 
 #include "utils/Logger.hh"
 #include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
 #include "DataTypes.hh"
 
 
-class ImageToScalarFieldConverter : public Block
+class ImageToScalarFieldConverter : public Block,
+  public AsOutput<ScalarField<uint8_t>, ImageToScalarFieldConverter>
 {
 public:
 
@@ -21,11 +23,12 @@ public:
   DataPromise<ScalarField<uint8_t>> out;
 
   DataInput<size_t> scale_input;
-  DataPromiseManual<size_t> scale_manual;
+  Input<size_t> scale_manual;
 };
 
 
-class ScalarFieldMassPrefixSum : public Block
+class ScalarFieldMassPrefixSum : public Block,
+  public AsOutput<ScalarField<MassElement>, ScalarFieldMassPrefixSum>
 {
 public:
 

@@ -2,10 +2,11 @@
 
 #include "utils/Logger.hh"
 #include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
 #include "DataTypes.hh"
 
 
-class PointsOrderer : public Block
+class PointsOrderer : public Block, public AsOutput<Polyline, PointsOrderer>
 {
 public:
 

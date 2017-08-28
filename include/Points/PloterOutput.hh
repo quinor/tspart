@@ -2,7 +2,9 @@
 
 #include "utils/Logger.hh"
 #include "utils/Block.hh"
+#include "utils/UtilityBlocks.hh"
 #include "DataTypes.hh"
+
 
 class PloterOutput : public Block
 {
@@ -19,5 +21,5 @@ public:
   DataInput<Polyline> in;
 
   DataInput<std::string> filename_input;
-  DataPromiseManual<std::string> filename_manual;
+  Input<std::string> filename_manual;
 };

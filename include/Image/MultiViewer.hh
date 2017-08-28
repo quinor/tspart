@@ -1,11 +1,13 @@
 #pragma once
 
+#include "utils/UtilityBlocks.hh"
+#include "utils/Block.hh"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
 #include <boost/optional.hpp>
 
-#include "utils/Block.hh"
 
 namespace
 {
@@ -20,15 +22,15 @@ class ImageMultiViewer : public Block
 public:
   ImageMultiViewer();
 
-  DataPromiseManual<std::string>& caption_manual(int x, int y);
+  Input<std::string>& caption_manual(int x, int y);
   DataInput<std::string>& caption(int x, int y);
   DataInput<sf::Texture>& input(int x, int y);
 
   DataInput<std::string> window_name_input;
-  DataPromiseManual<std::string> window_name_manual;
+  Input<std::string> window_name_manual;
 
   DataInput<sf::Vector2u> window_size_input;
-  DataPromiseManual<sf::Vector2u> window_size_manual;
+  Input<sf::Vector2u> window_size_manual;
 
 protected:
   virtual void compute() override;
@@ -41,7 +43,7 @@ private:
     DataInput<sf::Texture>,
     DataInput<std::string>
   >> in[W][H];
-  DataPromiseManual<std::string> capt[W][H];
+  Input<std::string> capt[W][H];
 };
 
 
@@ -64,7 +66,7 @@ ImageMultiViewer<W, H>::ImageMultiViewer()
 }
 
 template<int W, int H>
-DataPromiseManual<std::string>& ImageMultiViewer<W, H>::caption_manual(int x, int y)
+Input<std::string>& ImageMultiViewer<W, H>::caption_manual(int x, int y)
 {
   if (!check_bonds(x, y))
     throw "invalid x and y";
@@ -92,7 +94,7 @@ DataInput<sf::Texture>& ImageMultiViewer<W, H>::input(int x, int y)
   if (!in[x][y])
   {
     in[x][y].emplace(this, this);
-    in[x][y]->second.connect(capt[x][y]);
+    in[x][y]->second.connect(capt[x][y].out);
   }
   return in[x][y]->first;
 }
@@ -140,6 +142,6 @@ void ImageMultiViewer<W, H>::compute()
     sf::sleep(sf::milliseconds(50));
     window.display();
   }
-  
+
   refresh(); //so that window appears every time we update this block*/
 }

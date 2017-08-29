@@ -8,7 +8,6 @@ int main (int argc, char** argv)
     return 0;
 
   auto gr = Graph<ImageMixin, PointsMixin>();
-  gr.logger.set_log_level(Logger::Level::Debug);
 
   auto vis = [&](DataPromise<Polyline>& poly) -> DataPromise<sf::Texture>&
     {return gr.image_filter_gaussian_blur(gr.polyline_visualizer(poly), 1);};

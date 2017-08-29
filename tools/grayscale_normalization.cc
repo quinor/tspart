@@ -4,7 +4,6 @@
 int main (int argc, char** argv)
 {
   auto gr = Graph<ImageMixin>();
-  gr.logger.set_log_level(Logger::Level::Verbose);
 
   auto& in = gr.image_loader();
   auto& diff = gr.image_normalization(gr.image_filter_grayscale(in), 10);

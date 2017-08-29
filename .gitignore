@@ -5,6 +5,7 @@ build.ninja
 venv/
 deps/
 libs/
+package/
 normalization
 tsp_art
 /*.jpg

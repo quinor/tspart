@@ -7,6 +7,7 @@ cxxflags = -Wall -Wextra -std=c++14
 includedirs = deps/include include
 libs = sfml-graphics sfml-window sfml-system
 libdirs = $bd/lib deps/lib
+ldflags = -Wl,-rpath=libs
 
 filter variation: debug
   cxxflags += -g -O0 -DDEBUG

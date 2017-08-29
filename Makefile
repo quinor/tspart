@@ -1,6 +1,6 @@
-all: clean tspart
+all: clean tspart package
 
-.PHONY: all clean tspart venv libs sfml ninja glm boost
+.PHONY: all clean tspart venv libs sfml ninja glm boost package
 
 clean:
 	rm -rf deps
@@ -18,6 +18,8 @@ venv:
 
 libs: sfml ninja glm boost
 	rm -rf deps/src
+	mkdir -p libs
+	cp deps/lib/*.so.2.4 libs/
 
 sfml:
 	mkdir -p deps/src/;\
@@ -51,3 +53,7 @@ boost:
 	curl -L http://dl.bintray.com/boostorg/release/1.65.0/source/boost_1_65_0.tar.gz >boost.tar.gz;\
 	tar xf boost.tar.gz;\
 	cp -r boost_1_65_0/boost ../include
+
+package:
+	mkdir -p package
+	cp -r normalization tsp_art shaders libs res package/

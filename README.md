@@ -2,10 +2,9 @@ REQUIREMENTS
 
 clang C++ compiler (can be changed to gcc in the first line of `build.fox`)
 
-C++ Libraries:
-  * Boost
-
 Python3
+
+Rest of the dependencies is downloaded automatically!
 
 
 

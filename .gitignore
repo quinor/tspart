@@ -4,6 +4,7 @@ build.ninja
 .ninja_log
 venv/
 deps/
+libs/
 normalization
 tsp_art
 /*.jpg

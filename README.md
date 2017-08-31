@@ -1,8 +1,10 @@
 REQUIREMENTS
 
-clang C++ compiler (can be changed to gcc in the first line of `build.fox`)
-
-Python3
+You have to provide:
+  * clang C++ compiler (can be changed to gcc in the first line of `build.fox`)
+  * Python3
+  * make
+  * cmake
 
 Rest of the dependencies is downloaded automatically!
 

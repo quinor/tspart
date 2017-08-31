@@ -80,7 +80,11 @@ DataInput<std::string>& ImageMultiViewer<W, H>::caption(int x, int y)
     throw "invalid x and y";
   if (!in[x][y])
   {
-    in[x][y].emplace(this, this);
+    in[x][y].emplace(
+      std::piecewise_construct,
+      std::forward_as_tuple(this),
+      std::forward_as_tuple(this)
+    );
     in[x][y]->second.connect(capt[x][y]);
   }
   return in[x][y]->second;
@@ -93,7 +97,11 @@ DataInput<sf::Texture>& ImageMultiViewer<W, H>::input(int x, int y)
     throw "invalid x and y";
   if (!in[x][y])
   {
-    in[x][y].emplace(this, this);
+    in[x][y].emplace(
+      std::piecewise_construct,
+      std::forward_as_tuple(this),
+      std::forward_as_tuple(this)
+    );
     in[x][y]->second.connect(capt[x][y].out);
   }
   return in[x][y]->first;

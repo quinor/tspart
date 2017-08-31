@@ -6,7 +6,8 @@ venv/
 deps/
 libs/
 package/
-normalization
+color_normalization
+grayscale_normalization
 tsp_art
 /*.jpg
 /*.plt

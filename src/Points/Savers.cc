@@ -17,7 +17,7 @@ void PolylinePloterSaver::compute()
   out.open(filename_input.get_data());
 
   auto& input = in.get_data();
-  sf::Vector2f size = sf::Vector2f(input.size);
+  sf::Vector2f size = sf::Vector2f(input.size)/(float)input.scale;
 
   logger.log(Logger::Level::Verbose)<<"Number of points saved: "<<input.pts.size();
 
@@ -48,7 +48,7 @@ void PolylineSVGSaver::compute()
   out.open(filename_input.get_data());
 
   auto& input = in.get_data();
-  sf::Vector2f size = sf::Vector2f(input.size);
+  sf::Vector2f size = sf::Vector2f(input.size)/(float)input.scale;
 
   logger.log(Logger::Level::Verbose)<<"Number of points saved: "<<input.pts.size();
 

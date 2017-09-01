@@ -25,7 +25,7 @@ int main (int argc, char** argv)
   auto& pref = gr.scalar_field_mass_prefix_sum(inv);
 
   auto& pts = gr.points_generator(inv, 24);
-  auto& relaxed = gr.n_voronoi_relaxation(pts, pref, 10);
+  auto& relaxed = gr.n_voronoi_relaxation(pts, pref, 5);
   auto& path = gr.mst_ordering(relaxed);
 
   auto& pln_saver = gr.polyline_svg_saver(path, "out.svg");
@@ -43,6 +43,6 @@ int main (int argc, char** argv)
 
 
   pln_saver.update();
-  view.update();
+  //view.update();
   return 0;
 }

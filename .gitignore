@@ -5,7 +5,7 @@ build.ninja
 venv/
 deps/
 libs/
-package/
+package*
 color_normalization
 grayscale_normalization
 tsp_art

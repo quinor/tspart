@@ -21,9 +21,19 @@ ScalarFieldMassPrefixSum& PointsMixin::scalar_field_mass_prefix_sum(
   return *ret;
 }
 
-PloterOutput& PointsMixin::points_saver(DataPromise<Polyline>& data, std::string name)
+PolylinePloterSaver& PointsMixin::polyline_ploter_saver(DataPromise<Polyline>& data, std::string name)
 {
-  auto ret = new PloterOutput();
+  auto ret = new PolylinePloterSaver();
+  register_block(ret);
+  ret->in.connect(data);
+  if (name != "")
+    ret->filename_manual.set_data(name);
+  return *ret;
+}
+
+PolylineSVGSaver& PointsMixin::polyline_svg_saver(DataPromise<Polyline>& data, std::string name)
+{
+  auto ret = new PolylineSVGSaver();
   register_block(ret);
   ret->in.connect(data);
   if (name != "")

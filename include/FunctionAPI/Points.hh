@@ -10,7 +10,8 @@ public:
   ImageToScalarField& image_to_scalar_field(DataPromise<sf::Texture>& data, int scale=2);
   ScalarFieldMassPrefixSum& scalar_field_mass_prefix_sum(DataPromise<ScalarField<uint8_t>>& data);
 
-  PloterOutput& points_saver(DataPromise<Polyline>& data, std::string name="");
+  PolylinePloterSaver& polyline_ploter_saver(DataPromise<Polyline>& data, std::string name="");
+  PolylineSVGSaver& polyline_svg_saver(DataPromise<Polyline>& data, std::string name="");
 
   PointsGenerator& points_generator(DataPromise<ScalarField<uint8_t>>& data, int fill=12);
   PointsVoronoiDelaunay& points_voronoi_delaunay(DataPromise<Polyline>& data);

@@ -22,7 +22,11 @@ public:
     DataPromise<ScalarField<MassElement>>& mass_field);
 
   HilbertPointsOrderer& hilbert_points_orderer(DataPromise<Polyline>& data);
+  NearestNeighbourPointsOrderer& nearest_neighbour_points_orderer(DataPromise<Polyline>& data);
   MSTPointsOrderer& mst_points_orderer(
+    DataPromise<Polyline>& data,
+    DataPromise<DelaunayTriangulation>& graph);
+  SkipPointsOrderer& skip_points_orderer(
     DataPromise<Polyline>& data,
     DataPromise<DelaunayTriangulation>& graph);
 
@@ -40,4 +44,5 @@ public:
     int n=1);
 
   DataPromise<Polyline>& mst_ordering(DataPromise<Polyline>& data);
+  DataPromise<Polyline>& skip_ordering(DataPromise<Polyline>& data);
 };

@@ -81,11 +81,32 @@ HilbertPointsOrderer& PointsMixin::hilbert_points_orderer(DataPromise<Polyline>&
   return *ret;
 }
 
+NearestNeighbourPointsOrderer& PointsMixin::nearest_neighbour_points_orderer(DataPromise<Polyline>& data)
+{
+  auto ret = new NearestNeighbourPointsOrderer();
+  register_block(ret);
+  ret->in.connect(data);
+  return *ret;
+}
+
+
+
 MSTPointsOrderer& PointsMixin::mst_points_orderer(
   DataPromise<Polyline>& data,
   DataPromise<DelaunayTriangulation>& graph)
 {
   auto ret = new MSTPointsOrderer();
+  register_block(ret);
+  ret->in.connect(data);
+  ret->graph.connect(graph);
+  return *ret;
+}
+
+SkipPointsOrderer& PointsMixin::skip_points_orderer(
+  DataPromise<Polyline>& data,
+  DataPromise<DelaunayTriangulation>& graph)
+{
+  auto ret = new SkipPointsOrderer();
   register_block(ret);
   ret->in.connect(data);
   ret->graph.connect(graph);
@@ -138,4 +159,9 @@ DataPromise<Polyline>& PointsMixin::n_voronoi_relaxation(
 DataPromise<Polyline>& PointsMixin::mst_ordering(DataPromise<Polyline>& data)
 {
   return mst_points_orderer(data, points_voronoi_delaunay(data).delaunay);
+}
+
+DataPromise<Polyline>& PointsMixin::skip_ordering(DataPromise<Polyline>& data)
+{
+  return skip_points_orderer(data, points_voronoi_delaunay(data).delaunay);
 }

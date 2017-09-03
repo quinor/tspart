@@ -1,6 +1,7 @@
 #include "Points/Savers.hh"
 #include <fstream>
 
+
 PolylinePloterSaver::PolylinePloterSaver()
 : in(this)
 , filename_input(this)
@@ -49,6 +50,7 @@ void PolylineSVGSaver::compute()
 
   auto& input = in.get_data();
   sf::Vector2f size = sf::Vector2f(input.size)/(float)input.scale;
+  auto start = input.pts[0]/(float)input.scale;
 
   logger.log(Logger::Level::Verbose)<<"Number of points saved: "<<input.pts.size();
 
@@ -58,16 +60,18 @@ void PolylineSVGSaver::compute()
     << "\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
     << "<svg height=\""<<size.y<<"\" width=\""<<size.x<<"\" "
     << "xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
-    << "<polyline points=\"";
+    << "<path d=\"M "<<start.x<<" "<<start.y<<" ";
 
-  for (auto e : input.pts)
+  for (int i=0; i<input.pts.size(); i++)
   {
-    e/=(float)input.scale;
-    out<<(int)e.x<<","<<(int)e.y<<" ";
+    auto cur = input.pts[i]/(float)input.scale;
+    auto nxt = input.pts[std::min((size_t)i+1, input.pts.size()-1)]/(float)input.scale;
+    nxt = (nxt+cur)/2.f;
+    out<<"Q "<<cur.x<<" "<<cur.y<<", "<<nxt.x<<" "<<nxt.y<<" ";
+
   }
 
-  out
-    << "\" style=\"fill:none;stroke:#000000;stroke-width:4\" /></svg>\n";
+  out<< "\" fill=\"transparent\" stroke=\"black\" stroke-width=\"4\"/></svg>\n";
 
   out.close();
 }

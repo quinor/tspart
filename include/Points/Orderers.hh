@@ -29,10 +29,35 @@ protected:
 };
 
 
+class NearestNeighbourPointsOrderer : public PointsOrderer
+{
+public:
+
+  NearestNeighbourPointsOrderer();
+
+protected:
+
+  virtual void compute() override;
+};
+
+
 class MSTPointsOrderer : public PointsOrderer
 {
 public:
   MSTPointsOrderer();
+
+  DataInput<DelaunayTriangulation> graph;
+
+protected:
+
+  virtual void compute() override;
+};
+
+
+class SkipPointsOrderer : public PointsOrderer
+{
+public:
+  SkipPointsOrderer();
 
   DataInput<DelaunayTriangulation> graph;
 

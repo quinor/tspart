@@ -16,19 +16,30 @@ venv:
 	. ./venv/bin/activate;\
 	pip install -r requirements.txt
 
-libs: sfml ninja glm boost
+libs: sfml ninja glm boost tgui
 	rm -rf deps/src
 	mkdir -p libs
-	cp deps/lib/*.so.2.4 libs/
+	cp deps/lib/*.so.2.4 deps/lib/libtgui.so.0.7.4 libs/
 
 sfml:
 	mkdir -p deps/src/;\
 	cd deps/src;\
 	curl -L "https://www.sfml-dev.org/files/SFML-2.4.2-sources.zip" >SFML.zip;\
 	unzip -n SFML.zip;\
-	cd SFML-2.4.2;\
+	cd SFML-*;\
 	cmake .;\
-	make;\
+	make -j12;\
+	cp -r include lib ../..
+
+tgui:
+	mkdir -p deps/src/;\
+	cd deps/src;\
+	curl -L "https://github.com/texus/TGUI/archive/0.7.4.zip" >TGUI.zip;\
+	unzip -n TGUI.zip;\
+	cd TGUI-*;\
+	export SFML_ROOT=../../;\
+	cmake .;\
+	make -j12;\
 	cp -r include lib ../..
 
 ninja:
@@ -52,7 +63,7 @@ boost:
 	cd deps/src;\
 	curl -L http://dl.bintray.com/boostorg/release/1.65.0/source/boost_1_65_0.tar.gz >boost.tar.gz;\
 	tar xf boost.tar.gz;\
-	cp -r boost_1_65_0/boost ../include
+	cp -r boost_*/boost ../include
 
 package:
 	mkdir -p package

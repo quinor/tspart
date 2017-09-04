@@ -143,6 +143,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
       sigm,
       gauss),
     log);
+  auto& pre_saver = gr.image_saver(pre, std::string("/tmp/preview.jpg"));
 
   auto& scalar = gr.image_to_scalar_field(gr.image_filter_inverse(pre), scale);
   auto& pref = gr.scalar_field_mass_prefix_sum(scalar);
@@ -215,7 +216,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     out_file->setText("/tmp/out.svg");
     out_filename.set_data("/tmp/out.svg");
 
-    auto size_slider = slider(100, 1024, 4096, [&](int val)->void
+    auto size_slider = slider(100, 2048, 4096, [&](int val)->void
     {
       size.set_data(val);
     });
@@ -234,9 +235,9 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     {
       gauss.set_data(pow(1.5, val));
     });
-    auto contrast = slider(0, 2, 10, [&](int val)->void //pow(1.5, x)
+    auto contrast = slider(0, 8, 20, [&](int val)->void //pow(1.5, x)
     {
-      sigm.set_data(pow(1.5, val));
+      sigm.set_data(pow(1.5, 10-val));
     });
     auto log_gamma = slider(0, 3, 20, [&](int val)->void //pow(2,x)
     {
@@ -257,7 +258,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     {
       fill.set_data(int(12*pow(1.5, 10-val)));
     });
-    auto quality = slider(0, 1, 5, [&](int val)->void //1<<x
+    auto quality = slider(0, 0, 5, [&](int val)->void //1<<x
     {
       scale.set_data(1<<val);
     });
@@ -266,7 +267,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 
     bar->add(named_column(
     {
-      {"Inverse density", density},
+      {"Density", density},
       {"Quality (Uses LOTS of RAM)", quality},
       // {"Smoothing", passes}
     },
@@ -277,6 +278,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   {
     tgui::ComboBox::Ptr style = theme->load("ComboBox");
     tgui::Button::Ptr fire = theme->load("Button");
+    tgui::Button::Ptr prev = theme->load("Button");
     style->addItem("Minimal Spanning Tree", "mst");
     style->addItem("Skipping Minimal Spanning Tree", "skip");
     style->addItem("Hilbert", "hilbert");
@@ -309,11 +311,20 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
       pic->setTexture("/tmp/out.jpg");
     });
 
+    prev->setText("Preview");
+    prev->connect("Pressed", [&, pic]()
+    {
+      pre_saver.update();
+      pic->setTexture("misc/empty.png");
+      pic->setTexture("/tmp/preview.jpg");
+    });
+
     bar->add(named_column(
     {
       {"Style", style},
+      {"", prev},
       {"", fire}
-    }, 1));
+    }));
   }
 
 

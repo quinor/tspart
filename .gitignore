@@ -9,6 +9,7 @@ package*
 color_normalization
 grayscale_normalization
 tsp_art
+tspart_gui
 /*.jpg
 /*.plt
 /*.svg

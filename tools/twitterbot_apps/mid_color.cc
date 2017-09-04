@@ -31,7 +31,7 @@ int main (int argc, char** argv)
   diff.in2.connect(bl2);
 
   ImageFilterSigmoid sigm;
-  sigm.shape_manual.set_data({10,128});
+  sigm.alpha_manual.set_data(10);
   sigm.in.connect(diff);
 
   ImageSaver save;

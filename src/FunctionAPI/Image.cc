@@ -8,32 +8,29 @@ ImageViewer& ImageMixin::image_viewer(DataPromise<sf::Texture>& data)
   return *ret;
 }
 
-ImageLoader& ImageMixin::image_loader(std::string name)
+ImageLoader& ImageMixin::image_loader(Param<std::string> name)
 {
   auto ret = new ImageLoader();
   register_block(ret);
-  if (name != "")
-    ret->filename_manual.set_data(name);
+  ret->filename_input.connect(name.get_input(this));
   return *ret;
 }
 
-ImageSaver& ImageMixin::image_saver(DataPromise<sf::Texture>& data, std::string name)
+ImageSaver& ImageMixin::image_saver(DataPromise<sf::Texture>& data, Param<std::string> name)
 {
   auto ret = new ImageSaver();
   register_block(ret);
   ret->in.connect(data);
-  if (name != "")
-    ret->filename_manual.set_data(name);
+  ret->filename_input.connect(name.get_input(this));
   return *ret;
 }
 
-ImageMaximizer& ImageMixin::image_maximizer(DataPromise<sf::Texture>& data, int max_size)
+ImageMaximizer& ImageMixin::image_maximizer(DataPromise<sf::Texture>& data, Param<size_t> max_size)
 {
   auto ret = new ImageMaximizer();
   register_block(ret);
   ret->in.connect(data);
-  if (max_size != 0)
-    ret->max_size_manual.set_data(max_size);
+  ret->max_size_input.connect(max_size.get_input(this));
   return *ret;
 }
 
@@ -53,57 +50,56 @@ ImageFilterInverse& ImageMixin::image_filter_inverse(DataPromise<sf::Texture>& d
   return *ret;
 }
 
-ImageFilterSigmoid& ImageMixin::image_filter_sigmoid(DataPromise<sf::Texture>& data, std::pair<float, float> shape)
+ImageFilterSigmoid& ImageMixin::image_filter_sigmoid(
+  DataPromise<sf::Texture>& data,
+  Param<float> alpha,
+  Param<float> beta)
 {
   auto ret = new ImageFilterSigmoid();
   register_block(ret);
   ret->in.connect(data);
-  if (shape != std::pair<float, float>(0, 0))
-    ret->shape_manual.set_data(shape);
+  ret->alpha_input.connect(alpha.get_input(this));
+  ret->beta_input.connect(beta.get_input(this));
   return *ret;
 }
 
-ImageFilterGamma& ImageMixin::image_filter_gamma(DataPromise<sf::Texture>& data, float shape)
+ImageFilterGamma& ImageMixin::image_filter_gamma(DataPromise<sf::Texture>& data, Param<float> shape)
 {
   auto ret = new ImageFilterGamma();
   register_block(ret);
   ret->in.connect(data);
-  if (shape != 0.f)
-    ret->shape_manual.set_data(shape);
+  ret->shape_input.connect(shape.get_input(this));
   return *ret;
 }
 
-ImageFilterLogarithm& ImageMixin::image_filter_logarithm(DataPromise<sf::Texture>& data, float shape)
+ImageFilterLogarithm& ImageMixin::image_filter_logarithm(DataPromise<sf::Texture>& data, Param<float> shape)
 {
   auto ret = new ImageFilterLogarithm();
   register_block(ret);
   ret->in.connect(data);
-  if (shape != 0.f)
-    ret->shape_manual.set_data(shape);
+  ret->shape_input.connect(shape.get_input(this));
   return *ret;
 }
 
-ImageFilterGaussianBlur& ImageMixin::image_filter_gaussian_blur(DataPromise<sf::Texture>& data, float sigma)
+ImageFilterGaussianBlur& ImageMixin::image_filter_gaussian_blur(DataPromise<sf::Texture>& data, Param<size_t> sigma)
 {
   auto ret = new ImageFilterGaussianBlur();
   register_block(ret);
   ret->in.connect(data);
-  if (sigma != 0.f)
-    ret->sigma_manual.set_data(sigma);
+  ret->sigma_input.connect(sigma.get_input(this));
   return *ret;
 }
 
 ImageCompositorAverage& ImageMixin::image_compositor_average(
   DataPromise<sf::Texture>& left,
   DataPromise<sf::Texture>& right,
-  float ratio)
+  Param<float> ratio)
 {
   auto ret = new ImageCompositorAverage();
   register_block(ret);
   ret->in1.connect(left);
   ret->in2.connect(right);
-  if (ratio != .5f)
-    ret->ratio_manual.set_data(ratio);
+  ret->ratio_input.connect(ratio.get_input(this));
   return *ret;
 }
 
@@ -142,11 +138,12 @@ ImageCompositorRatio& ImageMixin::image_compositor_ratio(
 
 DataPromise<sf::Texture>& ImageMixin::image_normalization(
   DataPromise<sf::Texture>& data,
-  float steepness)
+  Param<float> steepness,
+  Param<size_t> radius)
 {
   return image_filter_sigmoid(
     image_compositor_ratio(
       image_filter_gaussian_blur(data, 1),
-      image_filter_grayscale(image_filter_gaussian_blur(data, 20))),
-    {steepness, 128});
+      image_filter_grayscale(image_filter_gaussian_blur(data, radius))),
+    steepness);
 }

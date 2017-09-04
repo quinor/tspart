@@ -2,13 +2,12 @@
 
 
 ImageToScalarField& PointsMixin::image_to_scalar_field(
-  DataPromise<sf::Texture>& data, int scale)
+  DataPromise<sf::Texture>& data, Param<size_t> scale)
 {
   auto ret = new ImageToScalarField();
   register_block(ret);
   ret->in.connect(data);
-  if (scale != 2)
-    ret->scale_manual.set_data(scale);
+  ret->scale_input.connect(scale.get_input(this));
   return *ret;
 }
 
@@ -21,34 +20,31 @@ ScalarFieldMassPrefixSum& PointsMixin::scalar_field_mass_prefix_sum(
   return *ret;
 }
 
-PolylinePloterSaver& PointsMixin::polyline_ploter_saver(DataPromise<Polyline>& data, std::string name)
+PolylinePloterSaver& PointsMixin::polyline_ploter_saver(DataPromise<Polyline>& data, Param<std::string> name)
 {
   auto ret = new PolylinePloterSaver();
   register_block(ret);
   ret->in.connect(data);
-  if (name != "")
-    ret->filename_manual.set_data(name);
+  ret->filename_input.connect(name.get_input(this));
   return *ret;
 }
 
-PolylineSVGSaver& PointsMixin::polyline_svg_saver(DataPromise<Polyline>& data, std::string name)
+PolylineSVGSaver& PointsMixin::polyline_svg_saver(DataPromise<Polyline>& data, Param<std::string> name)
 {
   auto ret = new PolylineSVGSaver();
   register_block(ret);
   ret->in.connect(data);
-  if (name != "")
-    ret->filename_manual.set_data(name);
+  ret->filename_input.connect(name.get_input(this));
   return *ret;
 }
 
 PointsGenerator& PointsMixin::points_generator(
-  DataPromise<ScalarField<uint8_t>>& data, int fill)
+  DataPromise<ScalarField<uint8_t>>& data, Param<size_t> fill)
 {
   auto ret = new PointsGenerator();
   register_block(ret);
   ret->in.connect(data);
-  if (fill != 12)
-    ret->fill_manual.set_data(fill);
+  ret->fill_input.connect(fill.get_input(this));
   return *ret;
 }
 

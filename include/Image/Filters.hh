@@ -46,8 +46,10 @@ private:
   virtual void prepare_shader() override;
 
 public:
-  DataInput<std::pair<float, float>> shape_input;
-  Input<std::pair<float, float>> shape_manual;
+  DataInput<float> alpha_input;
+  DataInput<float> beta_input;
+  Input<float> alpha_manual;
+  Input<float> beta_manual;
 };
 
 

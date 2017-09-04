@@ -4,31 +4,18 @@
 #include "utils/Logger.hh"
 #include "utils/UtilityBlocks.hh"
 #include <vector>
+#include <type_traits>
 
 
 class API
 {
+  template <typename T>
+  friend class Param;
+
 public:
 
   API();
   ~API();
-
-  template<typename T>
-  DataPromise<T>& input()
-  {
-    auto ret = new Input<T>();
-    register_block(ret);
-    return ret->out;
-  }
-
-  template<typename T>
-  Output<T>& output(DataPromise<T>& src)
-  {
-    auto ret = new Output<T>();
-    ret->in.connect(src);
-    register_block(ret);
-    return *ret;
-  }
 
 protected:
   void register_block(Block* bl);
@@ -40,4 +27,43 @@ public:
 private:
 
   std::vector<Block*> blocks;
+};
+
+
+template <typename T>
+class Param
+{
+public:
+
+  Param(T x)
+  : in(new Input<T>(x))
+  , pr(nullptr)
+  , reg(true)
+  {
+  }
+
+  template<typename X>
+  Param(X& x)
+  : in(nullptr)
+  , pr(&(x.operator DataPromise<T>&()))
+  , reg(false)
+  {
+  }
+
+  Param (Param<T>&) = default;
+  Param (Param<T>&&) = default;
+
+  DataPromise<T>& get_input(API* a)
+  {
+    if (!reg)
+      return *pr;
+    a->register_block(in);
+    return in->out;
+  }
+
+private:
+
+  Input<T>* in;
+  DataPromise<T>* pr;
+  bool reg;
 };

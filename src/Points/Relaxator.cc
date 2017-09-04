@@ -19,6 +19,7 @@ void PointsRelaxator::compute()
   auto& output = data_hook(out);
   output.size = input.size;
   output.scale = input.scale;
+  output.pts = std::vector<sf::Vector2f>();
 
   auto progress = logger.progress(Logger::Level::Verbose, "Redistribution pass", cells.size());
 

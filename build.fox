@@ -5,7 +5,7 @@ cxx = clang++ -fcolor-diagnostics
 #cxx = g++
 cxxflags = -Wall -Wextra -std=c++14
 includedirs = deps/include include
-libs = sfgui sfml-graphics sfml-window sfml-system
+libs = tgui sfml-graphics sfml-window sfml-system
 libdirs = $bd/lib deps/lib
 ldflags = -Wl,-rpath=libs
 

@@ -7,13 +7,13 @@ class PointsMixin : public virtual API
 {
 public:
 
-  ImageToScalarField& image_to_scalar_field(DataPromise<sf::Texture>& data, int scale=2);
+  ImageToScalarField& image_to_scalar_field(DataPromise<sf::Texture>& data, Param<size_t> scale=2);
   ScalarFieldMassPrefixSum& scalar_field_mass_prefix_sum(DataPromise<ScalarField<uint8_t>>& data);
 
-  PolylinePloterSaver& polyline_ploter_saver(DataPromise<Polyline>& data, std::string name="");
-  PolylineSVGSaver& polyline_svg_saver(DataPromise<Polyline>& data, std::string name="");
+  PolylinePloterSaver& polyline_ploter_saver(DataPromise<Polyline>& data, Param<std::string> name=std::string(""));
+  PolylineSVGSaver& polyline_svg_saver(DataPromise<Polyline>& data, Param<std::string> name=std::string(""));
 
-  PointsGenerator& points_generator(DataPromise<ScalarField<uint8_t>>& data, int fill=12);
+  PointsGenerator& points_generator(DataPromise<ScalarField<uint8_t>>& data, Param<size_t> fill=12);
   PointsVoronoiDelaunay& points_voronoi_delaunay(DataPromise<Polyline>& data);
 
   PointsRelaxator& points_relaxator(

@@ -19,10 +19,11 @@ class Input : public Block, public AsOutput<T, Input<T>>
 {
 public:
 
-  Input()
+  Input(T val=T())
   : out(this)
   {
     name = "Input";
+    set_data(val);
   }
 
   void set_data(T data)

@@ -27,7 +27,7 @@ sfml:
 	curl -L "https://www.sfml-dev.org/files/SFML-2.4.2-sources.zip" >SFML.zip;\
 	unzip -n SFML.zip;\
 	cd SFML-*;\
-	cmake .;\
+	cmake -DCMAKE_CXX_COMPILER=clang++ .;\
 	make -j12;\
 	cp -r include lib ../..
 
@@ -38,7 +38,7 @@ tgui:
 	unzip -n TGUI.zip;\
 	cd TGUI-*;\
 	export SFML_ROOT=../../;\
-	cmake .;\
+	cmake -DCMAKE_CXX_COMPILER=clang++ .;\
 	make -j12;\
 	cp -r include lib ../..
 

@@ -49,11 +49,14 @@ ImageFilterInverse::ImageFilterInverse()
 
 
 ImageFilterSigmoid::ImageFilterSigmoid()
-: shape_input(this)
+: alpha_input(this)
+, beta_input(this)
 {
   name = "ImageFilterSigmoid";
-  shape_input.connect(shape_manual);
-  shape_manual.set_data({30, 128});
+  alpha_input.connect(alpha_manual);
+  alpha_manual.set_data(30);
+  beta_input.connect(beta_manual);
+  beta_manual.set_data(128);
   if (!frag.loadFromFile(config.shader_pwd+"sigmoid.frag", sf::Shader::Fragment))
   {
     logger.log(Logger::Level::Error)<<"Failed to load sigmoid shader";
@@ -64,9 +67,9 @@ ImageFilterSigmoid::ImageFilterSigmoid()
 void ImageFilterSigmoid::prepare_shader()
 {
   logger.log(Logger::Level::Verbose)<<"Sigmoid function: "<<"atan((x + "
-    <<shape_input.get_data().second<<") * "<<shape_input.get_data().first<<")";
-  frag.setUniform("alpha", shape_input.get_data().first);
-  frag.setUniform("beta", shape_input.get_data().second);
+    <<beta_input.get_data()<<") * "<<alpha_input.get_data()<<")";
+  frag.setUniform("alpha", alpha_input.get_data());
+  frag.setUniform("beta", beta_input.get_data());
 }
 
 

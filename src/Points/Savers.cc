@@ -16,6 +16,11 @@ void PolylinePloterSaver::compute()
 
   std::ofstream out;
   out.open(filename_input.get_data());
+  if (!out.is_open())
+  {
+    logger.log(Logger::Level::Error)<<"Could not save the file! "<<filename_input.get_data();
+    return;
+  }
 
   auto& input = in.get_data();
   sf::Vector2f size = sf::Vector2f(input.size)/(float)input.scale;
@@ -47,6 +52,11 @@ void PolylineSVGSaver::compute()
 
   std::ofstream out;
   out.open(filename_input.get_data());
+  if (!out.is_open())
+  {
+    logger.log(Logger::Level::Error)<<"Could not save the file! "<<filename_input.get_data();
+    return;
+  }
 
   auto& input = in.get_data();
   sf::Vector2f size = sf::Vector2f(input.size)/(float)input.scale;

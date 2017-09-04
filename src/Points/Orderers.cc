@@ -85,6 +85,7 @@ void NearestNeighbourPointsOrderer::compute()
   auto& output = data_hook(out);
   output.size = input.size;
   output.scale = input.scale;
+  output.pts = std::vector<sf::Vector2f>();
 
   int BOX_DIM = pow(input.pts.size(), 0.33);
 
@@ -152,6 +153,7 @@ void MSTPointsOrderer::compute()
   auto& output = data_hook(out);
   output.size = input.size;
   output.scale = input.scale;
+  output.pts = std::vector<sf::Vector2f>();
 
   std::map<sf::Vector2f, sf::Vector2f, Vector2f_cmp> find_map;
   std::map<
@@ -253,6 +255,7 @@ void SkipPointsOrderer::compute()
   auto& output = data_hook(out);
   output.size = input.size;
   output.scale = input.scale;
+  output.pts = std::vector<sf::Vector2f>();
 
   std::map<sf::Vector2f, sf::Vector2f, Vector2f_cmp> find_map;
   std::map<

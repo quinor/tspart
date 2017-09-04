@@ -20,6 +20,7 @@ void PointsGenerator::compute()
   auto& output = data_hook(out);
   output.size = input.size;
   output.scale = input.scale;
+  output.pts = std::vector<sf::Vector2f>();
 
   int threshold = input.scale*input.scale*256*fill_input.get_data();
 

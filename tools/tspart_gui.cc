@@ -216,7 +216,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     out_file->setText("/tmp/out.svg");
     out_filename.set_data("/tmp/out.svg");
 
-    auto size_slider = slider(100, 2048, 4096, [&](int val)->void
+    auto size_slider = slider(100, 2000, 4000, [&](int val)->void
     {
       size.set_data(val);
     });

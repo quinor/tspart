@@ -68,6 +68,6 @@ boost:
 package:
 	mkdir -p package
 	mkdir -p package/res
-	cp -r grayscale_normalization color_normalization tsp_art shaders libs package/
+	cp -r grayscale_normalization color_normalization tsp_art tspart_gui shaders libs misc package/
 	cp res/klaudia.jpg package/res/
 	tar czf package.tar.gz package

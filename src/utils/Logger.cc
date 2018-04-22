@@ -9,6 +9,7 @@ std::map<std::string, const char*> msg_strings;
 
 int init()
 {
+  msg_headers[Logger::Level::Fatal] =   "\033[1;30m[ Fatal    ]\033[0m";
   msg_headers[Logger::Level::Error] =   "\033[1;31m[ Error    ]\033[0m";
   msg_headers[Logger::Level::Warning] = "\033[1;33m[ Warning  ]\033[0m";
   msg_headers[Logger::Level::Info] =    "\033[1;32m[ Info     ]\033[0m";
@@ -35,7 +36,7 @@ void Logger::set_log_level(Logger::Level level)
   loglevel = level;
 }
 
-void Logger::print(const char* hdr, const char* string, const char* msg, char line_end='\n')
+void Logger::print_logline(const char* hdr, const char* string, const char* msg, char line_end='\n')
 {
   fprintf(
     output,
@@ -49,27 +50,20 @@ void Logger::print(const char* hdr, const char* string, const char* msg, char li
   );
 }
 
-void Logger::enter(Logger::Level level, const char* block)
-{
-  if (level <= loglevel)
-    print(msg_headers[level], msg_strings["enter"], block);
-  stack.push_back({level, block});
-}
-
 void Logger::exit()
 {
   if (stack.size() == 0)
     throw "Too deep exits!";
   auto top = stack.back();
   if (top.first <= loglevel)
-    print(msg_headers[top.first], msg_strings["exit"], top.second.c_str());
+    print_logline(msg_headers[top.first], msg_strings["exit"], top.second.c_str());
   stack.pop_back();
 }
 
 void Logger::log_str(Logger::Level level, const char* message)
 {
   if (level <= loglevel)
-    print(msg_headers[level], msg_strings["empty"], message);
+    print_logline(msg_headers[level], msg_strings["empty"], message);
 }
 
 Logger::LogStream Logger::log(Logger::Level level)
@@ -110,14 +104,13 @@ void Logger::Progress::update(int amount)
     amount,
     max
     );
-  parent->print(msg_headers[level], msg_strings["empty"], buffer);
+  parent->print_logline(msg_headers[level], msg_strings["empty"], buffer);
 }
 
 void Logger::Progress::finish()
 {
   if (level > parent->loglevel)
     return;
-//  parent->print(msg_headers[level], msg_strings["empty"], "");
 }
 
 Logger::LogStream::LogStream(Logger* parent_, Logger::Level level_)
@@ -142,6 +135,18 @@ Logger::LogStream::~LogStream()
     parent->log_str(level, stream->str().c_str());
   delete stream;
 }
+
+Logger::EnterGuard::EnterGuard(Logger* log, Logger::Level level, const char* block)
+: parent(log)
+{
+  parent->enter(level, block);
+}
+
+Logger::EnterGuard::~EnterGuard()
+{
+  parent->exit();
+}
+
 
 Logger& get_logger()
 {

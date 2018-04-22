@@ -59,11 +59,7 @@ namespace block_impl
     }
     if (data_age > compute_timestamp)
     {
-      {
-        std::ostringstream stream;
-        stream<<"Block "<<name<<" ("<<id<<")";
-        logger.enter(Logger::Level::Info, stream.str().c_str());
-      }
+      logger.enter(Logger::Level::Info, "Block ", name, " (", id, ")");
       compute();
       logger.exit();
       compute_timestamp = get_timestamp();

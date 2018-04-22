@@ -14,8 +14,9 @@ public:
   enum class Level
   {
     None = 0,
-    Error = 1,
-    Warning = 2,
+    Fatal = 1,
+    Error = 2,
+    Warning = 3,
     Info = 10,
     Verbose = 20,
     Debug = 30,
@@ -56,21 +57,61 @@ public:
     }
   };
 
+  class EnterGuard
+  {
+    Logger* parent;
+  public:
+    EnterGuard(Logger* log, Level level, const char* block);
+    ~EnterGuard();
+  };
+
 private:
   Level loglevel;
   std::vector<std::pair<Level, std::string> > stack;
   FILE* output;
   sf::Clock time;
 
-  void print(const char* hdr, const char* string, const char* msg, char line_end);
+  void print_logline(const char* hdr, const char* string, const char* msg, char line_end);
 public:
   Logger(FILE* output=stderr);
   void set_log_level (Level level);
-  void enter (Level level, const char* block);
+  template<typename... Ts>
+  EnterGuard enter_guard (Level level, Ts&&... args);
+  template<typename... Ts>
+  void enter (Level level, Ts&&... args);
   void exit ();
   LogStream log (Level level);
+  template<typename... Ts>
+  void log (Level level, Ts&&... args);
   void log_str (Level level, const char* message);
   Progress progress(Level level, const char* desc, int max);
 };
 
+
 Logger& get_logger(); //singleton
+
+template<typename... Ts>
+std::string print(Ts&&... args)
+{
+    std::ostringstream os;
+    (os << ... << args);
+    return os.str();
+}
+
+template<typename... Ts>
+void Logger::log (Level level, Ts&&... args)
+{
+  log_str(level, print(args...).c_str());
+}
+
+template<typename... Ts>
+Logger::EnterGuard Logger::enter_guard  (Level level, Ts&&... args)
+{
+  return EnterGuard(this, level, print(args...).c_str());
+}
+
+template<typename... Ts>
+void Logger::enter (Level level, Ts&&... args)
+{
+  enter(level, print(args...).c_str());
+}

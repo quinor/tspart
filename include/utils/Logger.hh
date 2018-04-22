@@ -72,6 +72,8 @@ private:
   sf::Clock time;
 
   void print_logline(const char* hdr, const char* string, const char* msg, char line_end);
+  void enter_impl (Level level, const char* block);
+  void log_str (Level level, const char* message);
 public:
   Logger(FILE* output=stderr);
   void set_log_level (Level level);
@@ -83,7 +85,6 @@ public:
   LogStream log (Level level);
   template<typename... Ts>
   void log (Level level, Ts&&... args);
-  void log_str (Level level, const char* message);
   Progress progress(Level level, const char* desc, int max);
 };
 
@@ -113,5 +114,5 @@ Logger::EnterGuard Logger::enter_guard  (Level level, Ts&&... args)
 template<typename... Ts>
 void Logger::enter (Level level, Ts&&... args)
 {
-  enter(level, print(args...).c_str());
+  enter_impl(level, print(args...).c_str());
 }

@@ -50,6 +50,13 @@ void Logger::print_logline(const char* hdr, const char* string, const char* msg,
   );
 }
 
+void Logger::enter_impl(Logger::Level level, const char* block)
+{
+  if (level <= loglevel)
+    print_logline(msg_headers[level], msg_strings["enter"], block);
+  stack.push_back({level, block});
+}
+
 void Logger::exit()
 {
   if (stack.size() == 0)
@@ -132,7 +139,7 @@ Logger::LogStream::LogStream(Logger::LogStream&& other)
 Logger::LogStream::~LogStream()
 {
   if (!copied)
-    parent->log_str(level, stream->str().c_str());
+    parent->log(level, stream->str().c_str());
   delete stream;
 }
 

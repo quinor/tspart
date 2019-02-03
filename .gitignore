@@ -9,7 +9,7 @@ package*
 
 color_normalization
 grayscale_normalization
-tsp_art
+tspart_cli
 tspart_gui
 hilbert_path
 mid_color

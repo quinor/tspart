@@ -17,6 +17,7 @@ mid_grayscale
 voronoi
 voronoi_lowres
 
+/*.gcode
 /*.jpg
 /*.plt
 /*.svg

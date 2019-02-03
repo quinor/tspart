@@ -29,6 +29,15 @@ PolylinePloterSaver& PointsMixin::polyline_ploter_saver(DataPromise<Polyline>& d
   return *ret;
 }
 
+PolylineGcodeSaver& PointsMixin::polyline_gcode_saver(DataPromise<Polyline>& data, Param<std::string> name)
+{
+  auto ret = new PolylineGcodeSaver();
+  register_block(ret);
+  ret->in.connect(data);
+  ret->filename_input.connect(name.get_input(this));
+  return *ret;
+}
+
 PolylineSVGSaver& PointsMixin::polyline_svg_saver(DataPromise<Polyline>& data, Param<std::string> name)
 {
   auto ret = new PolylineSVGSaver();

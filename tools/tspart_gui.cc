@@ -152,7 +152,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& pts = gr.n_voronoi_relaxation(
     gr.points_generator(scalar, fill),
     pref,
-    10);
+    5);
 
   auto& mst = gr.mst_ordering(pts);
   auto& skip = gr.skip_ordering(pts);
@@ -160,7 +160,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& nearest_neighbour = gr.nearest_neighbour_points_orderer(pts);
 
   auto& pln_saver = gr.polyline_svg_saver(mst, out_filename);
-  auto& plt_saver = gr.polyline_ploter_saver(mst, std::string("out.plt"));
+  auto& gcd_saver = gr.polyline_gcode_saver(mst, std::string("output.gcode"));
   auto& out_name = gr.output<std::string> (out_filename);
 
 
@@ -301,7 +301,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
       else
         exit(-1); // never happens
       pln_saver.in.connect(*tgt);
-      plt_saver.in.connect(*tgt);
+      gcd_saver.in.connect(*tgt);
     });
     style->setSelectedItemByIndex(0);
 
@@ -309,7 +309,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     fire->connect("Pressed", [&, pic]()
     {
       pln_saver.update();
-      plt_saver.update();
+      gcd_saver.update();
       auto& name = out_name.get_data();
       std::ostringstream ss;
       ss << "convert " << name << " /tmp/out.jpg";

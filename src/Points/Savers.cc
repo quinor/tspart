@@ -38,6 +38,43 @@ void PolylinePloterSaver::compute()
 }
 
 
+PolylineGcodeSaver::PolylineGcodeSaver()
+: in(this)
+, filename_input(this)
+{
+  name = "PolylineGcodeSaver";
+  filename_input.connect(filename_manual);
+}
+
+void PolylineGcodeSaver::compute()
+{
+  logger.log(Logger::Level::Verbose)<<"Filename: "<<filename_input.get_data();
+
+  std::ofstream out;
+  out.open(filename_input.get_data());
+  if (!out.is_open())
+  {
+    logger.log(Logger::Level::Error)<<"Could not save the file! "<<filename_input.get_data();
+    return;
+  }
+
+  auto& input = in.get_data();
+  logger.log(Logger::Level::Verbose)<<"Number of points saved: "<<input.pts.size();
+
+  out<<"m107\n";
+  out<<"g1 f700.00\n";
+  out<<"g90\n";
+  for (auto e : input.pts)
+  {
+    e/=(float)input.scale*10.f;
+    out<<"g1 x"<<e.x<<" y"<<e.y<<"\n";
+  }
+  out<<"m106\n";
+
+  out.close();
+}
+
+
 PolylineSVGSaver::PolylineSVGSaver()
 : in(this)
 , filename_input(this)

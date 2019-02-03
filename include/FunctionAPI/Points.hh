@@ -11,6 +11,7 @@ public:
   ScalarFieldMassPrefixSum& scalar_field_mass_prefix_sum(DataPromise<ScalarField<uint8_t>>& data);
 
   PolylinePloterSaver& polyline_ploter_saver(DataPromise<Polyline>& data, Param<std::string> name=std::string(""));
+  PolylineGcodeSaver& polyline_gcode_saver(DataPromise<Polyline>& data, Param<std::string> name=std::string(""));
   PolylineSVGSaver& polyline_svg_saver(DataPromise<Polyline>& data, Param<std::string> name=std::string(""));
 
   PointsGenerator& points_generator(DataPromise<ScalarField<uint8_t>>& data, Param<size_t> fill=12);

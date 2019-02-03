@@ -25,6 +25,25 @@ public:
 };
 
 
+class PolylineGcodeSaver : public Block
+{
+public:
+
+  PolylineGcodeSaver();
+
+private:
+
+  virtual void compute() override;
+
+public:
+
+  DataInput<Polyline> in;
+
+  DataInput<std::string> filename_input;
+  Input<std::string> filename_manual;
+};
+
+
 class PolylineSVGSaver : public Block
 {
 public:

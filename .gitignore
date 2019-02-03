@@ -6,10 +6,17 @@ venv/
 deps/
 libs/
 package*
+
 color_normalization
 grayscale_normalization
 tsp_art
 tspart_gui
+hilbert_path
+mid_color
+mid_grayscale
+voronoi
+voronoi_lowres
+
 /*.jpg
 /*.plt
 /*.svg

@@ -13,7 +13,6 @@
 #include <cmath>
 
 const int PANEL_HEIGHT = 120;
-tgui::Theme::Ptr theme;
 
 std::shared_ptr<std::string> getImageFile()
 {
@@ -63,7 +62,7 @@ tgui::VerticalLayout::Ptr named_column(
   for (auto& p : widgets)
   {
     auto row = tgui::HorizontalLayout::create();
-    tgui::Label::Ptr label = theme->load("Label");
+    tgui::Label::Ptr label = tgui::Label::create();
     label->setText(p.first);
     label->setTextSize(10);
     label->setHorizontalAlignment(tgui::Label::HorizontalAlignment::Right);
@@ -82,20 +81,22 @@ tgui::HorizontalLayout::Ptr slider(int from, int def, int to, std::function<void
 {
   auto lt = tgui::HorizontalLayout::create();
 
-  tgui::Slider::Ptr slider = theme->load("Slider");
-  tgui::EditBox::Ptr box = theme->load("EditBox");
+  tgui::Slider::Ptr slider = tgui::Slider::create();
+  tgui::EditBox::Ptr box = tgui::EditBox::create();
 
   auto update = [=](int val)->void
   {
     int new_val = std::min(std::max(from, val), to);
-    slider->setValue(new_val);
-    if (val >= from)
+    if (int(slider->getValue()) != new_val)
+      slider->setValue(new_val);
+    if (val >= from && box->getText() != std::to_string(new_val))
       box->setText(std::to_string(new_val));
     callback(new_val);
   };
 
   box->setInputValidator(tgui::EditBox::Validator::UInt);
-  box->connect("TextChanged", [=](std::string val) {
+  box->connect("TextChanged", [=]() {
+    std::string val = box->getText();
     if (val.size() == 0)
       return;
     int r = std::stoi(val);
@@ -106,8 +107,8 @@ tgui::HorizontalLayout::Ptr slider(int from, int def, int to, std::function<void
 
   slider->setMinimum(from);
   slider->setMaximum(to);
-  slider->connect("ValueChanged", [=](int val) {
-    update(val);
+  slider->connect("ValueChanged", [=]() {
+    update(slider->getValue());
   });
 
   update(def);
@@ -131,7 +132,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& log = gr.input<float>();
 
   auto& fill = gr.input<size_t>();
-  auto& scale = gr.input<size_t>();
+  // auto& scale = gr.input<size_t>();
   // auto& relaxation_passes = gr.input<int>(); // TODO: dynamic graph, while?
 
   auto& pre = gr.image_filter_logarithm(
@@ -145,7 +146,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     log);
   auto& pre_saver = gr.image_saver(pre, std::string("/tmp/preview.jpg"));
 
-  auto& scalar = gr.image_to_scalar_field(gr.image_filter_inverse(pre), scale);
+  auto& scalar = gr.image_to_scalar_field(gr.image_filter_inverse(pre), 1);
   auto& pref = gr.scalar_field_mass_prefix_sum(scalar);
 
   auto& pts = gr.n_voronoi_relaxation(
@@ -159,13 +160,14 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& nearest_neighbour = gr.nearest_neighbour_points_orderer(pts);
 
   auto& pln_saver = gr.polyline_svg_saver(mst, out_filename);
+  auto& plt_saver = gr.polyline_ploter_saver(mst, std::string("out.plt"));
   auto& out_name = gr.output<std::string> (out_filename);
 
 
   auto pic = tgui::Picture::create("misc/empty.png");
   pic->setPosition(0, PANEL_HEIGHT);
   pic->setSize(tgui::bindWidth(gui), tgui::bindHeight(gui)-PANEL_HEIGHT);
-  pic->setSmooth(true);
+  pic->getRenderer()->getTexture().setSmooth(true);
   gui.add(pic);
 
 
@@ -174,7 +176,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 
   // file choosers
   {
-    tgui::Button::Ptr in_file = theme->load("Button");
+    tgui::Button::Ptr in_file = tgui::Button::create();
 
     auto new_file = [=, &gui, &in_filename](std::string path) -> void
     {
@@ -188,12 +190,12 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
         auto width = tgui::bindWidth(gui);
         auto height = tgui::bindHeight(gui)-PANEL_HEIGHT;
 
-        auto new_width = tgui::bindMin(width, height*ratio);
-        auto new_height = tgui::bindMin(height, width/ratio);
+        auto new_width = height*ratio;
+        auto new_height = height;
 
-        pic->setTexture(path);
+        pic->getRenderer()->setTexture(path);
         pic->setSize(new_width, new_height);
-        pic->setPosition({(width - new_width)/2, (height-new_height)/2+PANEL_HEIGHT});
+        pic->setPosition((width - new_width)/2, (height-new_height)/2+PANEL_HEIGHT);
     };
 
     in_file->connect("Pressed", [=]() {
@@ -203,7 +205,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     });
     new_file("res/klaudia.jpg");
 
-    tgui::Button::Ptr out_file = theme->load("Button");
+    tgui::Button::Ptr out_file = tgui::Button::create();
     out_file->setText("Save file");
     out_file->connect("Pressed", [&, out_file]() {
         auto path = saveImageFile();
@@ -258,17 +260,17 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     {
       fill.set_data(int(12*pow(1.5, 10-val)));
     });
-    auto quality = slider(0, 0, 5, [&](int val)->void //1<<x
-    {
-      scale.set_data(1<<val);
-    });
+    // auto quality = slider(0, 0, 5, [&](int val)->void //1<<x
+    // {
+    //   scale.set_data(1<<val);
+    // });
     // auto passes = slider(0, 5, 50, [&](int val)->void
     // {});
 
     bar->add(named_column(
     {
       {"Density", density},
-      {"Quality (Uses LOTS of RAM)", quality},
+      // {"Quality (Uses LOTS of RAM)", quality},
       // {"Smoothing", passes}
     },
     1));
@@ -276,26 +278,30 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 
   // Styles
   {
-    tgui::ComboBox::Ptr style = theme->load("ComboBox");
-    tgui::Button::Ptr fire = theme->load("Button");
-    tgui::Button::Ptr prev = theme->load("Button");
+    tgui::ComboBox::Ptr style = tgui::ComboBox::create();
+    tgui::Button::Ptr fire = tgui::Button::create();
+    tgui::Button::Ptr prev = tgui::Button::create();
     style->addItem("Minimal Spanning Tree", "mst");
     style->addItem("Skipping Minimal Spanning Tree", "skip");
     style->addItem("Hilbert", "hilbert");
     style->addItem("Nearest Neighbour", "nn");
 
-    style->connect("ItemSelected", [&](sf::String, sf::String id)
+    style->connect("ItemSelected", [&]()
     {
+      sf::String id = style->getSelectedItemId();
+      DataPromise<Polyline>* tgt;
       if (id == "hilbert")
-        pln_saver.in.connect(hilbert);
+        tgt = &static_cast<DataPromise<Polyline>&>(hilbert);
       else if (id == "mst")
-        pln_saver.in.connect(mst);
+        tgt = &static_cast<DataPromise<Polyline>&>(mst);
       else if (id == "skip")
-        pln_saver.in.connect(skip);
+        tgt = &static_cast<DataPromise<Polyline>&>(skip);
       else if (id == "nn")
-        pln_saver.in.connect(nearest_neighbour);
+        tgt = &static_cast<DataPromise<Polyline>&>(nearest_neighbour);
       else
         exit(-1); // never happens
+      pln_saver.in.connect(*tgt);
+      plt_saver.in.connect(*tgt);
     });
     style->setSelectedItemByIndex(0);
 
@@ -303,20 +309,21 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     fire->connect("Pressed", [&, pic]()
     {
       pln_saver.update();
+      plt_saver.update();
       auto& name = out_name.get_data();
       std::ostringstream ss;
       ss << "convert " << name << " /tmp/out.jpg";
       system(ss.str().c_str());
-      pic->setTexture("misc/empty.png");
-      pic->setTexture("/tmp/out.jpg");
+      pic->getRenderer()->setTexture("misc/empty.png");
+      pic->getRenderer()->setTexture("/tmp/out.jpg");
     });
 
     prev->setText("Preview");
     prev->connect("Pressed", [&, pic]()
     {
       pre_saver.update();
-      pic->setTexture("misc/empty.png");
-      pic->setTexture("/tmp/preview.jpg");
+      pic->getRenderer()->setTexture("misc/empty.png");
+      pic->getRenderer()->setTexture("/tmp/preview.jpg");
     });
 
     bar->add(named_column(
@@ -328,7 +335,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   }
 
 
-  tgui::Panel::Ptr panel = theme->load("Panel");
+  tgui::Panel::Ptr panel = tgui::Panel::create();
   panel->setPosition(0, 0);
   panel->setSize(tgui::bindWidth(gui), PANEL_HEIGHT);
   panel->add(bar);
@@ -346,9 +353,10 @@ int main()
   window.setVerticalSyncEnabled(true);
 
   auto graph = Graph<ImageMixin, PointsMixin>();
-
+  graph.logger.set_log_level(Logger::Level::Verbose);
   tgui::Gui gui(window);
-  theme = tgui::Theme::create("misc/TransparentGrey.txt");
+  auto theme = tgui::Theme{"misc/TransparentGrey.txt"};
+  tgui::Theme::setDefault(&theme);
 
   create_app(gui, graph);
 

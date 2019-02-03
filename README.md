@@ -1,28 +1,23 @@
-REQUIREMENTS
+# TSPART
+
+## Requirements
 
 You have to provide:
-  * clang C++ compiler (can be changed to gcc in the first line of `build.fox`)
-  * Python3
   * make
   * cmake
-
-Rest of the dependencies is downloaded automatically!
-
-
-
-BUILD INSTRUCTIONS
-
-Run `make` to download/compile dependencies and build the project for the first time.
-
-Run `./deps/bin/ninja` to (re)build the project later.
-
-The binaries will be copied to project's main directory.
+  * boost
+  * glm
+  * C++17-compatible compiler (preferably clang)
+  * SFML build dependencies (*installing dependencies* list from [here](https://www.sfml-dev.org/tutorials/2.5/compile-with-cmake.php))
 
 
+## Build instructions
 
-USAGE INSTRUCTIONS
+Run `make` to download/compile other dependencies and build the project automatically. The project uses CMake and it might be better to use it to build manually, the `Makefile` is not very robust.
 
-Not available yet, sorry. Most of the binaries receive path to one image as the commandline input
-and produce some files and windows with preview as the result.
-Example:
-`./tsp_art res/klaudia.jpg`
+The binaries will be built and copied to the project's main directory.
+
+
+## Usage instructions
+
+Run the `./tspart_gui` binary and play with the sliders. "Preview" shows preprocessed image and "Draw!" launches the drawing process and saves the output svg to the "Output file". `output.gcode` is also generated after each run - it contains a very simple gcode generated directly from the TSP path.

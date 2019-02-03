@@ -23,7 +23,7 @@ sfml:
 	curl -L "https://www.sfml-dev.org/files/SFML-2.5.1-sources.zip" >SFML.zip;\
 	unzip -n SFML.zip;\
 	cd SFML-*;\
-	cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=../../ .;\
+	cmake -DCMAKE_INSTALL_PREFIX=../../ .;\
 	make -j12;\
 	make install
 
@@ -33,13 +33,13 @@ tgui:
 	curl -L "https://github.com/texus/TGUI/archive/v0.8.3.zip" >TGUI.zip;\
 	unzip -n TGUI.zip;\
 	cd TGUI-*;\
-	cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=../../ .;\
+	cmake -DCMAKE_INSTALL_PREFIX=../../ .;\
 	make -j12;\
 	make install
 
 package:
 	mkdir -p package
 	mkdir -p package/res
-	cp -r  tsp_art tspart_gui shaders libs misc package/
+	cp -r  tspart_cli tspart_gui shaders libs misc package/
 	cp res/klaudia.jpg package/res/
 	tar czf package.tar.gz package

@@ -6,7 +6,7 @@
 
 struct Vector2f_cmp
 {
-  bool operator ()(const sf::Vector2f& a, const sf::Vector2f& b)
+  bool operator ()(const sf::Vector2f& a, const sf::Vector2f& b) const
   {
     if (a.x != b.x)
       return a.x < b.x;

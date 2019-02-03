@@ -61,15 +61,17 @@ void PolylineGcodeSaver::compute()
   auto& input = in.get_data();
   logger.log(Logger::Level::Verbose)<<"Number of points saved: "<<input.pts.size();
 
-  out<<"m107\n";
-  out<<"g1 f700.00\n";
-  out<<"g90\n";
+  out<<"M107\n";
+  out<<"G90\n";
+  out<<"G21\n";
+  out<<"G1 f700.00\n";
+  out<<"G4 P0\n";
   for (auto e : input.pts)
   {
     e/=(float)input.scale*10.f;
-    out<<"g1 x"<<e.x<<" y"<<e.y<<"\n";
+    out<<"G1 x"<<e.x<<" y"<<e.y<<"\n";
   }
-  out<<"m106\n";
+  out<<"M106\n";
 
   out.close();
 }

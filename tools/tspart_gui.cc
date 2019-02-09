@@ -286,10 +286,10 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     style->addItem("Hilbert", "hilbert");
     style->addItem("Nearest Neighbour", "nn");
 
-    style->connect("ItemSelected", [&]()
+    style->connect("ItemSelected", [&, style]()
     {
-      sf::String id = style->getSelectedItemId();
-      DataPromise<Polyline>* tgt;
+      std::string id = style->getSelectedItemId();
+      DataPromise<Polyline>* tgt = nullptr;
       if (id == "hilbert")
         tgt = &static_cast<DataPromise<Polyline>&>(hilbert);
       else if (id == "mst")

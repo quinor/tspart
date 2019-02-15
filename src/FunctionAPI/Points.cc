@@ -1,10 +1,20 @@
 #include "FunctionAPI/Points.hh"
 
 
-ImageToScalarField& PointsMixin::image_to_scalar_field(
+GrayscaleImageToScalarField& PointsMixin::grayscale_image_to_scalar_field(
   DataPromise<sf::Texture>& data, Param<size_t> scale)
 {
-  auto ret = new ImageToScalarField();
+  auto ret = new GrayscaleImageToScalarField();
+  register_block(ret);
+  ret->in.connect(data);
+  ret->scale_input.connect(scale.get_input(this));
+  return *ret;
+}
+
+ColorImageToScalarField& PointsMixin::color_image_to_scalar_field(
+  DataPromise<sf::Texture>& data, Param<size_t> scale)
+{
+  auto ret = new ColorImageToScalarField();
   register_block(ret);
   ret->in.connect(data);
   ret->scale_input.connect(scale.get_input(this));
@@ -15,6 +25,15 @@ ScalarFieldMassPrefixSum& PointsMixin::scalar_field_mass_prefix_sum(
   DataPromise<ScalarField<uint8_t>>& data)
 {
   auto ret = new ScalarFieldMassPrefixSum();
+  register_block(ret);
+  ret->in.connect(data);
+  return *ret;
+}
+
+ScalarFieldColorPrefixSum& PointsMixin::scalar_field_color_prefix_sum(
+  DataPromise<ScalarField<sf::Color>>& data)
+{
+  auto ret = new ScalarFieldColorPrefixSum();
   register_block(ret);
   ret->in.connect(data);
   return *ret;
@@ -68,13 +87,26 @@ PointsVoronoiDelaunay& PointsMixin::points_voronoi_delaunay(DataPromise<Polyline
 PointsRelaxator& PointsMixin::points_relaxator(
   DataPromise<Polyline>& data,
   DataPromise<VoronoiCells>& cells,
-  DataPromise<ScalarField<MassElement>>& mass_field)
+  DataPromise<ScalarField<WeightedElement>>& mass_field)
 {
   auto ret = new PointsRelaxator();
   register_block(ret);
   ret->in.connect(data);
   ret->voronoi_cells.connect(cells);
   ret->mass_field.connect(mass_field);
+  return *ret;
+}
+
+PointsColorAverager& PointsMixin::points_color_averager(
+  DataPromise<Polyline>& data,
+  DataPromise<VoronoiCells>& cells,
+  DataPromise<ScalarField<WeightedElement>>& color_field)
+{
+  auto ret = new PointsColorAverager();
+  register_block(ret);
+  ret->in.connect(data);
+  ret->voronoi_cells.connect(cells);
+  ret->color_field.connect(color_field);
   return *ret;
 }
 
@@ -118,6 +150,7 @@ SkipPointsOrderer& PointsMixin::skip_points_orderer(
   return *ret;
 }
 
+
 PolylineVisualizer& PointsMixin::polyline_visualizer(DataPromise<Polyline>& data)
 {
   auto ret = new PolylineVisualizer();
@@ -148,9 +181,23 @@ DelaunayTriangulationVisualizer& PointsMixin::delaunay_triangulation_visualizer(
   return *ret;
 }
 
+PolygonVisualizer& PointsMixin::polygon_visualizer(
+  DataPromise<Polyline>& data,
+  DataPromise<VoronoiCells>& voronoi,
+  DataPromise<ColorMapping>& colors)
+{
+  auto ret = new PolygonVisualizer();
+  register_block(ret);
+  ret->polyline.connect(data);
+  ret->cells.connect(voronoi);
+  ret->colors.connect(colors);
+  return *ret;
+}
+
+
 DataPromise<Polyline>& PointsMixin::n_voronoi_relaxation(
   DataPromise<Polyline>& data,
-  DataPromise<ScalarField<MassElement>>& field,
+  DataPromise<ScalarField<WeightedElement>>& field,
   int n)
 {
   if (n == 0)

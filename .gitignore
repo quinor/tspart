@@ -9,6 +9,7 @@ package*
 
 color_normalization
 grayscale_normalization
+colorful_tesselation
 tspart_cli
 tspart_gui
 hilbert_path

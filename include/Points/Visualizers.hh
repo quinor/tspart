@@ -51,3 +51,20 @@ public:
   DataInput<DelaunayTriangulation> neighbours;
   DataPromise<sf::Texture> out;
 };
+
+
+class PolygonVisualizer : public Block,
+  public AsOutput<sf::Texture, PolygonVisualizer>
+{
+public:
+  PolygonVisualizer();
+
+private:
+  virtual void compute () override;
+
+public:
+  DataInput<Polyline> polyline;
+  DataInput<VoronoiCells> cells;
+  DataInput<ColorMapping> colors;
+  DataPromise<sf::Texture> out;
+};

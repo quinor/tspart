@@ -66,58 +66,62 @@ public:
 };
 
 
-class MassElement
+class WeightedElement
 {
 public:
 
-  MassElement (long long x, long long y, long long w = 1)
+  WeightedElement (long long x, long long y, long long z = 0, long long w = 1)
   : wx(x)
   , wy(y)
+  , wz(z)
   , ws(w)
   {}
 
-  MassElement ()
+  WeightedElement ()
   : wx(0)
   , wy(0)
+  , wz(0)
   , ws(0)
   {}
 
-  MassElement operator + (const MassElement& other)
+  WeightedElement operator + (const WeightedElement& other)
   {
-    return {wx+other.wx, wy+other.wy, ws+other.ws};
+    return {wx+other.wx, wy+other.wy, wz+other.wz, ws+other.ws};
   }
 
-  MassElement operator - (const MassElement& other)
+  WeightedElement operator - (const WeightedElement& other)
   {
-    return {wx-other.wx, wy-other.wy, ws-other.ws};
-  }
-
-  template <typename Numeric>
-  MassElement operator * (Numeric scalar)
-  {
-    static_assert(std::is_arithmetic<Numeric>::value, "You can multiply mass only by scalars!");
-    return {wx*scalar, wy*scalar, ws*scalar};
+    return {wx-other.wx, wy-other.wz, wy-other.wz, ws-other.ws};
   }
 
   template <typename Numeric>
-  MassElement operator / (Numeric scalar)
+  WeightedElement operator * (Numeric scalar)
   {
     static_assert(std::is_arithmetic<Numeric>::value, "You can multiply mass only by scalars!");
-    return {wx/scalar, wy/scalar, ws/scalar};
+    return {wx*scalar, wy*scalar, wz*scalar, ws*scalar};
   }
 
-  MassElement operator += (const MassElement& other)
+  template <typename Numeric>
+  WeightedElement operator / (Numeric scalar)
+  {
+    static_assert(std::is_arithmetic<Numeric>::value, "You can multiply mass only by scalars!");
+    return {wx/scalar, wy/scalar, wz/scalar, ws/scalar};
+  }
+
+  WeightedElement& operator += (const WeightedElement& other)
   {
     wx+=other.wx;
     wy+=other.wy;
+    wz+=other.wz;
     ws+=other.ws;
     return *this;
   }
 
-  MassElement operator -= (const MassElement& other)
+  WeightedElement& operator -= (const WeightedElement& other)
   {
     wx-=other.wx;
     wy-=other.wy;
+    wz-=other.wz;
     ws-=other.ws;
     return *this;
   }
@@ -129,17 +133,28 @@ public:
     return {float(wx)/ws, float(wy)/ws};
   }
 
+  sf::Color color()
+  {
+    if (ws == 0)
+      throw std::runtime_error("Empty Mass Element has been middle'd");
+    return {uint8_t(wx/ws), uint8_t(wy/ws), uint8_t(wz/ws)};
+
+  }
+
   long long wx;
   long long wy;
+  long long wz;
   long long ws;
 
 };
 
 
+using Segment = std::pair<sf::Vector2i, sf::Vector2i>;
+
 using VoronoiCells =
   std::map<
     sf::Vector2f,
-    std::vector<std::pair<sf::Vector2i, sf::Vector2i>>,
+    std::vector<Segment>,
     Vector2f_cmp
   >;
 
@@ -148,5 +163,13 @@ using DelaunayTriangulation =
   std::map<
     sf::Vector2f,
     std::vector<sf::Vector2f>,
+    Vector2f_cmp
+  >;
+
+
+using ColorMapping =
+  std::map<
+    sf::Vector2f,
+    sf::Color,
     Vector2f_cmp
   >;

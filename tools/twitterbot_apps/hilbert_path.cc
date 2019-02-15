@@ -53,7 +53,7 @@ int main (int argc, char** argv)
 
 
 
-  ImageToScalarField im_to_sc;
+  GrayscaleImageToScalarField im_to_sc;
   im_to_sc.in.connect(inv);
 
   PointsGenerator gen;

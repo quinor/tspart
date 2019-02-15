@@ -6,12 +6,12 @@
 #include "DataTypes.hh"
 
 
-class ImageToScalarField : public Block,
-  public AsOutput<ScalarField<uint8_t>, ImageToScalarField>
+class GrayscaleImageToScalarField : public Block,
+  public AsOutput<ScalarField<uint8_t>, GrayscaleImageToScalarField>
 {
 public:
 
-  ImageToScalarField();
+  GrayscaleImageToScalarField();
 
 protected:
 
@@ -27,8 +27,29 @@ public:
 };
 
 
+class ColorImageToScalarField : public Block,
+  public AsOutput<ScalarField<sf::Color>, ColorImageToScalarField>
+{
+public:
+
+  ColorImageToScalarField();
+
+protected:
+
+  virtual void compute() override;
+
+public:
+
+  DataInput<sf::Texture> in;
+  DataPromise<ScalarField<sf::Color>> out;
+
+  DataInput<size_t> scale_input;
+  Input<size_t> scale_manual;
+};
+
+
 class ScalarFieldMassPrefixSum : public Block,
-  public AsOutput<ScalarField<MassElement>, ScalarFieldMassPrefixSum>
+  public AsOutput<ScalarField<WeightedElement>, ScalarFieldMassPrefixSum>
 {
 public:
 
@@ -41,5 +62,23 @@ protected:
 public:
 
   DataInput<ScalarField<uint8_t>> in;
-  DataPromise<ScalarField<MassElement>> out;
+  DataPromise<ScalarField<WeightedElement>> out;
+};
+
+
+class ScalarFieldColorPrefixSum : public Block,
+  public AsOutput<ScalarField<WeightedElement>, ScalarFieldColorPrefixSum>
+{
+public:
+
+  ScalarFieldColorPrefixSum();
+
+protected:
+
+  virtual void compute() override;
+
+public:
+
+  DataInput<ScalarField<sf::Color>> in;
+  DataPromise<ScalarField<WeightedElement>> out;
 };

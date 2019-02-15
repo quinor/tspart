@@ -1,5 +1,8 @@
 #include "Points/VoronoiDelaunay.hh"
 #include "utils/VoronoiDiagramGenerator.h"
+#include <algorithm>
+#include <cmath>
+
 
 namespace
 {
@@ -86,7 +89,10 @@ void PointsVoronoiDelaunay::compute()
   data_hook(delaunay) = std::move(graph);
 
   for (auto& e : raw_cells)
-    cells[e.first]=[&]()
+  {
+    auto mid = e.first;
+    auto& cell = cells[mid];
+    cell = [&]() -> std::vector<Segment>
     {
       for (sf::Vector2f shake : {
         sf::Vector2f(0.f,0.f),
@@ -95,7 +101,7 @@ void PointsVoronoiDelaunay::compute()
       })
       {
         size_t pmul = 1, kmul = 1;
-        std::vector<std::pair<sf::Vector2i, sf::Vector2i>> aligned;
+        std::vector<Segment> aligned;
         aligned.reserve(e.second.size());
 
         for (auto p : e.second)
@@ -113,8 +119,18 @@ void PointsVoronoiDelaunay::compute()
         if (pmul == kmul)
           return aligned;
       }
-      return std::vector<std::pair<sf::Vector2i, sf::Vector2i>>();
+      return std::vector<Segment>();
     }();
+
+    auto angle_cmp = [&](const Segment& p1, const Segment& p2) -> bool
+    {
+      auto r1 = static_cast<sf::Vector2f>(p1.first)-mid;
+      auto r2 = static_cast<sf::Vector2f>(p2.first)-mid;
+      return atan2(r1.x, r1.y) < atan2(r2.x, r2.y);
+    };
+
+    std::sort(cell.begin(), cell.end(), angle_cmp);
+  }
 
   data_hook(voronoi) = std::move(cells);
 }

@@ -1,27 +1,24 @@
-#include "Points/Relaxator.hh"
+#include "Points/Averager.hh"
 
 
-PointsRelaxator::PointsRelaxator()
-: mass_field(this)
+PointsColorAverager::PointsColorAverager()
+: color_field(this)
 , voronoi_cells(this)
 , in(this)
 , out(this)
 {
-  name = "PointsRelaxator";
+  name = "PointsColorAverager";
 }
 
 
-void PointsRelaxator::compute()
+void PointsColorAverager::compute()
 {
   auto& input = in.get_data();
-  auto& mass = mass_field.get_data();
+  auto& color = color_field.get_data();
   auto& cells = voronoi_cells.get_data();
   auto& output = data_hook(out);
-  output.size = input.size;
-  output.scale = input.scale;
-  output.pts = std::vector<sf::Vector2f>();
 
-  auto progress = logger.progress(Logger::Level::Verbose, "Redistribution pass", cells.size());
+  auto progress = logger.progress(Logger::Level::Verbose, "Color averaging", cells.size());
 
   int l = 0;
   for (auto& e : cells)
@@ -46,10 +43,12 @@ void PointsRelaxator::compute()
       {
         int x = p.x + (shift.x*i)/shift.y;
         int y = p.y + i;
-        m += mass.data[y*input.size.x+x] * sgn;
+        m += color.data[y*input.size.x+x] * sgn;
+        if (y*input.size.x+x > color.size.x*color.size.y)
+          printf("wtf\n");
       }
     }
 
-    output.pts.push_back(m.ws == 0 ? e.first : m.middle());
+    output[e.first] = (m.ws == 0 ? sf::Color::White : m.color());
   }
 }

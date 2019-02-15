@@ -22,7 +22,7 @@ int main (int argc, char** argv)
       25),
     8.f);
 
-  auto& inv = gr.image_to_scalar_field(gr.image_filter_inverse(pre), 2);
+  auto& inv = gr.grayscale_image_to_scalar_field(gr.image_filter_inverse(pre), 2);
   auto& pref = gr.scalar_field_mass_prefix_sum(inv);
 
   auto& pts = gr.points_generator(inv, 27);

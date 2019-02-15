@@ -4,11 +4,11 @@
 #include "utils/UtilityBlocks.hh"
 #include "DataTypes.hh"
 
-class PointsRelaxator : public Block, public AsOutput<Polyline, PointsRelaxator>
+class PointsColorAverager : public Block, public AsOutput<ColorMapping, PointsColorAverager>
 {
 public:
 
-  PointsRelaxator();
+  PointsColorAverager();
 
 private:
 
@@ -16,8 +16,8 @@ private:
 
 public:
 
-  DataInput<ScalarField<WeightedElement>> mass_field;
+  DataInput<ScalarField<WeightedElement>> color_field;
   DataInput<VoronoiCells> voronoi_cells;
   DataInput<Polyline> in;
-  DataPromise<Polyline> out;
+  DataPromise<ColorMapping> out;
 };

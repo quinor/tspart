@@ -146,7 +146,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     log);
   auto& pre_saver = gr.image_saver(pre, std::string("/tmp/preview.jpg"));
 
-  auto& scalar = gr.image_to_scalar_field(gr.image_filter_inverse(pre), 1);
+  auto& scalar = gr.grayscale_image_to_scalar_field(gr.image_filter_inverse(pre), 1);
   auto& pref = gr.scalar_field_mass_prefix_sum(scalar);
 
   auto& pts = gr.n_voronoi_relaxation(

@@ -1,4 +1,5 @@
 #include "Points/Visualizers.hh"
+#include <cmath>
 
 PolylineVisualizer::PolylineVisualizer()
 : in(this)
@@ -62,7 +63,7 @@ void VoronoiCellsVisualizer::compute()
       array[i].position=points.pts[i]/float(points.scale);
       array[i].color=sf::Color::Red;
     }
-    rtex.draw(array);    
+    rtex.draw(array);
   }
 
   for (auto& e : cellmap)
@@ -82,6 +83,7 @@ void VoronoiCellsVisualizer::compute()
   rtex.display();
   data_hook(out) = rtex.getTexture();
 }
+
 
 DelaunayTriangulationVisualizer::DelaunayTriangulationVisualizer()
 : polyline(this)
@@ -113,6 +115,46 @@ void DelaunayTriangulationVisualizer::compute()
       array[2*i].color=sf::Color::Black;
       array[2*i+1].position = e.first/float(points.scale);
       array[2*i+1].color=sf::Color::Black;
+    }
+    rtex.draw(array);
+  }
+
+  rtex.display();
+  data_hook(out) = rtex.getTexture();
+}
+
+
+PolygonVisualizer::PolygonVisualizer()
+: polyline(this)
+, cells(this)
+, colors(this)
+, out(this)
+{
+  name = "PolygonVisualizer";
+}
+
+void PolygonVisualizer::compute()
+{
+  auto& points = polyline.get_data();
+  auto& cellmap = cells.get_data();
+  auto& colormap = colors.get_data();
+
+  sf::Vector2f s = sf::Vector2f(points.size);
+  sf::RenderTexture rtex;
+  rtex.create(s.x/points.scale, s.y/points.scale);
+
+  rtex.clear(sf::Color::White);
+
+  for (auto point : points.pts)
+  {
+    auto& cell = cellmap.at(point);
+    auto color = colormap.at(point);
+    sf::VertexArray array(sf::TriangleFan, cell.size());
+    for (size_t i=0; i<cell.size(); i++)
+    {
+      auto pt = static_cast<sf::Vector2f>(cell[i].first)/float(points.scale);
+      array[i].position = pt;
+      array[i].color = color;
     }
     rtex.draw(array);
   }

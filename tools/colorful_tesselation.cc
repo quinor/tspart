@@ -3,11 +3,17 @@
 
 int main (int argc, char** argv)
 {
+  if (argc != 3)
+    exit(-1);
+
   auto gr = Graph<ImageMixin, PointsMixin>();
   gr.logger.set_log_level(Logger::Level::Verbose);
 
   auto& src = gr.input<std::string>();
-  auto& in = gr.image_maximizer(gr.image_loader(src), 1024);
+  auto& dst = gr.input<std::string>();
+
+
+  auto& in = gr.image_maximizer(gr.image_loader(src), 2048);
   auto& pre = gr.image_filter_sigmoid(
     gr.image_filter_logarithm(
       gr.image_filter_grayscale(
@@ -32,6 +38,12 @@ int main (int argc, char** argv)
   auto& colors = gr.points_color_averager(pts, voronoi.voronoi, color_field);
   auto& color_voronoi = gr.polygon_visualizer(pts, voronoi.voronoi, colors);
 
+  auto& saver = gr.image_saver(color_voronoi, dst);
+
+  src.set_data(argv[1]);
+  dst.set_data(argv[2]);
+  saver.update();
+
 
   auto& view = gr.image_multi_viewer<2, 2>();
 
@@ -50,11 +62,11 @@ int main (int argc, char** argv)
 
   auto& single_view = gr.image_viewer(color_voronoi);
 
-  for (int i=1; i<argc; i++)
-  {
-    src.set_data(argv[i]);
-    // view.update();
-    single_view.update();
-  }
+  // for (int i=1; i<argc; i++)
+  // {
+  //   src.set_data(argv[i]);
+  //   view.update();
+  //   single_view.update();
+  // }
   return 0;
 }

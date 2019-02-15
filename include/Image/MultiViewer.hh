@@ -59,7 +59,7 @@ ImageMultiViewer<W, H>::ImageMultiViewer()
 , window_size_input(this)
 {
   name = "ImageMultiViewer";
-  window_size_manual.set_data({1280,720});
+  window_size_manual.set_data({1600,900});
   window_name_input.connect(window_name_manual);
   window_size_input.connect(window_size_manual);
   font.loadFromFile("misc/DejaVuSans.ttf");

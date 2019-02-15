@@ -152,7 +152,7 @@ void PolygonVisualizer::compute()
     sf::VertexArray array(sf::TriangleFan, cell.size());
     for (size_t i=0; i<cell.size(); i++)
     {
-      auto pt = static_cast<sf::Vector2f>(cell[i].first)/float(points.scale);
+      auto pt = closen(point, sf::Vector2f(cell[i].first), 0.90)/float(points.scale);
       array[i].position = pt;
       array[i].color = color;
     }

@@ -132,19 +132,14 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& log = gr.input<float>();
 
   auto& fill = gr.input<size_t>();
-  // auto& scale = gr.input<size_t>();
-  // auto& relaxation_passes = gr.input<int>(); // TODO: dynamic graph, while?
 
+  auto& in = gr.image_maximizer(gr.image_loader(in_filename), size);
   auto& pre = gr.image_filter_logarithm(
     gr.image_normalization(
-      gr.image_filter_grayscale(
-        gr.image_maximizer(
-          gr.image_loader(in_filename),
-          size)),
+      gr.image_filter_grayscale(in),
       sigm,
       gauss),
     log);
-  auto& pre_saver = gr.image_saver(pre, std::string("/tmp/preview.jpg"));
 
   auto& scalar = gr.grayscale_image_to_scalar_field(gr.image_filter_inverse(pre), 1);
   auto& pref = gr.scalar_field_mass_prefix_sum(scalar);
@@ -163,6 +158,10 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& gcd_saver = gr.polyline_gcode_saver(mst, std::string("output.gcode"));
   auto& out_name = gr.output<std::string> (out_filename);
 
+  auto& in_pic = gr.output<sf::Texture>(in);
+  auto& pre_pic = gr.output<sf::Texture>(pre);
+  // auto& out_pic = gr.output<sf::Texture>(gr.image_filter_gaussian_blur(color_voronoi, 1));
+
 
   auto pic = tgui::Picture::create("misc/empty.png");
   pic->setPosition(0, PANEL_HEIGHT);
@@ -175,165 +174,156 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   bar->setSize(tgui::bindWidth(gui), PANEL_HEIGHT);
 
   // file choosers
+  tgui::Button::Ptr in_file = tgui::Button::create();
+
+  auto new_file = [=, &gui, &in_filename, &in_pic](std::string path) -> void
   {
-    tgui::Button::Ptr in_file = tgui::Button::create();
+      in_file->setText(path);
+      in_filename.set_data(path);
+      auto str = sf::String(path);
+      auto tex = tgui::Texture(path);
+      auto size = tex.getImageSize();
+      float ratio = size.x/size.y;
 
-    auto new_file = [=, &gui, &in_filename](std::string path) -> void
-    {
-        in_file->setText(path);
-        in_filename.set_data(path);
-        auto str = sf::String(path);
-        auto tex = tgui::Texture(path);
-        auto size = tex.getImageSize();
-        float ratio = size.x/size.y;
+      auto width = tgui::bindWidth(gui);
+      auto height = tgui::bindHeight(gui)-PANEL_HEIGHT;
 
-        auto width = tgui::bindWidth(gui);
-        auto height = tgui::bindHeight(gui)-PANEL_HEIGHT;
+      auto new_width = height*ratio;
+      auto new_height = height;
 
-        auto new_width = height*ratio;
-        auto new_height = height;
+      pic->getRenderer()->setTexture(in_pic.get_data());
+      pic->setSize(new_width, new_height);
+      pic->setPosition((width - new_width)/2, (height-new_height)/2+PANEL_HEIGHT);
+  };
 
-        pic->getRenderer()->setTexture(path);
-        pic->setSize(new_width, new_height);
-        pic->setPosition((width - new_width)/2, (height-new_height)/2+PANEL_HEIGHT);
-    };
+  in_file->connect("Pressed", [=]() {
+    auto path = getImageFile();
+    if (path != nullptr)
+      new_file(*path);
+  });
 
-    in_file->connect("Pressed", [=]() {
-      auto path = getImageFile();
+  tgui::Button::Ptr out_file = tgui::Button::create();
+  out_file->setText("Save file");
+  out_file->connect("Pressed", [&, out_file]() {
+      auto path = saveImageFile();
       if (path != nullptr)
-        new_file(*path);
-    });
-    new_file("res/klaudia.jpg");
+      {
+          out_file->setText(*path);
+          out_filename.set_data(*path);
+      }
+  });
+  out_file->setText("out.svg");
+  out_filename.set_data("out.svg");
 
-    tgui::Button::Ptr out_file = tgui::Button::create();
-    out_file->setText("Save file");
-    out_file->connect("Pressed", [&, out_file]() {
-        auto path = saveImageFile();
-        if (path != nullptr)
-        {
-            out_file->setText(*path);
-            out_filename.set_data(*path);
-        }
-    });
-    out_file->setText("/tmp/out.svg");
-    out_filename.set_data("/tmp/out.svg");
+  auto size_slider = slider(100, 2000, 4000, [&](int val)->void
+  {
+    size.set_data(val);
+  });
 
-    auto size_slider = slider(100, 2000, 4000, [&](int val)->void
-    {
-      size.set_data(val);
-    });
-
-    bar->add(named_column(
-    {
-      {"Input file", in_file},
-      {"Output file", out_file},
-      {"Size", size_slider}
-    }));
-  }
+  bar->add(named_column(
+  {
+    {"Input file", in_file},
+    {"Output file", out_file},
+    {"Size", size_slider}
+  }));
 
   // preprocessing params
+  auto details = slider(0, 8, 15, [&](int val)->void //pow(1.5, x)
   {
-    auto details = slider(0, 8, 15, [&](int val)->void //pow(1.5, x)
-    {
-      gauss.set_data(pow(1.5, val));
-    });
-    auto contrast = slider(0, 8, 20, [&](int val)->void //pow(1.5, x)
-    {
-      sigm.set_data(pow(1.5, 10-val));
-    });
-    auto log_gamma = slider(0, 3, 20, [&](int val)->void //pow(2,x)
-    {
-      log.set_data(pow(2, val));
-    });
+    gauss.set_data(pow(1.5, val));
+  });
+  auto contrast = slider(0, 8, 20, [&](int val)->void //pow(1.5, x)
+  {
+    sigm.set_data(pow(1.5, 10-val));
+  });
+  auto log_gamma = slider(0, 3, 20, [&](int val)->void //pow(2,x)
+  {
+    log.set_data(pow(2, val));
+  });
 
-    bar->add(named_column(
-    {
-      {"Details", details},
-      {"Contrast", contrast},
-      {"Log-gamma", log_gamma}
-    }));
-  }
+  bar->add(named_column(
+  {
+    {"Details", details},
+    {"Contrast", contrast},
+    {"Log-gamma", log_gamma}
+  }));
 
   // algo params
+  auto density = slider(0, 8, 10, [&](int val)->void //int(12*pow(1.5, -10x))
   {
-    auto density = slider(0, 8, 10, [&](int val)->void //int(12*pow(1.5, -10x))
-    {
-      fill.set_data(int(12*pow(1.5, 10-val)));
-    });
-    // auto quality = slider(0, 0, 5, [&](int val)->void //1<<x
-    // {
-    //   scale.set_data(1<<val);
-    // });
-    // auto passes = slider(0, 5, 50, [&](int val)->void
-    // {});
+    fill.set_data(int(12*pow(1.5, 10-val)));
+  });
+  // auto quality = slider(0, 0, 5, [&](int val)->void //1<<x
+  // {
+  //   scale.set_data(1<<val);
+  // });
+  // auto passes = slider(0, 5, 50, [&](int val)->void
+  // {});
 
-    bar->add(named_column(
-    {
-      {"Density", density},
-      // {"Quality (Uses LOTS of RAM)", quality},
-      // {"Smoothing", passes}
-    },
-    1));
-  }
+  bar->add(named_column(
+  {
+    {"Density", density},
+    // {"Quality (Uses LOTS of RAM)", quality},
+    // {"Smoothing", passes}
+  },
+  1));
 
   // Styles
+  tgui::ComboBox::Ptr style = tgui::ComboBox::create();
+  tgui::Button::Ptr fire = tgui::Button::create();
+  tgui::Button::Ptr prev = tgui::Button::create();
+  style->addItem("Minimal Spanning Tree", "mst");
+  style->addItem("Skipping Minimal Spanning Tree", "skip");
+  style->addItem("Hilbert", "hilbert");
+  style->addItem("Nearest Neighbour", "nn");
+
+  style->connect("ItemSelected", [&, style]()
   {
-    tgui::ComboBox::Ptr style = tgui::ComboBox::create();
-    tgui::Button::Ptr fire = tgui::Button::create();
-    tgui::Button::Ptr prev = tgui::Button::create();
-    style->addItem("Minimal Spanning Tree", "mst");
-    style->addItem("Skipping Minimal Spanning Tree", "skip");
-    style->addItem("Hilbert", "hilbert");
-    style->addItem("Nearest Neighbour", "nn");
+    std::string id = style->getSelectedItemId();
+    DataPromise<Polyline>* tgt = nullptr;
+    if (id == "hilbert")
+      tgt = &static_cast<DataPromise<Polyline>&>(hilbert);
+    else if (id == "mst")
+      tgt = &static_cast<DataPromise<Polyline>&>(mst);
+    else if (id == "skip")
+      tgt = &static_cast<DataPromise<Polyline>&>(skip);
+    else if (id == "nn")
+      tgt = &static_cast<DataPromise<Polyline>&>(nearest_neighbour);
+    else
+      exit(-1); // never happens
+    pln_saver.in.connect(*tgt);
+    gcd_saver.in.connect(*tgt);
+  });
+  style->setSelectedItemByIndex(0);
 
-    style->connect("ItemSelected", [&, style]()
-    {
-      std::string id = style->getSelectedItemId();
-      DataPromise<Polyline>* tgt = nullptr;
-      if (id == "hilbert")
-        tgt = &static_cast<DataPromise<Polyline>&>(hilbert);
-      else if (id == "mst")
-        tgt = &static_cast<DataPromise<Polyline>&>(mst);
-      else if (id == "skip")
-        tgt = &static_cast<DataPromise<Polyline>&>(skip);
-      else if (id == "nn")
-        tgt = &static_cast<DataPromise<Polyline>&>(nearest_neighbour);
-      else
-        exit(-1); // never happens
-      pln_saver.in.connect(*tgt);
-      gcd_saver.in.connect(*tgt);
-    });
-    style->setSelectedItemByIndex(0);
+  fire->setText("Draw!");
+  fire->connect("Pressed", [&, pic]()
+  {
+    pln_saver.update();
+    gcd_saver.update();
+    auto& name = out_name.get_data();
+    std::ostringstream ss;
+    ss << "convert " << name << " /tmp/out.jpg";
+    system(ss.str().c_str());
+    pic->getRenderer()->setTexture("misc/empty.png");
+    pic->getRenderer()->setTexture("/tmp/out.jpg");
+  });
 
-    fire->setText("Draw!");
-    fire->connect("Pressed", [&, pic]()
-    {
-      pln_saver.update();
-      gcd_saver.update();
-      auto& name = out_name.get_data();
-      std::ostringstream ss;
-      ss << "convert " << name << " /tmp/out.jpg";
-      system(ss.str().c_str());
-      pic->getRenderer()->setTexture("misc/empty.png");
-      pic->getRenderer()->setTexture("/tmp/out.jpg");
-    });
+  prev->setText("Preview");
+  prev->connect("Pressed", [&, pic]()
+  {
+    pic->getRenderer()->setTexture("misc/empty.png");
+    pic->getRenderer()->setTexture(pre_pic.get_data());
+  });
 
-    prev->setText("Preview");
-    prev->connect("Pressed", [&, pic]()
-    {
-      pre_saver.update();
-      pic->getRenderer()->setTexture("misc/empty.png");
-      pic->getRenderer()->setTexture("/tmp/preview.jpg");
-    });
+  bar->add(named_column(
+  {
+    {"Style", style},
+    {"", prev},
+    {"", fire}
+  }));
 
-    bar->add(named_column(
-    {
-      {"Style", style},
-      {"", prev},
-      {"", fire}
-    }));
-  }
-
+  new_file("res/klaudia.jpg");
 
   tgui::Panel::Ptr panel = tgui::Panel::create();
   panel->setPosition(0, 0);

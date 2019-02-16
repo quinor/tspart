@@ -148,8 +148,6 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     sigm
   );
 
-  auto& pre_saver = gr.image_saver(pre, std::string("/tmp/preview.jpg"));
-
   auto& inv = gr.grayscale_image_to_scalar_field(pre, 2);
   auto& pts = gr.n_voronoi_relaxation(
     gr.points_generator(inv, fill), // 25-1000
@@ -163,10 +161,9 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 
   auto& saver = gr.image_saver(color_voronoi, out_filename);
 
-  auto& view_saver = gr.image_saver(
-    gr.image_filter_gaussian_blur(color_voronoi, 1),
-    std::string("/tmp/view.jpg")
-  );
+  auto& in_pic = gr.output<sf::Texture>(in);
+  auto& pre_pic = gr.output<sf::Texture>(pre);
+  auto& out_pic = gr.output<sf::Texture>(gr.image_filter_gaussian_blur(color_voronoi, 1));
 
 
   auto pic = tgui::Picture::create("misc/empty.png");
@@ -180,121 +177,115 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   bar->setSize(tgui::bindWidth(gui), PANEL_HEIGHT);
 
   // file choosers
+  tgui::Button::Ptr in_file = tgui::Button::create();
+
+  auto new_file = [=, &gui, &in_filename, &in_pic](std::string path) -> void
   {
-    tgui::Button::Ptr in_file = tgui::Button::create();
+      in_file->setText(path);
+      in_filename.set_data(path);
+      auto str = sf::String(path);
+      auto tex = tgui::Texture(path);
+      auto size = tex.getImageSize();
+      float ratio = size.x/size.y;
 
-    auto new_file = [=, &gui, &in_filename](std::string path) -> void
-    {
-        in_file->setText(path);
-        in_filename.set_data(path);
-        auto str = sf::String(path);
-        auto tex = tgui::Texture(path);
-        auto size = tex.getImageSize();
-        float ratio = size.x/size.y;
+      auto width = tgui::bindWidth(gui);
+      auto height = tgui::bindHeight(gui)-PANEL_HEIGHT;
 
-        auto width = tgui::bindWidth(gui);
-        auto height = tgui::bindHeight(gui)-PANEL_HEIGHT;
+      auto new_width = height*ratio;
+      auto new_height = height;
 
-        auto new_width = height*ratio;
-        auto new_height = height;
+      pic->getRenderer()->setTexture(in_pic.get_data());
+      pic->setSize(new_width, new_height);
+      pic->setPosition((width - new_width)/2, (height-new_height)/2+PANEL_HEIGHT);
+  };
 
-        pic->getRenderer()->setTexture(path);
-        pic->setSize(new_width, new_height);
-        pic->setPosition((width - new_width)/2, (height-new_height)/2+PANEL_HEIGHT);
-    };
+  in_file->connect("Pressed", [=]() {
+    auto path = getImageFile();
+    if (path != nullptr)
+      new_file(*path);
+  });
 
-    in_file->connect("Pressed", [=]() {
-      auto path = getImageFile();
+  tgui::Button::Ptr out_file = tgui::Button::create();
+  out_file->setText("Save file");
+  out_file->connect("Pressed", [&, out_file]() {
+      auto path = saveImageFile();
       if (path != nullptr)
-        new_file(*path);
-    });
-    new_file("res/klaudia.jpg");
+      {
+          out_file->setText(*path);
+          out_filename.set_data(*path);
+      }
+  });
+  out_file->setText("out.jpg");
+  out_filename.set_data("out.jpg");
 
-    tgui::Button::Ptr out_file = tgui::Button::create();
-    out_file->setText("Save file");
-    out_file->connect("Pressed", [&, out_file]() {
-        auto path = saveImageFile();
-        if (path != nullptr)
-        {
-            out_file->setText(*path);
-            out_filename.set_data(*path);
-        }
-    });
-    out_file->setText("/tmp/out.jpg");
-    out_filename.set_data("/tmp/out.jpg");
+  auto size_slider = slider(100, 2000, 4000, [&](int val)->void
+  {
+    size.set_data(val);
+  });
 
-    auto size_slider = slider(100, 2000, 4000, [&](int val)->void
-    {
-      size.set_data(val);
-    });
-
-    bar->add(named_column(
-    {
-      {"Input file", in_file},
-      {"Output file", out_file},
-      {"Size", size_slider}
-    }));
-  }
+  bar->add(named_column(
+  {
+    {"Input file", in_file},
+    {"Output file", out_file},
+    {"Size", size_slider}
+  }));
 
   // preprocessing params
+  auto details = slider(0, 7, 15, [&](int val)->void //pow(1.5, x)
   {
-    auto details = slider(0, 7, 15, [&](int val)->void //pow(1.5, x)
-    {
-      gauss.set_data(pow(1.5, 15-val));
-    });
-    auto brightness = slider(0, 7, 20, [&](int val)->void //pow(1.5, x)
-    {
-      log.set_data(pow(2, val));
-    });
-    auto contrast = slider(0, 10, 20, [&](int val)->void //pow(2,x)
-    {
-      sigm.set_data(pow(1.5, (10-val)));
-    });
+    gauss.set_data(pow(1.5, 15-val));
+  });
+  auto brightness = slider(0, 7, 20, [&](int val)->void //pow(1.5, x)
+  {
+    log.set_data(pow(2, val));
+  });
+  auto contrast = slider(0, 10, 20, [&](int val)->void //pow(2,x)
+  {
+    sigm.set_data(pow(1.5, (10-val)));
+  });
 
-    bar->add(named_column(
-    {
-      {"Details", details},
-      {"Brightness", brightness},
-      {"Contrast", contrast}
-    }));
-  }
+  bar->add(named_column(
+  {
+    {"Details", details},
+    {"Brightness", brightness},
+    {"Contrast", contrast}
+  }));
 
   // algo params
+  auto density = slider(0, 5, 10, [&](int val)->void //int(12*pow(1.5, -10x))
   {
-    auto density = slider(0, 5, 10, [&](int val)->void //int(12*pow(1.5, -10x))
-    {
-      fill.set_data(int(50*pow(1.5, 10-val)));
-    });
+    fill.set_data(int(50*pow(1.5, 10-val)));
+  });
 
-    tgui::Button::Ptr fire = tgui::Button::create();
-    tgui::Button::Ptr prev = tgui::Button::create();
+  tgui::Button::Ptr fire = tgui::Button::create();
+  tgui::Button::Ptr prev = tgui::Button::create();
 
-    fire->setText("Draw!");
-    fire->connect("Pressed", [&, pic]()
-    {
-      saver.update();
-      view_saver.update();
-      pic->getRenderer()->setTexture("misc/empty.png");
-      pic->getRenderer()->setTexture("/tmp/view.jpg");
-    });
+  fire->setText("Draw!");
+  fire->connect("Pressed", [&, pic]()
+  {
+    saver.update();
+    // view_saver.update();
+    pic->getRenderer()->setTexture("misc/empty.png");
+    pic->getRenderer()->setTexture(out_pic.get_data());
+  });
 
-    prev->setText("Preview");
-    prev->connect("Pressed", [&, pic]()
-    {
-      pre_saver.update();
-      pic->getRenderer()->setTexture("misc/empty.png");
-      pic->getRenderer()->setTexture("/tmp/preview.jpg");
-    });
+  prev->setText("Preview");
+  prev->connect("Pressed", [&, pic]()
+  {
+    // pre_saver.update();
+    pic->getRenderer()->setTexture("misc/empty.png");
+    pic->getRenderer()->setTexture(pre_pic.get_data());
+  });
 
-    bar->add(named_column(
-    {
-      {"Density", density},
-      {"", prev},
-      {"", fire}
-    },
-    1));
-  }
+  bar->add(named_column(
+  {
+    {"Density", density},
+    {"", prev},
+    {"", fire}
+  },
+  1));
 
+  new_file("res/klaudia.jpg");
 
   tgui::Panel::Ptr panel = tgui::Panel::create();
   panel->setPosition(0, 0);

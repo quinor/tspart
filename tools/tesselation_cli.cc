@@ -3,17 +3,19 @@
 
 int main (int argc, char** argv)
 {
-  if (argc != 3)
-    exit(-1);
+  if (argc != 2)
+    return -1;
 
   auto gr = Graph<ImageMixin, PointsMixin>();
   gr.logger.set_log_level(Logger::Level::Verbose);
 
   auto& src = gr.input<std::string>();
   auto& dst = gr.input<std::string>();
+  src.set_data(argv[1]);
+  dst.set_data("out.jpg");
 
 
-  auto& in = gr.image_maximizer(gr.image_loader(src), 2048);
+  auto& in = gr.image_maximizer(gr.image_loader(src), 1024);
   auto& pre = gr.image_filter_sigmoid(
     gr.image_filter_logarithm(
       gr.image_filter_grayscale(
@@ -29,7 +31,7 @@ int main (int argc, char** argv)
 
   auto& inv = gr.grayscale_image_to_scalar_field(pre, 2);
   auto& pts = gr.n_voronoi_relaxation(
-    gr.points_generator(inv, 100),
+    gr.points_generator(inv, 200),
     gr.scalar_field_mass_prefix_sum(inv),
     5);
 
@@ -39,10 +41,6 @@ int main (int argc, char** argv)
   auto& color_voronoi = gr.polygon_visualizer(pts, voronoi.voronoi, colors);
 
   auto& saver = gr.image_saver(color_voronoi, dst);
-
-  src.set_data(argv[1]);
-  dst.set_data(argv[2]);
-  saver.update();
 
 
   auto& view = gr.image_multi_viewer<2, 2>();
@@ -60,13 +58,8 @@ int main (int argc, char** argv)
   view.input(1, 1).connect(gr.image_filter_gaussian_blur(color_voronoi, 1));
   view.caption_manual(1, 1).set_data("Colored tesselation");
 
-  auto& single_view = gr.image_viewer(color_voronoi);
 
-  // for (int i=1; i<argc; i++)
-  // {
-  //   src.set_data(argv[i]);
-  //   view.update();
-  //   single_view.update();
-  // }
+  saver.update();
+  view.update();
   return 0;
 }

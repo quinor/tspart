@@ -12,6 +12,8 @@ grayscale_normalization
 colorful_tesselation
 tspart_cli
 tspart_gui
+tesselation_cli
+tesselation_gui
 hilbert_path
 mid_color
 mid_grayscale
@@ -23,6 +25,7 @@ voronoi_lowres
 /*.plt
 /*.svg
 /res/
+/out/
 !/res/klaudia.jpg
 *.sublime*
 activate

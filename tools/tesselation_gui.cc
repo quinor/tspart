@@ -163,7 +163,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 
   auto& in_pic = gr.output<sf::Texture>(in);
   auto& pre_pic = gr.output<sf::Texture>(pre);
-  auto& out_pic = gr.output<sf::Texture>(gr.image_filter_gaussian_blur(color_voronoi, 1));
+  auto& out_pic = gr.output<sf::Texture>(color_voronoi);
 
 
   auto pic = tgui::Picture::create("misc/empty.png");
@@ -195,6 +195,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
       auto new_height = height;
 
       pic->getRenderer()->setTexture(in_pic.get_data());
+      pic->getRenderer()->getTexture().setSmooth(true);
       pic->setSize(new_width, new_height);
       pic->setPosition((width - new_width)/2, (height-new_height)/2+PANEL_HEIGHT);
   };
@@ -267,6 +268,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     // view_saver.update();
     pic->getRenderer()->setTexture("misc/empty.png");
     pic->getRenderer()->setTexture(out_pic.get_data());
+    pic->getRenderer()->getTexture().setSmooth(true);
   });
 
   prev->setText("Preview");
@@ -275,7 +277,8 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     // pre_saver.update();
     pic->getRenderer()->setTexture("misc/empty.png");
     pic->getRenderer()->setTexture(pre_pic.get_data());
-  });
+    pic->getRenderer()->getTexture().setSmooth(true);
+});
 
   bar->add(named_column(
   {

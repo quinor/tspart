@@ -5,28 +5,41 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/deps)
 
 #set(SFML_STATIC_LIBRARIES TRUE) # set this for static builds, you must have compiled SFML as static though
 
-find_package(SFML 2.5 COMPONENTS graphics window REQUIRED)
+
+find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 find_package(TGUI 0.8 REQUIRED)
+
+
+find_program(MAGICK_CONFIG "Magick++-config")
+# Ask about CXX and lib flags/locations
+execute_process(COMMAND "${MAGICK_CONFIG}" "--cxxflags" OUTPUT_VARIABLE MAGICK_CXX_FLAGS)
+execute_process(COMMAND "${MAGICK_CONFIG}" "--libs" OUTPUT_VARIABLE MAGICK_LD_FLAGS)
+# Remove trailing whitespace (CMAKE warns about this)
+string(STRIP "${MAGICK_CXX_FLAGS}" MAGICK_CXX_FLAGS)
+string(STRIP "${MAGICK_LD_FLAGS}" MAGICK_LD_FLAGS)
+# Append all flags to CMAKE_CXX_FLAGS
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${MAGICK_CXX_FLAGS} ${MAGICK_LD_FLAGS}")
+
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O3 -std=c++17")
-set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,-rpath=libs")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O3 -std=c++17 ${MAGICK_CXX_FLAGS}")
+set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,-rpath=libs ${MAGICK_LD_FLAGS}")
 
 
-include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/deps/include)
-link_directories(${CMAKE_SOURCE_DIR}/deps/lib)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE sources ${CMAKE_SOURCE_DIR}/src/*.cc src/*.cpp)
 file(GLOB_RECURSE tools ${CMAKE_SOURCE_DIR}/tools/*.cc)
 
 add_library(tspart ${sources})
+target_link_libraries(tspart sfml-graphics sfml-window sfml-system)
 
-set(libraries tspart tgui sfml-graphics sfml-window sfml-system)
+set(libraries tspart tgui)
 
 
 foreach(tool_src ${tools})
     get_filename_component(binary ${tool_src} NAME_WE)
     add_executable(${binary} ${tool_src})
-    target_link_libraries(${binary} tspart tgui sfml-graphics sfml-window sfml-system)
+    target_link_libraries(${binary} ${libraries})
 endforeach()

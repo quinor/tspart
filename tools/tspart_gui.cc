@@ -5,6 +5,8 @@
 #include <SFML/Window.hpp>
 #include <TGUI/TGUI.hpp>
 
+#include <Magick++.h>
+
 #include <vector>
 #include <string>
 #include <sstream>
@@ -13,6 +15,10 @@
 #include <cmath>
 
 const int PANEL_HEIGHT = 120;
+
+
+sf::Texture sf_tex;
+
 
 std::shared_ptr<std::string> getImageFile()
 {
@@ -192,6 +198,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
       auto new_height = height;
 
       pic->getRenderer()->setTexture(in_pic.get_data());
+      pic->getRenderer()->getTexture().setSmooth(true);
       pic->setSize(new_width, new_height);
       pic->setPosition((width - new_width)/2, (height-new_height)/2+PANEL_HEIGHT);
   };
@@ -301,12 +308,35 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   {
     pln_saver.update();
     gcd_saver.update();
-    auto& name = out_name.get_data();
-    std::ostringstream ss;
-    ss << "convert " << name << " /tmp/out.jpg";
-    system(ss.str().c_str());
+
+    Magick::Image img;
+    img.resolutionUnits(Magick::PixelsPerInchResolution);
+    img.density("254");
+    img.read(out_name.get_data());
+    img.type(Magick::TrueColorType);
+
+    int w = img.columns(), h = img.rows();
+
+    auto sf_pixels = new sf::Uint8[4*w*h];
+
+    for (int y=0; y<h; y++)
+      for (int x=0; x<w; x++)
+      {
+        Magick::ColorRGB col = img.pixelColor(x, y);
+        sf_pixels[(y*w + x)*4 + 0] = col.red() * 255;
+        sf_pixels[(y*w + x)*4 + 1] = col.green() * 255;
+        sf_pixels[(y*w + x)*4 + 2] = col.blue() * 255;
+        sf_pixels[(y*w + x)*4 + 3] = 255;
+      }
+
+    sf_tex.create(w, h);
+    sf_tex.update(sf_pixels);
+
+    delete[] sf_pixels;
+
     pic->getRenderer()->setTexture("misc/empty.png");
-    pic->getRenderer()->setTexture("/tmp/out.jpg");
+    pic->getRenderer()->setTexture(sf::Texture(sf_tex));
+    pic->getRenderer()->getTexture().setSmooth(true);
   });
 
   prev->setText("Preview");
@@ -314,6 +344,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   {
     pic->getRenderer()->setTexture("misc/empty.png");
     pic->getRenderer()->setTexture(pre_pic.get_data());
+    pic->getRenderer()->getTexture().setSmooth(true);
   });
 
   bar->add(named_column(
@@ -333,8 +364,9 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 }
 
 
-int main()
+int main(int, char** argv)
 {
+  Magick::InitializeMagick(*argv);
   sf::RenderWindow window(
     sf::VideoMode(1280, 720),
     "TSPArt",

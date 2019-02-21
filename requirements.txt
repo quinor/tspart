@@ -1,2 +1,0 @@
-buildfox
-pyserial

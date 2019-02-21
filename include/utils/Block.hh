@@ -4,11 +4,21 @@
 #include <algorithm>
 #include <string>
 #include "utils/Logger.hh"
-#include <boost/core/noncopyable.hpp>
 
 
 namespace block_impl
 {
+  class Noncopyable {
+  public:
+    Noncopyable() = default;
+    ~Noncopyable() = default;
+
+  private:
+    Noncopyable(const Noncopyable&) = delete;
+    Noncopyable& operator=(const Noncopyable&) = delete;
+  };
+
+
   using timestamp_t = size_t;
   timestamp_t get_timestamp ();
 
@@ -21,7 +31,7 @@ namespace block_impl
 
 
   template <typename Content>
-  class DataPromiseMeta : private boost::noncopyable
+  class DataPromiseMeta : private Noncopyable
   {
     friend class DataInput<Content>;
 
@@ -59,7 +69,7 @@ namespace block_impl
   };
 
 
-  class DataInputMeta : private boost::noncopyable
+  class DataInputMeta : private Noncopyable
   {
     friend class Block;
 
@@ -115,7 +125,7 @@ namespace block_impl
   };
 
 
-  class Block : private boost::noncopyable
+  class Block : private Noncopyable
   {
     template <typename Content>
     friend class DataInput;

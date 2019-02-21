@@ -5,7 +5,6 @@
 You have to provide:
   * make
   * cmake
-  * boost
   * glm
   * libmagick-7
   * C++17-compatible compiler (preferably clang)

@@ -6,7 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
-#include <boost/optional.hpp>
+#include <optional>
 
 
 namespace
@@ -39,7 +39,7 @@ private:
   bool check_bonds(int x, int y);
   sf::Font font;
 
-  boost::optional<std::pair<
+  std::optional<std::pair<
     DataInput<sf::Texture>,
     DataInput<std::string>
   >> in[W][H];

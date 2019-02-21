@@ -17,14 +17,12 @@ execute_process(COMMAND "${MAGICK_CONFIG}" "--libs" OUTPUT_VARIABLE MAGICK_LD_FL
 # Remove trailing whitespace (CMAKE warns about this)
 string(STRIP "${MAGICK_CXX_FLAGS}" MAGICK_CXX_FLAGS)
 string(STRIP "${MAGICK_LD_FLAGS}" MAGICK_LD_FLAGS)
-# Append all flags to CMAKE_CXX_FLAGS
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${MAGICK_CXX_FLAGS} ${MAGICK_LD_FLAGS}")
 
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O3 -std=c++17 ${MAGICK_CXX_FLAGS}")
-set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,-rpath=libs ${MAGICK_LD_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O3 -std=c++17 ${MAGICK_CXX_FLAGS} ${MAGICK_LD_FLAGS}")
+set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,-rpath=libs")
 
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -40,6 +38,11 @@ set(libraries tspart tgui)
 
 foreach(tool_src ${tools})
     get_filename_component(binary ${tool_src} NAME_WE)
+    file(RELATIVE_PATH local_path ${CMAKE_SOURCE_DIR}/tools/ ${tool_src})
+    get_filename_component(local_dir ${local_path} DIRECTORY)
     add_executable(${binary} ${tool_src})
+    set_target_properties(${binary} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${local_dir}
+    )
     target_link_libraries(${binary} ${libraries})
 endforeach()

@@ -313,21 +313,11 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     img.resolutionUnits(Magick::PixelsPerInchResolution);
     img.density("254");
     img.read(out_name.get_data());
-    img.type(Magick::TrueColorType);
 
     int w = img.columns(), h = img.rows();
-
     auto sf_pixels = new sf::Uint8[4*w*h];
 
-    for (int y=0; y<h; y++)
-      for (int x=0; x<w; x++)
-      {
-        Magick::ColorRGB col = img.pixelColor(x, y);
-        sf_pixels[(y*w + x)*4 + 0] = col.red() * 255;
-        sf_pixels[(y*w + x)*4 + 1] = col.green() * 255;
-        sf_pixels[(y*w + x)*4 + 2] = col.blue() * 255;
-        sf_pixels[(y*w + x)*4 + 3] = 255;
-      }
+    img.write(0, 0, w, h, "RGBA", Magick::CharPixel, sf_pixels);
 
     sf_tex.create(w, h);
     sf_tex.update(sf_pixels);

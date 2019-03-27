@@ -147,6 +147,7 @@ void ImageFilterGaussianBlur::compute()
 
   frag_x.setUniform("sigma", (float)sigma_input.get_data());
   frag_x.setUniform("tex", in.get_data());
+  frag_x.setUniform("size", static_cast<sf::Vector2f>(in.get_data().getSize()));
   rt1.draw(rs, &frag_x);
   rt1.display();
 
@@ -154,6 +155,7 @@ void ImageFilterGaussianBlur::compute()
 
   frag_y.setUniform("sigma", (float)sigma_input.get_data());
   frag_y.setUniform("tex", tex);
+  frag_y.setUniform("size", static_cast<sf::Vector2f>(in.get_data().getSize()));
   rt2.draw(rs, &frag_y);
   rt2.display();
 

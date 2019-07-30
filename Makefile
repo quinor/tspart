@@ -1,12 +1,14 @@
-all: clean configure tspart package
+all: tspart
 
-.PHONY: all clean conigure tspart libs sfml tgui package
+build: clean configure tspart package
+
+.PHONY: all clean conigure tspart libs sfml tgui package build
 
 clean:
 	rm -rf deps
 	rm -rf venv
 
-configure: libs
+configure:
 	cmake . -B .build
 
 tspart:

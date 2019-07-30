@@ -333,7 +333,7 @@ int main()
       gui.handleEvent(event);
     }
 
-    window.clear();
+    window.clear(sf::Color::White);
     gui.draw();
     window.display();
   }

@@ -6,7 +6,6 @@ You have to provide:
   * make
   * cmake
   * glm
-  * libmagick-7
   * C++17-compatible compiler (preferably clang)
   * SFML build dependencies (*installing dependencies* list from [here](https://www.sfml-dev.org/tutorials/2.5/compile-with-cmake.php))
 

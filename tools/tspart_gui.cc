@@ -5,7 +5,10 @@
 #include <SFML/Window.hpp>
 #include <TGUI/TGUI.hpp>
 
-#include <Magick++.h>
+#define NANOSVG_IMPLEMENTATION
+#define NANOSVGRAST_IMPLEMENTATION
+#include "external/nanosvg.h"
+#include "external/nanosvgrast.h"
 
 #include <vector>
 #include <string>
@@ -13,6 +16,7 @@
 #include <algorithm>
 #include <memory>
 #include <cmath>
+
 
 const int PANEL_HEIGHT = 120;
 
@@ -309,15 +313,13 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     pln_saver.update();
     gcd_saver.update();
 
-    Magick::Image img;
-    img.resolutionUnits(Magick::PixelsPerInchResolution);
-    img.density("254");
-    img.read(out_name.get_data());
 
-    int w = img.columns(), h = img.rows();
+    NSVGimage *img = nsvgParseFromFile(out_name.get_data().c_str(), "px", 254);
+    int w = img->width, h = img->height;
     auto sf_pixels = new sf::Uint8[4*w*h];
 
-    img.write(0, 0, w, h, "RGBA", Magick::CharPixel, sf_pixels);
+    NSVGrasterizer *rast = nsvgCreateRasterizer();
+    nsvgRasterize(rast, img, 0, 0, 1, sf_pixels, w, h, w*4);
 
     sf_tex.create(w, h);
     sf_tex.update(sf_pixels);
@@ -354,9 +356,8 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 }
 
 
-int main(int, char** argv)
+int main()
 {
-  Magick::InitializeMagick(*argv);
   sf::RenderWindow window(
     sf::VideoMode(1280, 720),
     "TSPArt",
@@ -390,7 +391,7 @@ int main(int, char** argv)
       gui.handleEvent(event);
     }
 
-    window.clear();
+    window.clear(sf::Color::White);
     gui.draw();
     window.display();
   }

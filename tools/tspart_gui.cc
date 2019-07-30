@@ -1,4 +1,4 @@
-#include "utils/tinyfiledialogs.h"
+#include "external/tinyfiledialogs.h"
 #include "FunctionAPI/Graph.hh"
 
 #include <SFML/Graphics.hpp>

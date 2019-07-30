@@ -1,5 +1,5 @@
 #include "Points/VoronoiDelaunay.hh"
-#include "utils/VoronoiDiagramGenerator.h"
+#include "external/VoronoiDiagramGenerator.h"
 #include <algorithm>
 #include <cmath>
 

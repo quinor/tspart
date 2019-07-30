@@ -95,7 +95,7 @@ misrepresented as being the original software.
 #include <ctype.h>
 #include <sys/stat.h>
 
-#include "utils/tinyfiledialogs.h"
+#include "external/tinyfiledialogs.h"
 /* #define TINYFD_NOLIB */
 
 #ifdef _WIN32

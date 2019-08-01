@@ -5,8 +5,7 @@
 You have to provide:
   * make
   * cmake
-  * glm
-  * C++17-compatible compiler (preferably clang)
+  * C++17-compatible compiler
   * SFML build dependencies (*installing dependencies* list from [here](https://www.sfml-dev.org/tutorials/2.5/compile-with-cmake.php))
 
 

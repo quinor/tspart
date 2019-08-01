@@ -9,7 +9,7 @@ namespace glm {
  template<typename T, precision P> using tmat3x3 = detail::tmat3x3<T, P>;
 }
 #endif
-typedef glm::tmat3x3<int, glm::precision::highp> imat3;
+typedef glm::tmat3x3<int, glm::highp> imat3;
 typedef glm::ivec3 ivec3;
 
 class HilbertGenerator

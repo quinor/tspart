@@ -15,11 +15,14 @@ HilbertGenerator::HilbertGenerator (int depth)
   for (size_t i = 1; i <= height; i++)
   {
     levels[i] = 0;
-    matrices[i] = imat3{
-      { 0, 1, 0 },
-      { 1, 0, 0 },
-      { 0, 0, 1 }
-    } * matrices[i - 1];
+    matrices[i] = linalg::mul(
+      imat3{
+        { 0, 1, 0 },
+        { 1, 0, 0 },
+        { 0, 0, 1 }
+      },
+      matrices[i - 1]
+    );
   }
 }
 
@@ -31,7 +34,7 @@ HilbertGenerator::~HilbertGenerator()
 
 ivec3 HilbertGenerator::get() const
 {
-  return ivec3(0, 0, 1) * matrices[height];
+  return linalg::mul(linalg::transpose(matrices[height]), ivec3(0, 0, 1));
 }
 
 ivec3 HilbertGenerator::next()
@@ -50,27 +53,36 @@ ivec3 HilbertGenerator::next()
     switch (levels[position])
     {
     case 1:
-      matrices[position] = imat3{
-        { 1, 0, 0 },
-        { 0, 1, r },
-        { 0, 0, 1 }
-      } * matrices[position - 1];
+      matrices[position] = linalg::mul(
+        imat3{
+          { 1, 0, 0 },
+          { 0, 1, r },
+          { 0, 0, 1 }
+        },
+        matrices[position - 1]
+      );
       break;
 
     case 2:
-      matrices[position] = imat3{
-        { 1, 0, r },
-        { 0, 1, r },
-        { 0, 0, 1 }
-      } * matrices[position - 1];
+      matrices[position] = linalg::mul(
+        imat3{
+          { 1, 0, r },
+          { 0, 1, r },
+          { 0, 0, 1 }
+        },
+        matrices[position - 1]
+      );
       break;
 
     case 3:
-      matrices[position] = imat3{
-        { 0, -1, 2 * r - 1 },
-        { -1, 0, r - 1 },
-        { 0, 0, 1 }
-      } * matrices[position - 1];
+      matrices[position] = linalg::mul(
+        imat3{
+          { 0, -1, 2 * r - 1 },
+          { -1, 0, r - 1 },
+          { 0, 0, 1 }
+        },
+        matrices[position - 1]
+      );
       break;
     }
   }
@@ -78,11 +90,14 @@ ivec3 HilbertGenerator::next()
   for (position++; position <= height; position++)
   {
     levels[position] = 0;
-    matrices[position] = imat3{
-      { 0, 1, 0 },
-      { 1, 0, 0 },
-      { 0, 0, 1 }
-    } * matrices[position - 1];
+    matrices[position] = linalg::mul(
+      imat3{
+        { 0, 1, 0 },
+        { 1, 0, 0 },
+        { 0, 0, 1 }
+      },
+      matrices[position - 1]
+    );
   }
 
   return get();

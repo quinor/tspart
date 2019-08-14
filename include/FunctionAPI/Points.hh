@@ -31,6 +31,7 @@ public:
 
   HilbertPointsOrderer& hilbert_points_orderer(DataPromise<Polyline>& data);
   NearestNeighbourPointsOrderer& nearest_neighbour_points_orderer(DataPromise<Polyline>& data);
+  DeintersectorPointsOrderer& deintersector_points_orderer(DataPromise<Polyline>& data);
   MSTPointsOrderer& mst_points_orderer(
     DataPromise<Polyline>& data,
     DataPromise<DelaunayTriangulation>& graph);

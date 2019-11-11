@@ -37,15 +37,15 @@ namespace
   }
 }
 
-VoronoiCellsVisualizer::VoronoiCellsVisualizer()
+CellsVisualizer::CellsVisualizer()
 : polyline(this)
 , cells(this)
 , out(this)
 {
-  name = "VoronoiCellsVisualizer";
+  name = "CellsVisualizer";
 }
 
-void VoronoiCellsVisualizer::compute()
+void CellsVisualizer::compute()
 {
   auto& points = polyline.get_data();
   auto& cellmap = cells.get_data();
@@ -85,15 +85,15 @@ void VoronoiCellsVisualizer::compute()
 }
 
 
-DelaunayTriangulationVisualizer::DelaunayTriangulationVisualizer()
+TriangulationVisualizer::TriangulationVisualizer()
 : polyline(this)
 , neighbours(this)
 , out(this)
 {
-  name = "DelaunayTriangulationVisualizer";
+  name = "TriangulationVisualizer";
 }
 
-void DelaunayTriangulationVisualizer::compute()
+void TriangulationVisualizer::compute()
 {
   auto& points = polyline.get_data();
   auto& graph = neighbours.get_data();

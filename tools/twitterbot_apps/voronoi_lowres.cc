@@ -63,7 +63,7 @@ int main (int argc, char** argv)
   PointsVoronoiDelaunay voronoi;
   voronoi.in.connect(gen);
 
-  VoronoiCellsVisualizer vis_voronoi;
+  CellsVisualizer vis_voronoi;
   vis_voronoi.polyline.connect(gen);
   vis_voronoi.cells.connect(voronoi.voronoi);
 

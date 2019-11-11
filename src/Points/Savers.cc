@@ -31,8 +31,30 @@ void PolylinePloterSaver::compute()
   {
     e-=size/2.f;
     e/=(float)input.scale;
-    out<<(int)e.x<<" "<<(int)e.y<<"\n";
+    out<<(int)e.x<<" "<<(int)-e.y<<"\n";
   }
+
+  // out << "\nint16_t generated[][2] = {\n    ";
+  // int i = 0;
+  // for (auto e : input.pts)
+  // {
+  //   if ((++i) % 10 == 0)
+  //     out << "\n    ";
+  //   e-=size/2.f;
+  //   e/=(float)input.scale;
+  //   out<<"{"<<(int)e.x<<", "<<(int)-e.y<<"}, ";
+  // }
+  // out << "\n};\n\nint generated_size = sizeof(generated)/sizeof(generated[0]);\n\n";
+
+  // out << "\nint16_t generated_box[][2] = {\n";
+
+  // auto sh = sf::Vector2i(size/2.f);
+  // out << "    {"<<-sh.x<<", "<<sh.y<<"},\n";
+  // out << "    {"<<sh.x<<", "<<sh.y<<"},\n";
+  // out << "    {"<<sh.x<<", "<<-sh.y<<"},\n";
+  // out << "    {"<<-sh.x<<", "<<-sh.y<<"},\n";
+  // out << "    {"<<-sh.x<<", "<<sh.y<<"},\n";
+  // out << "};\n\nint generated_box_size = sizeof(generated_box)/sizeof(generated_box[0]);\n\n";
 
   out.close();
 }

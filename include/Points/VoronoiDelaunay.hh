@@ -20,6 +20,6 @@ private:
 public:
 
   DataInput<Polyline> in;
-  DataPromise<VoronoiCells> voronoi;
-  DataPromise<DelaunayTriangulation> delaunay;
+  DataPromise<Cells> voronoi;
+  DataPromise<Triangulation> delaunay;
 };

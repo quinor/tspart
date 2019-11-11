@@ -17,7 +17,7 @@ private:
 public:
 
   DataInput<ScalarField<WeightedElement>> color_field;
-  DataInput<VoronoiCells> voronoi_cells;
+  DataInput<Cells> voronoi_cells;
   DataInput<Polyline> in;
   DataPromise<ColorMapping> out;
 };

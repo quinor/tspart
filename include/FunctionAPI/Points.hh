@@ -21,34 +21,34 @@ public:
 
   PointsRelaxator& points_relaxator(
     DataPromise<Polyline>& data,
-    DataPromise<VoronoiCells>& cells,
+    DataPromise<Cells>& cells,
     DataPromise<ScalarField<WeightedElement>>& mass_field);
 
   PointsColorAverager& points_color_averager(
     DataPromise<Polyline>& data,
-    DataPromise<VoronoiCells>& cells,
+    DataPromise<Cells>& cells,
     DataPromise<ScalarField<WeightedElement>>& color_field);
 
   HilbertPointsOrderer& hilbert_points_orderer(DataPromise<Polyline>& data);
   NearestNeighbourPointsOrderer& nearest_neighbour_points_orderer(DataPromise<Polyline>& data);
   MSTPointsOrderer& mst_points_orderer(
     DataPromise<Polyline>& data,
-    DataPromise<DelaunayTriangulation>& graph);
+    DataPromise<Triangulation>& graph);
   SkipPointsOrderer& skip_points_orderer(
     DataPromise<Polyline>& data,
-    DataPromise<DelaunayTriangulation>& graph);
+    DataPromise<Triangulation>& graph);
 
   PolylineVisualizer& polyline_visualizer(DataPromise<Polyline>& data);
-  VoronoiCellsVisualizer& voronoi_cells_visualizer(
+  CellsVisualizer& voronoi_cells_visualizer(
     DataPromise<Polyline>& data,
-    DataPromise<VoronoiCells>& voronoi);
-  DelaunayTriangulationVisualizer& delaunay_triangulation_visualizer(
+    DataPromise<Cells>& voronoi);
+  TriangulationVisualizer& delaunay_triangulation_visualizer(
     DataPromise<Polyline>& data,
-    DataPromise<DelaunayTriangulation>& delaunay);
+    DataPromise<Triangulation>& delaunay);
 
   PolygonVisualizer& polygon_visualizer(
     DataPromise<Polyline>& data,
-    DataPromise<VoronoiCells>& voronoi,
+    DataPromise<Cells>& voronoi,
     DataPromise<ColorMapping>& colors);
 
   DataPromise<Polyline>& n_voronoi_relaxation(

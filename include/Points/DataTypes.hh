@@ -151,7 +151,7 @@ public:
 
 using Segment = std::pair<sf::Vector2i, sf::Vector2i>;
 
-using VoronoiCells =
+using Cells =
   std::map<
     sf::Vector2f,
     std::vector<Segment>,
@@ -159,7 +159,7 @@ using VoronoiCells =
   >;
 
 
-using DelaunayTriangulation =
+using Triangulation =
   std::map<
     sf::Vector2f,
     std::vector<sf::Vector2f>,

@@ -86,7 +86,7 @@ PointsVoronoiDelaunay& PointsMixin::points_voronoi_delaunay(DataPromise<Polyline
 
 PointsRelaxator& PointsMixin::points_relaxator(
   DataPromise<Polyline>& data,
-  DataPromise<VoronoiCells>& cells,
+  DataPromise<Cells>& cells,
   DataPromise<ScalarField<WeightedElement>>& mass_field)
 {
   auto ret = new PointsRelaxator();
@@ -99,7 +99,7 @@ PointsRelaxator& PointsMixin::points_relaxator(
 
 PointsColorAverager& PointsMixin::points_color_averager(
   DataPromise<Polyline>& data,
-  DataPromise<VoronoiCells>& cells,
+  DataPromise<Cells>& cells,
   DataPromise<ScalarField<WeightedElement>>& color_field)
 {
   auto ret = new PointsColorAverager();
@@ -130,7 +130,7 @@ NearestNeighbourPointsOrderer& PointsMixin::nearest_neighbour_points_orderer(Dat
 
 MSTPointsOrderer& PointsMixin::mst_points_orderer(
   DataPromise<Polyline>& data,
-  DataPromise<DelaunayTriangulation>& graph)
+  DataPromise<Triangulation>& graph)
 {
   auto ret = new MSTPointsOrderer();
   register_block(ret);
@@ -141,7 +141,7 @@ MSTPointsOrderer& PointsMixin::mst_points_orderer(
 
 SkipPointsOrderer& PointsMixin::skip_points_orderer(
   DataPromise<Polyline>& data,
-  DataPromise<DelaunayTriangulation>& graph)
+  DataPromise<Triangulation>& graph)
 {
   auto ret = new SkipPointsOrderer();
   register_block(ret);
@@ -159,22 +159,22 @@ PolylineVisualizer& PointsMixin::polyline_visualizer(DataPromise<Polyline>& data
   return *ret;
 }
 
-VoronoiCellsVisualizer& PointsMixin::voronoi_cells_visualizer(
+CellsVisualizer& PointsMixin::voronoi_cells_visualizer(
   DataPromise<Polyline>& data,
-  DataPromise<VoronoiCells>& voronoi)
+  DataPromise<Cells>& voronoi)
 {
-  auto ret = new VoronoiCellsVisualizer();
+  auto ret = new CellsVisualizer();
   register_block(ret);
   ret->polyline.connect(data);
   ret->cells.connect(voronoi);
   return *ret;
 }
 
-DelaunayTriangulationVisualizer& PointsMixin::delaunay_triangulation_visualizer(
+TriangulationVisualizer& PointsMixin::delaunay_triangulation_visualizer(
   DataPromise<Polyline>& data,
-  DataPromise<DelaunayTriangulation>& delaunay)
+  DataPromise<Triangulation>& delaunay)
 {
-  auto ret = new DelaunayTriangulationVisualizer();
+  auto ret = new TriangulationVisualizer();
   register_block(ret);
   ret->polyline.connect(data);
   ret->neighbours.connect(delaunay);
@@ -183,7 +183,7 @@ DelaunayTriangulationVisualizer& PointsMixin::delaunay_triangulation_visualizer(
 
 PolygonVisualizer& PointsMixin::polygon_visualizer(
   DataPromise<Polyline>& data,
-  DataPromise<VoronoiCells>& voronoi,
+  DataPromise<Cells>& voronoi,
   DataPromise<ColorMapping>& colors)
 {
   auto ret = new PolygonVisualizer();

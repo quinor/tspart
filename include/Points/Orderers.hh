@@ -46,7 +46,7 @@ class MSTPointsOrderer : public PointsOrderer
 public:
   MSTPointsOrderer();
 
-  DataInput<DelaunayTriangulation> graph;
+  DataInput<Triangulation> graph;
 
 protected:
 
@@ -59,7 +59,7 @@ class SkipPointsOrderer : public PointsOrderer
 public:
   SkipPointsOrderer();
 
-  DataInput<DelaunayTriangulation> graph;
+  DataInput<Triangulation> graph;
 
 protected:
 

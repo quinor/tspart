@@ -22,33 +22,33 @@ public:
 };
 
 
-class VoronoiCellsVisualizer : public Block, public AsOutput<sf::Texture, VoronoiCellsVisualizer>
+class CellsVisualizer : public Block, public AsOutput<sf::Texture, CellsVisualizer>
 {
 public:
-  VoronoiCellsVisualizer();
+  CellsVisualizer();
 
 private:
   virtual void compute () override;
 
 public:
   DataInput<Polyline> polyline;
-  DataInput<VoronoiCells> cells;
+  DataInput<Cells> cells;
   DataPromise<sf::Texture> out;
 };
 
 
-class DelaunayTriangulationVisualizer : public Block,
-  public AsOutput<sf::Texture, DelaunayTriangulationVisualizer>
+class TriangulationVisualizer : public Block,
+  public AsOutput<sf::Texture, TriangulationVisualizer>
 {
 public:
-  DelaunayTriangulationVisualizer();
+  TriangulationVisualizer();
 
 private:
   virtual void compute () override;
 
 public:
   DataInput<Polyline> polyline;
-  DataInput<DelaunayTriangulation> neighbours;
+  DataInput<Triangulation> neighbours;
   DataPromise<sf::Texture> out;
 };
 
@@ -64,7 +64,7 @@ private:
 
 public:
   DataInput<Polyline> polyline;
-  DataInput<VoronoiCells> cells;
+  DataInput<Cells> cells;
   DataInput<ColorMapping> colors;
   DataPromise<sf::Texture> out;
 };

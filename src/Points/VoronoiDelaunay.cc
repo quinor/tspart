@@ -44,8 +44,8 @@ void PointsVoronoiDelaunay::compute()
     Vector2f_cmp
   > raw_cells;
 
-  VoronoiCells cells;
-  DelaunayTriangulation graph;
+  Cells cells;
+  Triangulation graph;
 
   VoronoiDiagramGenerator generator;
 

@@ -156,8 +156,12 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 
   auto& voronoi = gr.points_voronoi_delaunay(pts);
   auto& color_field = gr.scalar_field_color_prefix_sum(gr.color_image_to_scalar_field(in));
-  auto& colors = gr.points_color_averager(pts, voronoi.voronoi, color_field);
-  auto& color_voronoi = gr.polygon_visualizer(pts, voronoi.voronoi, colors);
+  auto& triangle_cells = gr.triangulation_to_cells(pts, voronoi.delaunay);
+
+  auto& centres = triangle_cells.pts;
+  auto& cells = triangle_cells.cells;
+  auto& colors = gr.points_color_averager(centres, cells, color_field);
+  auto& color_voronoi = gr.polygon_visualizer(centres, cells, colors);
 
   auto& saver = gr.image_saver(color_voronoi, out_filename);
 

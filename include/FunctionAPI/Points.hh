@@ -18,6 +18,7 @@ public:
 
   PointsGenerator& points_generator(DataPromise<ScalarField<uint8_t>>& data, Param<size_t> fill=12);
   PointsVoronoiDelaunay& points_voronoi_delaunay(DataPromise<Polyline>& data);
+  TriangulationToCells& triangulation_to_cells(DataPromise<Polyline>& pts, DataPromise<Triangulation>& triangles);
 
   PointsRelaxator& points_relaxator(
     DataPromise<Polyline>& data,

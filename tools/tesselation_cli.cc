@@ -37,8 +37,12 @@ int main (int argc, char** argv)
 
   auto& voronoi = gr.points_voronoi_delaunay(pts);
   auto& color_field = gr.scalar_field_color_prefix_sum(gr.color_image_to_scalar_field(in));
-  auto& colors = gr.points_color_averager(pts, voronoi.voronoi, color_field);
-  auto& color_voronoi = gr.polygon_visualizer(pts, voronoi.voronoi, colors);
+  auto& triangle_cells = gr.triangulation_to_cells(pts, voronoi.delaunay);
+
+  auto& centres = triangle_cells.pts;
+  auto& cells = triangle_cells.cells;
+  auto& colors = gr.points_color_averager(centres, cells, color_field);
+  auto& color_voronoi = gr.polygon_visualizer(centres, cells, colors);
 
   auto& saver = gr.image_saver(color_voronoi, dst);
 
@@ -51,8 +55,8 @@ int main (int argc, char** argv)
   view.caption_manual(0, 1).set_data("Preprocessing");
 
   view.input(1, 0).connect(gr.image_filter_gaussian_blur(gr.voronoi_cells_visualizer(
-    pts,
-    voronoi.voronoi
+    centres,
+    cells
   ), 1));
   view.caption_manual(1, 0).set_data("Voronoi tesselation");
   view.input(1, 1).connect(gr.image_filter_gaussian_blur(color_voronoi, 1));

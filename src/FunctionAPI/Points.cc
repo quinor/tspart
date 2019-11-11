@@ -84,6 +84,16 @@ PointsVoronoiDelaunay& PointsMixin::points_voronoi_delaunay(DataPromise<Polyline
   return *ret;
 }
 
+TriangulationToCells& PointsMixin::triangulation_to_cells(DataPromise<Polyline>& pts, DataPromise<Triangulation>& triangles)
+{
+  auto ret = new TriangulationToCells();
+  register_block(ret);
+  ret->centres.connect(pts);
+  ret->triangles.connect(triangles);
+  return *ret;
+}
+
+
 PointsRelaxator& PointsMixin::points_relaxator(
   DataPromise<Polyline>& data,
   DataPromise<Cells>& cells,

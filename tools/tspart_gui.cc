@@ -165,8 +165,8 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& nearest_neighbour = gr.nearest_neighbour_points_orderer(pts);
 
   auto& pln_saver = gr.polyline_svg_saver(mst, out_filename);
-  auto& plt_saver = gr.polyline_ploter_saver(mst, std::string("output.plt"));
-  auto& gcd_saver = gr.polyline_gcode_saver(mst, std::string("output.gcode"));
+  auto& plt_saver = gr.polyline_ploter_saver(mst, std::string("out.plt"));
+  auto& gcd_saver = gr.polyline_gcode_saver(mst, std::string("out.gcode"));
 
   auto& out_name = gr.output<std::string> (out_filename);
 
@@ -266,20 +266,6 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   {
     fill.set_data(int(12*pow(1.5, 10-val)));
   });
-  // auto quality = slider(0, 0, 5, [&](int val)->void //1<<x
-  // {
-  //   scale.set_data(1<<val);
-  // });
-  // auto passes = slider(0, 5, 50, [&](int val)->void
-  // {});
-
-  bar->add(named_column(
-  {
-    {"Density", density},
-    // {"Quality (Uses LOTS of RAM)", quality},
-    // {"Smoothing", passes}
-  },
-  1));
 
   // Styles
   tgui::ComboBox::Ptr style = tgui::ComboBox::create();
@@ -309,6 +295,13 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     gcd_saver.in.connect(*tgt);
   });
   style->setSelectedItemByIndex(0);
+
+  bar->add(named_column(
+  {
+    {"Density", density},
+    {"Style", style},
+  },
+  1));
 
   fire->setText("Draw!");
   fire->connect("Pressed", [&, pic]()
@@ -345,7 +338,6 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 
   bar->add(named_column(
   {
-    {"Style", style},
     {"", prev},
     {"", fire}
   }));

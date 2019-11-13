@@ -128,6 +128,7 @@ PolygonVisualizer::PolygonVisualizer()
 : polyline(this)
 , cells(this)
 , colors(this)
+, shrink(this)
 , out(this)
 {
   name = "PolygonVisualizer";
@@ -138,6 +139,7 @@ void PolygonVisualizer::compute()
   auto& points = polyline.get_data();
   auto& cellmap = cells.get_data();
   auto& colormap = colors.get_data();
+  float shrink_val = shrink.get_data();
 
   sf::Vector2f s = sf::Vector2f(points.size);
   sf::RenderTexture rtex;
@@ -152,7 +154,7 @@ void PolygonVisualizer::compute()
     sf::VertexArray array(sf::TriangleFan, cell.size());
     for (size_t i=0; i<cell.size(); i++)
     {
-      auto pt = closen(point, sf::Vector2f(cell[i].first), 0.90)/float(points.scale);
+      auto pt = closen(point, sf::Vector2f(cell[i].first), shrink_val)/float(points.scale);
       array[i].position = pt;
       array[i].color = color;
     }

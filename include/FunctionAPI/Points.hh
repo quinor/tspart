@@ -50,7 +50,8 @@ public:
   PolygonVisualizer& polygon_visualizer(
     DataPromise<Polyline>& data,
     DataPromise<Cells>& voronoi,
-    DataPromise<ColorMapping>& colors);
+    DataPromise<ColorMapping>& colors,
+    Param<float> shrink=0.9f);
 
   DataPromise<Polyline>& n_voronoi_relaxation(
     DataPromise<Polyline>& data,

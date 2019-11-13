@@ -66,5 +66,6 @@ public:
   DataInput<Polyline> polyline;
   DataInput<Cells> cells;
   DataInput<ColorMapping> colors;
+  DataInput<float> shrink;
   DataPromise<sf::Texture> out;
 };

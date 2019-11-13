@@ -160,14 +160,17 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 
   auto& centres = triangle_cells.pts;
   auto& cells = triangle_cells.cells;
-  auto& colors = gr.points_color_averager(centres, cells, color_field);
-  auto& color_voronoi = gr.polygon_visualizer(centres, cells, colors);
+  auto& colors_delaunay = gr.points_color_averager(centres, cells, color_field);
+  auto& color_triangles = gr.polygon_visualizer(centres, cells, colors_delaunay, 1);
 
-  auto& saver = gr.image_saver(color_voronoi, out_filename);
+  auto& colors_voronoi = gr.points_color_averager(pts, voronoi.voronoi, color_field);
+  auto& color_cells = gr.polygon_visualizer(pts, voronoi.voronoi, colors_voronoi, 0.9);
+
+  auto& saver = gr.image_saver(color_cells, out_filename);
 
   auto& in_pic = gr.output<sf::Texture>(in);
   auto& pre_pic = gr.output<sf::Texture>(pre);
-  auto& out_pic = gr.output<sf::Texture>(color_voronoi);
+  auto& out_pic = gr.output<sf::Texture>(color_cells);
 
 
   auto pic = tgui::Picture::create("misc/empty.png");
@@ -262,6 +265,34 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     fill.set_data(int(50*pow(1.5, 10-val)));
   });
 
+  // Styles
+  tgui::ComboBox::Ptr style = tgui::ComboBox::create();
+  style->addItem("Voronoi", "voronoi");
+  style->addItem("Delaunay", "delaunay");
+
+  style->connect("ItemSelected", [&, style]()
+  {
+    std::string id = style->getSelectedItemId();
+    DataPromise<sf::Texture>* tgt = nullptr;
+    if (id == "voronoi")
+      tgt = &static_cast<DataPromise<sf::Texture>&>(color_cells);
+    else if (id == "delaunay")
+      tgt = &static_cast<DataPromise<sf::Texture>&>(color_triangles);
+    else
+      exit(-1); // never happens
+    saver.in.connect(*tgt);
+    out_pic.in.connect(*tgt);
+  });
+  style->setSelectedItemByIndex(0);
+
+  bar->add(named_column(
+  {
+    {"Density", density},
+    {"Style", style},
+    //
+  },
+  1));
+
   tgui::Button::Ptr fire = tgui::Button::create();
   tgui::Button::Ptr prev = tgui::Button::create();
 
@@ -269,7 +300,6 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   fire->connect("Pressed", [&, pic]()
   {
     saver.update();
-    // view_saver.update();
     pic->getRenderer()->setTexture("misc/empty.png");
     pic->getRenderer()->setTexture(out_pic.get_data());
     pic->getRenderer()->getTexture().setSmooth(true);
@@ -278,7 +308,6 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   prev->setText("Preview");
   prev->connect("Pressed", [&, pic]()
   {
-    // pre_saver.update();
     pic->getRenderer()->setTexture("misc/empty.png");
     pic->getRenderer()->setTexture(pre_pic.get_data());
     pic->getRenderer()->getTexture().setSmooth(true);
@@ -286,9 +315,9 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 
   bar->add(named_column(
   {
-    {"Density", density},
+    //
     {"", prev},
-    {"", fire}
+    {"", fire},
   },
   1));
 

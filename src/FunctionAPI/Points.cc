@@ -194,13 +194,15 @@ TriangulationVisualizer& PointsMixin::delaunay_triangulation_visualizer(
 PolygonVisualizer& PointsMixin::polygon_visualizer(
   DataPromise<Polyline>& data,
   DataPromise<Cells>& voronoi,
-  DataPromise<ColorMapping>& colors)
+  DataPromise<ColorMapping>& colors,
+  Param<float> shrink)
 {
   auto ret = new PolygonVisualizer();
   register_block(ret);
   ret->polyline.connect(data);
   ret->cells.connect(voronoi);
   ret->colors.connect(colors);
+  ret->shrink.connect(shrink.get_input(this));
   return *ret;
 }
 

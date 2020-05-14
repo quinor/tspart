@@ -1,0 +1,6 @@
+[submodule "deps/SFML"]
+	path = deps/SFML
+	url = https://github.com/SFML/SFML.git
+[submodule "deps/TGUI"]
+	path = deps/TGUI
+	url = https://github.com/texus/TGUI.git

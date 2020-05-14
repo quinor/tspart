@@ -1,13 +1,10 @@
 cmake_minimum_required(VERSION 3.4)
 project(tspart)
 
-list(APPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/deps)
+add_subdirectory(deps)
 
-#set(SFML_STATIC_LIBRARIES TRUE) # set this for static builds, you must have compiled SFML as static though
-
-
-find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
-find_package(TGUI 0.8 REQUIRED)
+#find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+#find_package(TGUI 0.8 REQUIRED)
 
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})

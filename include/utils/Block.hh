@@ -253,4 +253,3 @@ using DataPromise = block_impl::DataPromise<Content>;
 
 template<typename Content>
 using DataInput = block_impl::DataInput<Content>;
-

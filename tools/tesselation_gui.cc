@@ -239,7 +239,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   }));
 
   // preprocessing params
-  auto details = slider(0, 7, 15, [&](int val)->void //pow(1.5, x)
+  auto details = slider(0, 9, 15, [&](int val)->void //pow(1.5, x)
   {
     gauss.set_data(pow(1.5, 15-val));
   });
@@ -260,24 +260,24 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   }));
 
   // algo params
-  auto density = slider(0, 5, 10, [&](int val)->void //int(12*pow(1.5, -10x))
+  auto density = slider(0, 7, 10, [&](int val)->void //int(12*pow(1.5, -10x))
   {
     fill.set_data(int(50*pow(1.5, 10-val)));
   });
 
   // Styles
   tgui::ComboBox::Ptr style = tgui::ComboBox::create();
-  style->addItem("Voronoi", "voronoi");
   style->addItem("Delaunay", "delaunay");
+  style->addItem("Voronoi", "voronoi");
 
   style->connect("ItemSelected", [&, style]()
   {
     std::string id = style->getSelectedItemId();
     DataPromise<sf::Texture>* tgt = nullptr;
-    if (id == "voronoi")
-      tgt = &static_cast<DataPromise<sf::Texture>&>(color_cells);
-    else if (id == "delaunay")
+    if (id == "delaunay")
       tgt = &static_cast<DataPromise<sf::Texture>&>(color_triangles);
+    else if (id == "voronoi")
+      tgt = &static_cast<DataPromise<sf::Texture>&>(color_cells);
     else
       exit(-1); // never happens
     saver.in.connect(*tgt);

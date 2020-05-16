@@ -13,7 +13,7 @@ You have to provide:
 
 Run `git submodule update --init` after cloning to update the submodule dependencies or clone the repository with `git clone https://github.com/quinor/tspart.git --recursive` to download the submodules instantly.
 
-Run `cmake -B build` and then `cmake --build build -j4` to build the project.
+Run `cmake -B build .` and then `cmake --build build -j4` to build the project.
 
 The binaries will be built and copied to the project's main directory.
 

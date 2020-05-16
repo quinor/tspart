@@ -1,17 +1,14 @@
 cmake_minimum_required(VERSION 3.4)
 project(tspart)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 add_subdirectory(deps)
-
-#find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
-#find_package(TGUI 0.8 REQUIRED)
-
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O3 -std=c++17 ${MAGICK_CXX_FLAGS}")
-set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,-rpath=libs")
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O3")
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 

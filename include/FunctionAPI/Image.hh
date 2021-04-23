@@ -43,6 +43,7 @@ public:
   DataPromise<sf::Texture>& image_normalization(
     DataPromise<sf::Texture>& data,
     Param<float> steepness=30,
+    Param<float> graypoint=128,
     Param<size_t> radius=20);
 };
 

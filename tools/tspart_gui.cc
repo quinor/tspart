@@ -18,7 +18,7 @@
 #include <cmath>
 
 
-const int PANEL_HEIGHT = 120;
+const int PANEL_HEIGHT = 160;
 
 
 sf::Texture sf_tex;
@@ -104,7 +104,7 @@ tgui::HorizontalLayout::Ptr slider(int from, int def, int to, std::function<void
     callback(new_val);
   };
 
-  box->setInputValidator(tgui::EditBox::Validator::UInt);
+  box->setInputValidator(tgui::EditBox::Validator::Int);
   box->connect("TextChanged", [=]() {
     std::string val = box->getText();
     if (val.size() == 0)
@@ -138,7 +138,8 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& size = gr.input<size_t>();
 
   auto& gauss = gr.input<size_t>();
-  auto& sigm = gr.input<float>();
+  auto& steepness = gr.input<float>();
+  auto& graypoint = gr.input<float>();
   auto& log = gr.input<float>();
 
   auto& fill = gr.input<size_t>();
@@ -147,7 +148,8 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& pre = gr.image_filter_logarithm(
     gr.image_normalization(
       gr.image_filter_grayscale(in),
-      sigm,
+      steepness,
+      graypoint,
       gauss),
     log);
 
@@ -238,7 +240,8 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     {"Input file", in_file},
     {"Output file", out_file},
     {"Size", size_slider}
-  }));
+  },
+  1));
 
   // preprocessing params
   auto details = slider(0, 8, 15, [&](int val)->void //pow(1.5, x)
@@ -247,7 +250,11 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   });
   auto contrast = slider(0, 8, 20, [&](int val)->void //pow(1.5, x)
   {
-    sigm.set_data(pow(1.5, 10-val));
+    steepness.set_data(pow(1.5, 10-val));
+  });
+  auto brightness = slider(-8, 0, 8, [&](int val)->void //linear
+  {
+    graypoint.set_data(127.f - val * 2.f);
   });
   auto log_gamma = slider(0, 3, 20, [&](int val)->void //pow(2,x)
   {
@@ -258,6 +265,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   {
     {"Details", details},
     {"Contrast", contrast},
+    {"Brightness", brightness},
     {"Log-gamma", log_gamma}
   }));
 
@@ -301,7 +309,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     {"Density", density},
     {"Style", style},
   },
-  1));
+  2));
 
   fire->setText("Draw!");
   fire->connect("Pressed", [&, pic]()

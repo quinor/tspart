@@ -139,11 +139,14 @@ ImageCompositorRatio& ImageMixin::image_compositor_ratio(
 DataPromise<sf::Texture>& ImageMixin::image_normalization(
   DataPromise<sf::Texture>& data,
   Param<float> steepness,
+  Param<float> graypoint,
   Param<size_t> radius)
 {
   return image_filter_sigmoid(
     image_compositor_ratio(
       image_filter_gaussian_blur(data, 1),
       image_filter_grayscale(image_filter_gaussian_blur(data, radius))),
-    steepness);
+    steepness,
+    graypoint
+  );
 }

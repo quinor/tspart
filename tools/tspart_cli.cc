@@ -19,6 +19,7 @@ int main (int argc, char** argv)
       gr.image_filter_grayscale(
         gr.image_maximizer(in, 2048)),
       2.25f,
+      128,
       25),
     8.f);
 

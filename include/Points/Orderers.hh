@@ -41,7 +41,8 @@ protected:
   virtual void compute() override;
 };
 
-class IdxsComparator {
+class IdxsComparator
+{
     std::vector<sf::Vector2f>* _v;
     public:
     IdxsComparator(): _v(nullptr) { }
@@ -75,6 +76,11 @@ class DeintersectorPointsOrderer : public PointsOrderer
     _idxs.clear();
     _s.clear();
     _intersects.clear();
+  }
+
+  void _addIntersect(size_t idxA, size_t idxB) {
+    _intersects.emplace_back(std::min(idxA, idxB),
+                             std::max(idxA, idxB));
   }
 
   void _handleStartPoint(size_t idxA, size_t idxB);

@@ -58,19 +58,19 @@ void DeintersectorPointsOrderer::_checkStartingAt(size_t idx1st, size_t idx2nd)
 }
 
 
-void DeintersectorPointsOrderer::_checkWithStartingAt(size_t idxA, size_t  idxB, size_t idx2nd)
+void DeintersectorPointsOrderer::_checkWithStartingAt(size_t idxA, size_t idxB, size_t idx2nd)
 {
   auto& pts = *_pts;
   if(idx2nd + 1 < _pts->size() and pts[idx2nd].x < pts[idx2nd+1].x and
     _checkIntersection(idxA, idxB, idx2nd, idx2nd+1)) {
-    _intersects.emplace_back(idxA, idx2nd);
+    _addIntersect(idxA, idx2nd);
     auto it = _s.find(idx2nd);
     if(it != _s.end())
       _s.erase(it);
   }
   if(idx2nd > 0 and pts[idx2nd].x < pts[idx2nd-1].x and
     _checkIntersection(idxA, idxB, idx2nd-1, idx2nd)) {
-    _intersects.emplace_back(idxA,  idx2nd-1);
+    _addIntersect(idxA, idx2nd-1);
     auto it = _s.find(idx2nd-1);
     if(it != _s.end())
       _s.erase(it);
@@ -103,7 +103,7 @@ void DeintersectorPointsOrderer::_handleEndPoint(size_t idxA, size_t idxB)
     }
   }
   it = _s.find(idxA);
-  if(it == _s.end()) {
+  if(it != _s.end()) {
     _s.erase(it);
   }
 }

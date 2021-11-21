@@ -1,4 +1,5 @@
 #include <Points/Orderers.hh>
+#include <utils/FindUnion.hh>
 #include <set>
 
 
@@ -128,9 +129,61 @@ void DeintersectorPointsOrderer::_find()
   }
 }
 
+void DeintersectorPointsOrderer::_repin(long a1, long a2, long b1, long b2)
+{
+  if(_swaper[a1].contains(a2) && _swaper[a2].contains(a1) &&
+     _swaper[b1].contains(b2) && _swaper[b2].contains(b1)) {
+    _swaper[a1].replace(a2, b1);
+    _swaper[b1].replace(b2, a1);
+    _swaper[a2].replace(a1, b2);
+    _swaper[b2].replace(b1, a2);
+  }
+}
 
 void DeintersectorPointsOrderer::_remove()
 {
+  _intersects.pop_back();
+  _swaper.reserve(_pts->size());
+  auto nPts = _pts->size();
+  for (size_t i=0; i<nPts-1; i++) {
+    _swaper.emplace_back(i-1, i+1);
+  }
+  _swaper.emplace_back(nPts-2, -1);
+
+  for (auto& pair: _intersects) {
+      _repin(pair.first, pair.first+1,
+             pair.second, pair.second+1);
+    }
+
+  FindUnion fu(_swaper.size());
+  for (size_t i = 0; i < _swaper.size(); i++) {
+    if (_swaper[i]._x != -1)
+      fu.unify(i, _swaper[i]._x);
+    if (_swaper[i]._y != -1)
+      fu.unify(i, _swaper[i]._y);
+  }
+  for (auto& pair : _intersects) {
+    if (fu.nUnions() == 1)
+        break;
+    if (fu.find(pair.first) != fu.find(pair.first+1)) {
+      _repin(pair.first, pair.second,
+             pair.second+1, pair.first+1);
+      fu.unify(pair.first, pair.first+1);
+    }
+  }
+
+  std::vector<sf::Vector2f> newPts;
+  newPts.reserve(_pts->size());
+  long prev = -1;
+  long idx = 0;
+  do {
+    newPts.emplace_back(_pts->at(idx));
+    auto tmp = _swaper[idx].next(prev);
+    prev = idx;
+    idx = tmp;
+  } while(idx > 0);
+  _pts->clear(); // is this needed?
+  *_pts = newPts;
 }
 
 
@@ -140,7 +193,7 @@ void DeintersectorPointsOrderer::compute()
   _pts = &output.pts;
   _init();
   _find();
-  // _remove();
+  _remove();
   // _clear();
 }
 

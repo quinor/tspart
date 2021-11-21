@@ -61,6 +61,38 @@ class IdxsComparator
 
 class DeintersectorPointsOrderer : public PointsOrderer
 {
+  struct Node {
+    long _x;
+    long _y;
+    Node(size_t x, size_t y): _x(x), _y(y) { }
+
+    bool contains(long elem) {
+      return _x == elem || _y == elem;
+    }
+
+    bool replace(long elem, long value) {
+      if (_x == elem) {
+        _x = value;
+        return true;
+      }
+      if (_y == elem) {
+        _y = value;
+        return true;
+      }
+      return false;
+    }
+
+    long next(long elem) const {
+      if (_x == elem)
+        return _y;
+      if (_y == elem)
+        return _x;
+      throw std::invalid_argument("Node does not contain such element: "
+                                  + std::to_string(elem));
+    }
+  };
+
+  std::vector<Node> _swaper;
   std::vector<sf::Vector2f>* _pts;
   std::vector<size_t> _idxs;
   /*!
@@ -94,6 +126,8 @@ class DeintersectorPointsOrderer : public PointsOrderer
   void _checkWithStartingAt(size_t idxA, size_t idxB, size_t idx2nd);
 
   void _find();
+
+  void _repin(long a1, long a2, long b1, long b2);
   void _remove();
 
 

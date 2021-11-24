@@ -43,10 +43,10 @@ protected:
 
 class IdxsComparator
 {
-    std::vector<sf::Vector2f>* _v;
+    const std::vector<sf::Vector2f>* _v;
     public:
     IdxsComparator(): _v(nullptr) { }
-    IdxsComparator(std::vector<sf::Vector2f>& v): _v(&v) { }
+    IdxsComparator(const std::vector<sf::Vector2f>& v): _v(&v) { }
 
     bool operator()(size_t i, size_t j) const {
         auto& v = *_v;
@@ -93,24 +93,19 @@ class DeintersectorPointsOrderer : public PointsOrderer
   };
 
   std::vector<Node> _swaper;
-  std::vector<sf::Vector2f>* _pts;
+  const std::vector<sf::Vector2f>* _pts;
   std::vector<size_t> _idxs;
   /*!
    * indexes of start points of sections
    */
   std::vector<std::pair<size_t, size_t>> _intersects;
-  std::multiset<size_t, IdxsComparator> _s;
+  std::multiset<size_t, IdxsComparator> _active;
   // IdxsComparator _cmp;
 
-  void _init();
+  // void _init();
+  void _init_structs(const std::vector<sf::Vector2f>&);
 
-  void _clear() {
-    _idxs.clear();
-    _s.clear();
-    _intersects.clear();
-  }
-
-  void _addIntersect(size_t idxA, size_t idxB) {
+  void _addIntersection(size_t idxA, size_t idxB) {
     _intersects.emplace_back(std::min(idxA, idxB),
                              std::max(idxA, idxB));
   }
@@ -118,22 +113,31 @@ class DeintersectorPointsOrderer : public PointsOrderer
   void _handleStartPoint(size_t idxA, size_t idxB);
   void _handleEndPoint(size_t idxA, size_t idxB);
 
-  bool _checkIntersection(sf::Vector2f A, sf::Vector2f B,
-                  sf::Vector2f C, sf::Vector2f D);
   bool _checkIntersection(size_t a, size_t b, size_t c, size_t d);
-      
+
   void _checkStartingAt(size_t idx1st, size_t idx2nd);
   void _checkWithStartingAt(size_t idxA, size_t idxB, size_t idx2nd);
 
-  void _find();
 
   void _repin(long a1, long a2, long b1, long b2);
-  void _remove();
 
 
 public:
 
   DeintersectorPointsOrderer();
+
+  std::vector<std::pair<size_t, size_t>>& find(const std::vector<sf::Vector2f>&);
+  void remove(std::vector<sf::Vector2f>*);
+
+  bool static isIntersecting(sf::Vector2f A, sf::Vector2f B,
+                             sf::Vector2f C, sf::Vector2f D);
+
+  void clear() {
+    _idxs.clear();
+    _s.clear();
+    _intersects.clear();
+    _pts = nullptr;
+  }
 
 protected:
 

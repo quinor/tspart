@@ -1,6 +1,8 @@
 #include <Points/Orderers.hh>
+#include <exception>
 #include <utils/FindUnion.hh>
 #include <set>
+#include <vector>
 
 
 static const float EPS = 1e-9;
@@ -12,22 +14,22 @@ DeintersectorPointsOrderer::DeintersectorPointsOrderer()
 }
 
 
-void DeintersectorPointsOrderer::_init()
+void DeintersectorPointsOrderer::_init_structs(const std::vector<sf::Vector2f>& pts)
 {
-  auto& pts = *_pts;
+  _pts = &pts;
   _idxs.reserve(pts.size());
-  for(int i=0; i<(int)_pts->size(); i++)
+  for(size_t i = 0; i < pts.size(); i++)
     _idxs.push_back(i);
   std::sort(_idxs.begin(), _idxs.end(), [&](size_t i, size_t j) {
     return pts[i].x < pts[j].x;
   });
   auto cmp = IdxsComparator(pts);
-  _s = std::multiset<size_t, IdxsComparator>(cmp);
+  _active = std::multiset<size_t, IdxsComparator>(cmp);
 }
 
 
-bool DeintersectorPointsOrderer::_checkIntersection(sf::Vector2f a, sf::Vector2f b,
-                                                    sf::Vector2f c, sf::Vector2f d)
+bool DeintersectorPointsOrderer::isIntersecting(sf::Vector2f a, sf::Vector2f b,
+                                                sf::Vector2f c, sf::Vector2f d)
 {
   auto cross = [](sf::Vector2f u, sf::Vector2f v) {
                   return u.x*v.y - u.y*v.x; };
@@ -43,7 +45,7 @@ bool DeintersectorPointsOrderer::_checkIntersection(sf::Vector2f a, sf::Vector2f
 bool DeintersectorPointsOrderer::_checkIntersection(size_t a, size_t b, size_t c, size_t d)
 {
   auto& pts = *_pts;
-  return _checkIntersection(pts[a], pts[b], pts[c], pts[d]);
+  return isIntersecting(pts[a], pts[b], pts[c], pts[d]);
 }
 
 
@@ -64,30 +66,30 @@ void DeintersectorPointsOrderer::_checkWithStartingAt(size_t idxA, size_t idxB, 
   auto& pts = *_pts;
   if(idx2nd + 1 < _pts->size() and pts[idx2nd].x < pts[idx2nd+1].x and
     _checkIntersection(idxA, idxB, idx2nd, idx2nd+1)) {
-    _addIntersect(idxA, idx2nd);
-    auto it = _s.find(idx2nd);
-    if(it != _s.end())
-      _s.erase(it);
+    _addIntersection(idxA, idx2nd);
+    auto it = _active.find(idx2nd);
+    if(it != _active.end())
+      _active.erase(it);
   }
   if(idx2nd > 0 and pts[idx2nd].x < pts[idx2nd-1].x and
     _checkIntersection(idxA, idxB, idx2nd-1, idx2nd)) {
-    _addIntersect(idxA, idx2nd-1);
-    auto it = _s.find(idx2nd-1);
-    if(it != _s.end())
-      _s.erase(it);
+    _addIntersection(idxA, idx2nd-1);
+    auto it = _active.find(idx2nd-1);
+    if(it != _active.end())
+      _active.erase(it);
   }
 }
 
 
 void DeintersectorPointsOrderer::_handleStartPoint(size_t idxA, size_t idxB)
 {
-  auto it = _s.insert(idxA);
-  if(it != _s.begin()) {
+  auto it = _active.insert(idxA);
+  if(it != _active.begin()) {
     auto dw = std::prev(it);
     _checkWithStartingAt(idxA, idxB, *dw);
   }
   auto up = std::next(it);
-  if(up != _s.end()) {
+  if(up != _active.end()) {
     _checkWithStartingAt(idxA, idxB, *up);
   }
 }
@@ -95,38 +97,39 @@ void DeintersectorPointsOrderer::_handleStartPoint(size_t idxA, size_t idxB)
 
 void DeintersectorPointsOrderer::_handleEndPoint(size_t idxA, size_t idxB)
 {
-  auto it = _s.find(idxB);
-  if(it != _s.begin()) {
+  auto it = _active.find(idxB);
+  if(it != _active.begin()) {
     auto up = std::next(it);
     auto dw = std::prev(it);
-    if(up != _s.end()) {
+    if(up != _active.end()) {
       _checkStartingAt(*dw, *up);
     }
   }
-  it = _s.find(idxA);
-  if(it != _s.end()) {
-    _s.erase(it);
+  it = _active.find(idxA);
+  if(it != _active.end()) {
+    _active.erase(it);
   }
 }
 
 
-void DeintersectorPointsOrderer::_find()
+std::vector<std::pair<size_t, size_t>>& DeintersectorPointsOrderer::find(const std::vector<sf::Vector2f>& pts)
 {
-  auto& pts = *_pts;
+  _init_structs(pts);
   for(size_t idx: _idxs) {
     if(idx > 0) {
       if(pts[idx-1].x <= pts[idx].x)
           _handleEndPoint(idx-1, idx);
       else
-          _handleStartPoint(idx, idx-1);
+          _handleStartPoint(idx-1, idx);
     }
     if(idx+1 < pts.size()) {
       if(pts[idx].x <= pts[idx+1].x)
           _handleStartPoint(idx, idx+1);
       else
-          _handleEndPoint(idx+1, idx);
+          _handleEndPoint(idx, idx+1);
     }
   }
+  return _intersects;
 }
 
 void DeintersectorPointsOrderer::_repin(long a1, long a2, long b1, long b2)
@@ -140,9 +143,11 @@ void DeintersectorPointsOrderer::_repin(long a1, long a2, long b1, long b2)
   }
 }
 
-void DeintersectorPointsOrderer::_remove()
+void DeintersectorPointsOrderer::remove(std::vector<sf::Vector2f>* ptsPtr)
 {
-  _intersects.pop_back();
+  if (_pts != ptsPtr)
+    throw std::invalid_argument("Given pointer differs from one that has been used "
+                                "to find brutForceFindIntersections");
   _swaper.reserve(_pts->size());
   auto nPts = _pts->size();
   for (size_t i=0; i<nPts-1; i++) {
@@ -151,9 +156,9 @@ void DeintersectorPointsOrderer::_remove()
   _swaper.emplace_back(nPts-2, -1);
 
   for (auto& pair: _intersects) {
-      _repin(pair.first, pair.first+1,
-             pair.second, pair.second+1);
-    }
+    _repin(pair.first, pair.first+1,
+           pair.second, pair.second+1);
+  }
 
   FindUnion fu(_swaper.size());
   for (size_t i = 0; i < _swaper.size(); i++) {
@@ -172,29 +177,31 @@ void DeintersectorPointsOrderer::_remove()
     }
   }
 
-  std::vector<sf::Vector2f> newPts;
-  newPts.reserve(_pts->size());
+  // std::vector<sf::Vector2f> newPts;
+  // newPts.reserve(_pts->size());
   long prev = -1;
   long idx = 0;
-  do {
-    newPts.emplace_back(_pts->at(idx));
+  for (size_t i = 0; i < ptsPtr->size(); i++) {
+    ptsPtr->at(i) = _pts->at(idx);
     auto tmp = _swaper[idx].next(prev);
     prev = idx;
     idx = tmp;
-  } while(idx > 0);
-  _pts->clear(); // is this needed?
-  *_pts = newPts;
+  }
+  if (idx> 0)
+    throw std::runtime_error("Something went wront. Last element of `_swaper` structure"
+                             "shouldn't point to any other element");
+  clear();
 }
 
 
 void DeintersectorPointsOrderer::compute()
 {
   Polyline& output = data_hook(out) = in.get_data();
-  _pts = &output.pts;
-  _init();
-  _find();
-  _remove();
-  // _clear();
+  // _pts = &output.pts;
+  // _init();
+  find(output.pts);
+  remove(&output.pts);
+  clear();
 }
 
 

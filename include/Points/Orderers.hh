@@ -43,20 +43,21 @@ protected:
 
 class IdxsComparator
 {
-    const std::vector<sf::Vector2f>* _v;
-    public:
-    IdxsComparator(): _v(nullptr) { }
-    IdxsComparator(const std::vector<sf::Vector2f>& v): _v(&v) { }
+  const std::vector<sf::Vector2f>* _v;
+  public:
+  IdxsComparator(): _v(nullptr) { }
+  IdxsComparator(const std::vector<sf::Vector2f>& v): _v(&v) { }
 
-    bool operator()(size_t i, size_t j) const {
-        auto& v = *_v;
-        if(v[i].y < v[j].y)
-            return true;
-        else if(v[i].y > v[j].y)
-            return false;
-        else
-            return v[i].x < v[j].x;
-    }
+  bool operator()(size_t i, size_t j) const
+  {
+    auto& v = *_v;
+    if (v[i].y < v[j].y)
+      return true;
+    else if (v[i].y > v[j].y)
+      return false;
+    else
+      return v[i].x < v[j].x;
+  }
 };
 
 class DeintersectorPointsOrderer : public PointsOrderer
@@ -66,11 +67,13 @@ class DeintersectorPointsOrderer : public PointsOrderer
     long _y;
     Node(size_t x, size_t y): _x(x), _y(y) { }
 
-    bool contains(long elem) {
+    bool contains(long elem)
+    {
       return _x == elem || _y == elem;
     }
 
-    bool replace(long elem, long value) {
+    bool replace(long elem, long value)
+    {
       if (_x == elem) {
         _x = value;
         return true;
@@ -82,7 +85,8 @@ class DeintersectorPointsOrderer : public PointsOrderer
       return false;
     }
 
-    long next(long elem) const {
+    long next(long elem) const
+    {
       if (_x == elem)
         return _y;
       if (_y == elem)
@@ -92,7 +96,7 @@ class DeintersectorPointsOrderer : public PointsOrderer
     }
   };
 
-  std::vector<Node> _swaper;
+  std::vector<Node> _swapper;
   const std::vector<sf::Vector2f>* _pts;
   std::vector<size_t> _idxs;
   /*!
@@ -100,12 +104,11 @@ class DeintersectorPointsOrderer : public PointsOrderer
    */
   std::vector<std::pair<size_t, size_t>> _intersects;
   std::multiset<size_t, IdxsComparator> _active;
-  // IdxsComparator _cmp;
 
-  // void _init();
   void _init_structs(const std::vector<sf::Vector2f>&);
 
-  void _addIntersection(size_t idxA, size_t idxB) {
+  void _addIntersection(size_t idxA, size_t idxB)
+  {
     _intersects.emplace_back(std::min(idxA, idxB),
                              std::max(idxA, idxB));
   }
@@ -132,10 +135,12 @@ public:
   bool static isIntersecting(sf::Vector2f A, sf::Vector2f B,
                              sf::Vector2f C, sf::Vector2f D);
 
-  void clear() {
+  void clear()
+  {
     _idxs.clear();
-    _s.clear();
+    _active.clear();
     _intersects.clear();
+    _swapper.clear();
     _pts = nullptr;
   }
 

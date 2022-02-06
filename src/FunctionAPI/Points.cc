@@ -136,6 +136,13 @@ NearestNeighbourPointsOrderer& PointsMixin::nearest_neighbour_points_orderer(Dat
   return *ret;
 }
 
+DeintersectorPointsOrderer& PointsMixin::deintersector_points_orderer(DataPromise<Polyline>& data)
+{
+  auto ret = new DeintersectorPointsOrderer();
+  register_block(ret);
+  ret->in.connect(data);
+  return *ret;
+}
 
 
 MSTPointsOrderer& PointsMixin::mst_points_orderer(

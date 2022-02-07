@@ -35,10 +35,12 @@ public:
   DeintersectorPointsOrderer& deintersector_points_orderer(DataPromise<Polyline>& data);
   MSTPointsOrderer& mst_points_orderer(
     DataPromise<Polyline>& data,
-    DataPromise<Triangulation>& graph);
+    DataPromise<Triangulation>& graph,
+    DataPromise<int>& shrink);
   SkipPointsOrderer& skip_points_orderer(
     DataPromise<Polyline>& data,
-    DataPromise<Triangulation>& graph);
+    DataPromise<Triangulation>& graph,
+    DataPromise<int>& shrink);
 
   PolylineVisualizer& polyline_visualizer(DataPromise<Polyline>& data);
   CellsVisualizer& voronoi_cells_visualizer(
@@ -59,6 +61,6 @@ public:
     DataPromise<ScalarField<WeightedElement>>& field,
     int n=1);
 
-  DataPromise<Polyline>& mst_ordering(DataPromise<Polyline>& data);
-  DataPromise<Polyline>& skip_ordering(DataPromise<Polyline>& data);
+  DataPromise<Polyline>& mst_ordering(DataPromise<Polyline>& data, Param<int> shrink=0);
+  DataPromise<Polyline>& skip_ordering(DataPromise<Polyline>& data, Param<int> shrink=0);
 };

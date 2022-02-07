@@ -156,6 +156,7 @@ public:
   MSTPointsOrderer();
 
   DataInput<Triangulation> graph;
+  DataInput<int> shrink;
 
 protected:
 
@@ -169,6 +170,7 @@ public:
   SkipPointsOrderer();
 
   DataInput<Triangulation> graph;
+  DataInput<int> shrink;
 
 protected:
 

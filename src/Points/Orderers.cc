@@ -141,6 +141,7 @@ void NearestNeighbourPointsOrderer::compute()
 
 MSTPointsOrderer::MSTPointsOrderer()
 : graph(this)
+, shrink(this)
 {
   name = "MSTPointsOrderer";
 }
@@ -150,6 +151,7 @@ void MSTPointsOrderer::compute()
 {
   auto& input = in.get_data();
   auto& gr = graph.get_data();
+  auto shr = shrink.get_data();
   auto& output = data_hook(out);
   output.size = input.size;
   output.scale = input.scale;
@@ -224,17 +226,26 @@ void MSTPointsOrderer::compute()
   std::map<sf::Vector2f, bool, Vector2f_cmp> vis;
 
   logger.log(Logger::Level::Debug)<<"Building path";
-  std::function<void(sf::Vector2f)> dfs = [&](sf::Vector2f w)->void
+  std::function<int(sf::Vector2f)> dfs = [&](sf::Vector2f w)->int
   {
     vis[w] = true;
     ret.push_back(w);
 
+    int depth = 0;
     for (auto e : mst_graph[w])
       if (!vis[e])
       {
-        dfs(e);
-        ret.push_back(w);
+        int d = dfs(e);
+        if (d > shr)
+          ret.push_back(w);
+
+        depth = std::max(depth, d);
       }
+
+    if (depth < shr)
+      ret.pop_back();
+
+    return depth + 1;
   };
   dfs(start);
   logger.log(Logger::Level::Verbose)<<"path length is "<<ret.size();
@@ -243,6 +254,7 @@ void MSTPointsOrderer::compute()
 
 SkipPointsOrderer::SkipPointsOrderer()
 : graph(this)
+, shrink(this)
 {
   name = "SkipPointsOrderer";
 }
@@ -252,6 +264,7 @@ void SkipPointsOrderer::compute()
 {
   auto& input = in.get_data();
   auto& gr = graph.get_data();
+  auto shr = shrink.get_data();
   auto& output = data_hook(out);
   output.size = input.size;
   output.scale = input.scale;
@@ -326,20 +339,24 @@ void SkipPointsOrderer::compute()
   std::map<sf::Vector2f, bool, Vector2f_cmp> vis;
 
   logger.log(Logger::Level::Debug)<<"Building path";
-  std::function<void(sf::Vector2f, bool)> dfs = [&](sf::Vector2f w, bool thru)->void
+  std::function<int(sf::Vector2f, bool)> dfs = [&](sf::Vector2f w, bool thru)->int
   {
     vis[w] = true;
     if (thru)
       ret.push_back(w);
 
+    int depth = 0;
     for (auto e : mst_graph[w])
       if (!vis[e])
       {
-        dfs(e, !thru);
-//        ret.push_back(w);
+        depth = std::max(depth, dfs(e, !thru));
       }
-    if (!thru)
+    if (thru && depth < shr)
+      ret.pop_back();
+    if (!thru && depth >= shr)
       ret.push_back(w);
+
+    return depth + 1;
   };
   dfs(start, false);
   logger.log(Logger::Level::Verbose)<<"path length is "<<ret.size();

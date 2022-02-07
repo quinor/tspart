@@ -147,23 +147,27 @@ DeintersectorPointsOrderer& PointsMixin::deintersector_points_orderer(DataPromis
 
 MSTPointsOrderer& PointsMixin::mst_points_orderer(
   DataPromise<Polyline>& data,
-  DataPromise<Triangulation>& graph)
+  DataPromise<Triangulation>& graph,
+  DataPromise<int>& shrink)
 {
   auto ret = new MSTPointsOrderer();
   register_block(ret);
   ret->in.connect(data);
   ret->graph.connect(graph);
+  ret->shrink.connect(shrink);
   return *ret;
 }
 
 SkipPointsOrderer& PointsMixin::skip_points_orderer(
   DataPromise<Polyline>& data,
-  DataPromise<Triangulation>& graph)
+  DataPromise<Triangulation>& graph,
+  DataPromise<int>& shrink)
 {
   auto ret = new SkipPointsOrderer();
   register_block(ret);
   ret->in.connect(data);
   ret->graph.connect(graph);
+  ret->shrink.connect(shrink);
   return *ret;
 }
 
@@ -227,12 +231,16 @@ DataPromise<Polyline>& PointsMixin::n_voronoi_relaxation(
     n-1);
 }
 
-DataPromise<Polyline>& PointsMixin::mst_ordering(DataPromise<Polyline>& data)
+DataPromise<Polyline>& PointsMixin::mst_ordering(
+  DataPromise<Polyline>& data,
+  Param<int> shrink)
 {
-  return mst_points_orderer(data, points_voronoi_delaunay(data).delaunay);
+  return mst_points_orderer(data, points_voronoi_delaunay(data).delaunay, shrink.get_input(this));
 }
 
-DataPromise<Polyline>& PointsMixin::skip_ordering(DataPromise<Polyline>& data)
+DataPromise<Polyline>& PointsMixin::skip_ordering(
+  DataPromise<Polyline>& data,
+  Param<int> shrink)
 {
-  return skip_points_orderer(data, points_voronoi_delaunay(data).delaunay);
+  return skip_points_orderer(data, points_voronoi_delaunay(data).delaunay, shrink.get_input(this));
 }

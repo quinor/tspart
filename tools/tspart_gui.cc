@@ -143,6 +143,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   auto& log = gr.input<float>();
 
   auto& fill = gr.input<size_t>();
+  auto& shrink = gr.input<int>();
 
   auto& in = gr.image_maximizer(gr.image_loader(in_filename), size);
   auto& pre = gr.image_filter_logarithm(
@@ -161,10 +162,11 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     pref,
     5);
 
-  auto& mst = gr.mst_ordering(pts);
-  auto& skip = gr.skip_ordering(pts);
-  auto& hilbert = gr.hilbert_points_orderer(pts);
-  auto& nearest_neighbour = gr.nearest_neighbour_points_orderer(pts);
+  auto& mst = gr.mst_ordering(pts, shrink);
+  auto& skip = gr.skip_ordering(pts, shrink);
+  auto& skip_deintersect = gr.deintersector_points_orderer(gr.skip_ordering(pts, shrink));
+  auto& hilbert = gr.deintersector_points_orderer(gr.hilbert_points_orderer(pts));
+  auto& nearest_neighbour = gr.deintersector_points_orderer(gr.nearest_neighbour_points_orderer(pts));
 
   auto& pln_saver = gr.polyline_svg_saver(mst, out_filename);
   auto& plt_saver = gr.polyline_ploter_saver(mst, std::string("out.plt"));
@@ -275,12 +277,18 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
     fill.set_data(int(12*pow(1.5, 10-val)));
   });
 
+  auto shrinkage = slider(0, 0, 5, [&](int val)->void //int(12*pow(1.5, -10x))
+  {
+    shrink.set_data(val);
+  });
+
   // Styles
   tgui::ComboBox::Ptr style = tgui::ComboBox::create();
   tgui::Button::Ptr fire = tgui::Button::create();
   tgui::Button::Ptr prev = tgui::Button::create();
   style->addItem("Minimal Spanning Tree", "mst");
-  style->addItem("Skipping Minimal Spanning Tree", "skip");
+  style->addItem("Skipping MST", "skip");
+  style->addItem("Skipping MST (No intersections)", "skip_d");
   style->addItem("Hilbert", "hilbert");
   style->addItem("Nearest Neighbour", "nn");
 
@@ -294,6 +302,8 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
       tgt = &static_cast<DataPromise<Polyline>&>(mst);
     else if (id == "skip")
       tgt = &static_cast<DataPromise<Polyline>&>(skip);
+    else if (id == "skip_d")
+      tgt = &static_cast<DataPromise<Polyline>&>(skip_deintersect);
     else if (id == "nn")
       tgt = &static_cast<DataPromise<Polyline>&>(nearest_neighbour);
     else
@@ -307,6 +317,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   bar->add(named_column(
   {
     {"Density", density},
+    {"Shrinkage", shrinkage},
     {"Style", style},
   },
   2));

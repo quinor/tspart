@@ -26,6 +26,9 @@ voronoi_lowres
 /*.svg
 /res/
 /out/
+/deps
+/showroom
+/tests_bin
 !/res/klaudia.jpg
 *.sublime*
 activate

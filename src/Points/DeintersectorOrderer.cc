@@ -39,7 +39,7 @@ bool DeintersectorPointsOrderer::isIntersecting(sf::Vector2f a, sf::Vector2f b,
   auto w = cross(d-c, d-a);
   auto z = cross(d-c, d-b);
   return x * y < -EPS \
-      && w * z < -EPS;    
+      && w * z < -EPS;
 }
 
 
@@ -100,7 +100,7 @@ void DeintersectorPointsOrderer::_handleStartPoint(size_t idxA, size_t idxB)
 
 void DeintersectorPointsOrderer::_handleEndPoint(size_t idxA, size_t idxB)
 {
-  auto it = _active.find(idxB);
+  auto it = _active.find(idxA);
   if (it != _active.begin()) {
     auto up = std::next(it);
     auto dw = std::prev(it);

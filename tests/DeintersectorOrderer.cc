@@ -187,6 +187,8 @@ DeintersectorPointsOrderer dpo;
     dpo.remove(&pts);
   }
   REQUIRE(nIntersects == 0);
+  int real_n_intersects = brutForceFindIntersections(pts).size();
+  REQUIRE(real_n_intersects == 0);
   dpo.clear();
 }
 
@@ -203,6 +205,8 @@ DeintersectorPointsOrderer dpo;
     dpo.remove(&pts);
   }
   REQUIRE(nIntersects == 0);
+  int real_n_intersects = brutForceFindIntersections(pts).size();
+  REQUIRE(real_n_intersects == 0);
   dpo.clear();
 }
 

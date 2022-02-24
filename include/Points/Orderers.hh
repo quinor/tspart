@@ -48,15 +48,24 @@ class IdxsComparator
   IdxsComparator(): _v(nullptr) { }
   IdxsComparator(const std::vector<sf::Vector2f>& v): _v(&v) { }
 
-  bool operator()(size_t i, size_t j) const
+  bool operator()(std::pair<size_t, size_t> i, std::pair<size_t, size_t> j) const
   {
     auto& v = *_v;
-    if (v[i].y < v[j].y)
-      return true;
-    else if (v[i].y > v[j].y)
-      return false;
-    else
-      return v[i].x < v[j].x;
+    size_t ii = i.first, jj = j.first;
+
+    // they start at different points
+    if (ii != jj)
+    {
+      if (v[ii].y != v[jj].y)
+        return v[ii].y < v[jj].y;
+      return v[ii].x < v[jj].x;
+    }
+
+    // they start at the same point
+    auto v1 = v[i.second]-v[i.first];
+    auto v2 = v[j.second]-v[j.first];
+
+    return v1.x*v2.y-v1.y*v2.x > 0;
   }
 };
 
@@ -103,7 +112,7 @@ class DeintersectorPointsOrderer : public PointsOrderer
    * indexes of start points of sections
    */
   std::vector<std::pair<size_t, size_t>> _intersects;
-  std::multiset<size_t, IdxsComparator> _active;
+  std::set<std::pair<size_t, size_t>, IdxsComparator> _active;
 
   void _init_structs(const std::vector<sf::Vector2f>&);
 
@@ -115,11 +124,7 @@ class DeintersectorPointsOrderer : public PointsOrderer
 
   void _handleStartPoint(size_t idxA, size_t idxB);
   void _handleEndPoint(size_t idxA, size_t idxB);
-
-  bool _checkIntersection(size_t a, size_t b, size_t c, size_t d);
-
-  void _checkStartingAt(size_t idx1st, size_t idx2nd);
-  void _checkWithStartingAt(size_t idxA, size_t idxB, size_t idx2nd);
+  void _checkIntersection(size_t idxA, size_t idxB, size_t idxC, size_t idxD);
 
 
   void _repin(long a1, long a2, long b1, long b2);

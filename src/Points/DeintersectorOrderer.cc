@@ -25,7 +25,7 @@ void DeintersectorPointsOrderer::_init_structs(const std::vector<sf::Vector2f>& 
     return pts[i].x < pts[j].x;
   });
   auto cmp = IdxsComparator(pts);
-  _active = std::multiset<size_t, IdxsComparator>(cmp);
+  _active = std::set<std::pair<size_t, size_t>, IdxsComparator>(cmp);
 }
 
 
@@ -43,75 +43,45 @@ bool DeintersectorPointsOrderer::isIntersecting(sf::Vector2f a, sf::Vector2f b,
 }
 
 
-bool DeintersectorPointsOrderer::_checkIntersection(size_t a, size_t b, size_t c, size_t d)
+void DeintersectorPointsOrderer::_checkIntersection(size_t idxA, size_t idxB, size_t idxC, size_t idxD)
 {
   auto& pts = *_pts;
-  return isIntersecting(pts[a], pts[b], pts[c], pts[d]);
-}
-
-
-void DeintersectorPointsOrderer::_checkStartingAt(size_t idx1st, size_t idx2nd)
-{
-  auto& pts = *_pts;
-   if (idx1st+1 < _pts->size() and pts[idx1st].x < pts[idx1st+1].x) {
-     _checkWithStartingAt(idx1st, idx1st+1, idx2nd);
-   }
-   if (idx1st > 0 and pts[idx1st].x < pts[idx1st-1].x) {
-     _checkWithStartingAt(idx1st-1, idx1st, idx2nd);
-   }
-}
-
-
-void DeintersectorPointsOrderer::_checkWithStartingAt(size_t idxA, size_t idxB, size_t idx2nd)
-{
-  auto& pts = *_pts;
-  if (idx2nd + 1 < _pts->size() and pts[idx2nd].x < pts[idx2nd+1].x and
-    _checkIntersection(idxA, idxB, idx2nd, idx2nd+1)) {
-    _addIntersection(idxA, idx2nd);
-    auto it = _active.find(idx2nd);
-    if (it != _active.end())
-      _active.erase(it);
-  }
-  if (idx2nd > 0 and pts[idx2nd].x < pts[idx2nd-1].x and
-    _checkIntersection(idxA, idxB, idx2nd-1, idx2nd)) {
-    _addIntersection(idxA, idx2nd-1);
-    auto it = _active.find(idx2nd-1);
-    if (it != _active.end())
-      _active.erase(it);
+  if(isIntersecting(pts[idxA], pts[idxB], pts[idxC], pts[idxD])) {
+    _addIntersection(std::min(idxA, idxB), std::min(idxC, idxD));
+    auto it = _active.find({idxC, idxD});
+    if (it == _active.end())
+      throw std::runtime_error("It ain't supposed to happen, ever!");
+    _active.erase(it);
   }
 }
-
 
 void DeintersectorPointsOrderer::_handleStartPoint(size_t idxA, size_t idxB)
 {
-  auto it = _active.insert(idxA);
-  if (idxA > idxB)
-    std::swap(idxA, idxB);
+  auto it = _active.insert({idxA, idxB}).first;
   if (it != _active.begin()) {
     auto dw = std::prev(it);
-    _checkWithStartingAt(idxA, idxB, *dw);
+    _checkIntersection(idxA, idxB, dw->first, dw->second);
   }
   auto up = std::next(it);
   if (up != _active.end()) {
-    _checkWithStartingAt(idxA, idxB, *up);
+    _checkIntersection(idxA, idxB, up->first, up->second);
   }
 }
 
 
 void DeintersectorPointsOrderer::_handleEndPoint(size_t idxA, size_t idxB)
 {
-  auto it = _active.find(idxA);
+  auto it = _active.find({idxA, idxB});
+  if (it == _active.end())
+    return;
   if (it != _active.begin()) {
     auto up = std::next(it);
     auto dw = std::prev(it);
     if (up != _active.end()) {
-      _checkStartingAt(*dw, *up);
+      _checkIntersection(dw->first, dw->second, up->first, up->second);
     }
   }
-  it = _active.find(idxA);
-  if (it != _active.end()) {
-    _active.erase(it);
-  }
+  _active.erase(it);
 }
 
 

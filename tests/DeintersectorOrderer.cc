@@ -86,6 +86,8 @@ do {                                            \
     std::cout << "OK" << std::endl;             \
   }                                             \
 } while(0)
+
+
 int main() {
 
 // TEST_CASE("Simple intersecting", "")
@@ -124,8 +126,6 @@ DeintersectorPointsOrderer dpo;
   auto pts = getSimple();
   auto intersects = dpo.find(pts);
   REQUIRE(intersects.size() == 1);
-  // REQUIRE((intersects[0].first == 0 || intersects[0].first == 1)
-  //      && (intersects[0].second == 2 || intersects[0].second == 3));
   REQUIRE(intersects[0].first == 0 && intersects[0].second == 2);
   dpo.clear();
 }
@@ -135,6 +135,7 @@ DeintersectorPointsOrderer dpo;
   auto pts = getRandomPoints(15, 0, 20, 0, 20, 1);
   auto intersects = dpo.find(pts);
   auto all_intersects = brutForceFindIntersections(pts);
+  REQUIRE(all_intersects.size() > 0 ? intersects.size() > 0 : true);
   REQUIRE(checkInclusion(intersects, all_intersects) == 0);
   dpo.clear();
 }
@@ -144,6 +145,7 @@ DeintersectorPointsOrderer dpo;
   auto pts = getRandomPoints(100, 0, 200, 0, 200, 2);
   auto intersects = dpo.find(pts);
   auto all_intersects = brutForceFindIntersections(pts);
+  REQUIRE(all_intersects.size() > 0 ? intersects.size() > 0 : true);
   REQUIRE(checkInclusion(intersects, all_intersects) == 0);
   dpo.clear();
 }
@@ -181,7 +183,6 @@ DeintersectorPointsOrderer dpo;
   size_t nIntersects;
   for (size_t i = 0; i < pts.size(); i++) {
     nIntersects = dpo.find(pts).size();
-    // std::cerr << ">>> " << nIntersects << std::endl;
     if (nIntersects == 0)
       break;
     dpo.remove(&pts);
@@ -199,7 +200,6 @@ DeintersectorPointsOrderer dpo;
   size_t nIntersects;
   for (size_t i = 0; i < pts.size(); i++) {
     nIntersects = dpo.find(pts).size();
-    // std::cerr << ">>> " << nIntersects << std::endl;
     if (nIntersects == 0)
       break;
     dpo.remove(&pts);

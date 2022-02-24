@@ -44,28 +44,50 @@ protected:
 class IdxsComparator
 {
   const std::vector<sf::Vector2f>* _v;
-  public:
-  IdxsComparator(): _v(nullptr) { }
-  IdxsComparator(const std::vector<sf::Vector2f>& v): _v(&v) { }
+  const float* _x;
+
+public:
+  IdxsComparator(): _v(nullptr), _x(nullptr) { }
+  IdxsComparator(const std::vector<sf::Vector2f>& v, float* x): _v(&v), _x(x) { }
+
+  inline float get_y_at_x(const std::pair<size_t, size_t>& seg, float x0) const
+  {
+    auto& v = *_v;
+    sf::Vector2f dist = v[seg.second] - v[seg.first];
+    float y0 = (x0 - v[seg.first].x) * dist.y / dist.x + v[seg.first].y;
+    return y0;
+  }
 
   bool operator()(std::pair<size_t, size_t> i, std::pair<size_t, size_t> j) const
   {
+    // the same section
+    if(i.first == j.first && i.second == j.second)
+      return false;
+    float x = *_x;
     auto& v = *_v;
-    size_t ii = i.first, jj = j.first;
-
-    // they start at different points
-    if (ii != jj)
-    {
-      if (v[ii].y != v[jj].y)
-        return v[ii].y < v[jj].y;
-      return v[ii].x < v[jj].x;
+    if(x < v[i.first].x || x > v[i.second].x ||
+       x < v[j.first].x || x > v[j.second].x)
+      throw std::runtime_error("x coordinate outside section footprint");
+    float eps = 1e-5;
+    bool rev_ret = false;
+    // both starting at x
+    if(x == v[i.first].x && x == v[j.first].x)
+      x = std::min(v[i.second].x, v[j.second].x);
+    // both ending at x
+    if(x == v[i.second].x && x == v[j.second].x) {
+      x = std::max(v[i.first].x, v[j.first].x);
+      rev_ret = true;
+      eps *= -1;
     }
-
-    // they start at the same point
-    auto v1 = v[i.second]-v[i.first];
-    auto v2 = v[j.second]-v[j.first];
-
-    return v1.x*v2.y-v1.y*v2.x > 0;
+    float y_i = get_y_at_x(i, x);
+    float y_j = get_y_at_x(j, x);
+    if(y_i != y_j)
+      return rev_ret != (y_i < y_j);
+    y_i = get_y_at_x(i, x-eps);
+    y_j = get_y_at_x(j, x-eps);
+    if(y_i != y_j)
+      return rev_ret != (y_i < y_j);
+    throw std::runtime_error("segments overlapping");
   }
 };
 
@@ -112,6 +134,7 @@ class DeintersectorPointsOrderer : public PointsOrderer
    * indexes of start points of sections
    */
   std::vector<std::pair<size_t, size_t>> _intersects;
+  float _current_x;
   std::set<std::pair<size_t, size_t>, IdxsComparator> _active;
 
   void _init_structs(const std::vector<sf::Vector2f>&);
@@ -124,7 +147,7 @@ class DeintersectorPointsOrderer : public PointsOrderer
 
   void _handleStartPoint(size_t idxA, size_t idxB);
   void _handleEndPoint(size_t idxA, size_t idxB);
-  void _checkIntersection(size_t idxA, size_t idxB, size_t idxC, size_t idxD);
+  bool _checkIntersection(size_t idxA, size_t idxB, size_t idxC, size_t idxD);
 
 
   void _repin(long a1, long a2, long b1, long b2);

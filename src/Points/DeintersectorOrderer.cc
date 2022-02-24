@@ -24,7 +24,7 @@ void DeintersectorPointsOrderer::_init_structs(const std::vector<sf::Vector2f>& 
   std::sort(_idxs.begin(), _idxs.end(), [&](size_t i, size_t j) {
     return pts[i].x < pts[j].x;
   });
-  auto cmp = IdxsComparator(pts);
+  auto cmp = IdxsComparator(pts, &_current_x);
   _active = std::set<std::pair<size_t, size_t>, IdxsComparator>(cmp);
 }
 
@@ -43,28 +43,29 @@ bool DeintersectorPointsOrderer::isIntersecting(sf::Vector2f a, sf::Vector2f b,
 }
 
 
-void DeintersectorPointsOrderer::_checkIntersection(size_t idxA, size_t idxB, size_t idxC, size_t idxD)
+bool DeintersectorPointsOrderer::_checkIntersection(size_t idxA, size_t idxB, size_t idxC, size_t idxD)
 {
   auto& pts = *_pts;
-  if(isIntersecting(pts[idxA], pts[idxB], pts[idxC], pts[idxD])) {
+  bool intersect = isIntersecting(pts[idxA], pts[idxB], pts[idxC], pts[idxD]);
+  if(intersect)
     _addIntersection(std::min(idxA, idxB), std::min(idxC, idxD));
-    auto it = _active.find({idxC, idxD});
-    if (it == _active.end())
-      throw std::runtime_error("It ain't supposed to happen, ever!");
-    _active.erase(it);
-  }
+  return intersect;
 }
 
 void DeintersectorPointsOrderer::_handleStartPoint(size_t idxA, size_t idxB)
 {
+  _current_x = _pts->at(idxA).x;
   auto it = _active.insert({idxA, idxB}).first;
-  if (it != _active.begin()) {
-    auto dw = std::prev(it);
-    _checkIntersection(idxA, idxB, dw->first, dw->second);
-  }
+  auto dw = std::prev(it);
   auto up = std::next(it);
-  if (up != _active.end()) {
-    _checkIntersection(idxA, idxB, up->first, up->second);
+  if(it != _active.begin() &&
+      _checkIntersection(idxA, idxB, dw->first, dw->second)) {
+    _active.erase(it);
+    _active.erase(dw);
+  } else if(up != _active.end() &&
+      _checkIntersection(idxA, idxB, up->first, up->second)) {
+    _active.erase(it);
+    _active.erase(up);
   }
 }
 
@@ -78,7 +79,10 @@ void DeintersectorPointsOrderer::_handleEndPoint(size_t idxA, size_t idxB)
     auto up = std::next(it);
     auto dw = std::prev(it);
     if (up != _active.end()) {
-      _checkIntersection(dw->first, dw->second, up->first, up->second);
+      if(_checkIntersection(dw->first, dw->second, up->first, up->second)) {
+        _active.erase(up);
+        _active.erase(dw);
+      }
     }
   }
   _active.erase(it);

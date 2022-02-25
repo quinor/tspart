@@ -73,17 +73,14 @@ void DeintersectorPointsOrderer::_handleStartPoint(size_t idxA, size_t idxB)
 void DeintersectorPointsOrderer::_handleEndPoint(size_t idxA, size_t idxB)
 {
   auto it = _active.find({idxA, idxB});
-  if (it == _active.end())
+  if(it == _active.end())
     return;
-  if (it != _active.begin()) {
-    auto up = std::next(it);
-    auto dw = std::prev(it);
-    if (up != _active.end()) {
-      if(_checkIntersection(dw->first, dw->second, up->first, up->second)) {
-        _active.erase(up);
-        _active.erase(dw);
-      }
-    }
+  auto up = std::next(it);
+  auto dw = std::prev(it);
+  if(dw != _active.end() && up != _active.end() &&
+      _checkIntersection(dw->first, dw->second, up->first, up->second)) {
+    _active.erase(up);
+    _active.erase(dw);
   }
   _active.erase(it);
 }

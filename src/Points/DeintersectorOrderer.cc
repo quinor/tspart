@@ -43,7 +43,9 @@ bool DeintersectorPointsOrderer::isIntersecting(sf::Vector2f a, sf::Vector2f b,
 }
 
 
-bool DeintersectorPointsOrderer::_handleIntersection(ActiveIterT seg1, ActiveIterT seg2)
+bool DeintersectorPointsOrderer::_handleIntersection(ActiveIterT seg1,
+                                                     ActiveIterT seg2,
+                                                     bool adv_rm)
 {
   auto& pts = *_pts;
   bool intersect = isIntersecting(pts[seg1->first], pts[seg1->second],
@@ -52,7 +54,10 @@ bool DeintersectorPointsOrderer::_handleIntersection(ActiveIterT seg1, ActiveIte
     _addIntersection(std::min(seg1->first, seg1->second),
                      std::min(seg2->first, seg2->second));
     _active.erase(seg1);
-    _active.erase(seg2);
+    if(adv_rm)
+      _handleEndPoint(seg2->first, seg2->second);
+    else
+      _active.erase(seg2);
   }
   return intersect;
 }
@@ -63,12 +68,12 @@ void DeintersectorPointsOrderer::_handleStartPoint(size_t idxA, size_t idxB)
   auto it = _active.insert({idxA, idxB}).first;
   if(it != _active.begin()) {
     auto dw = std::prev(it);
-    if(_handleIntersection(it, dw))
+    if(_handleIntersection(it, dw, true))
       return;
   }
   auto up = std::next(it);
   if(up != _active.end())
-    _handleIntersection(it, up);
+    _handleIntersection(it, up, true);
 }
 
 

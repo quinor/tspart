@@ -149,7 +149,7 @@ class DeintersectorPointsOrderer : public PointsOrderer
 
   void _handleStartPoint(size_t idxA, size_t idxB);
   void _handleEndPoint(size_t idxA, size_t idxB);
-  bool _handleIntersection(ActiveIterT seg1, ActiveIterT seg2);
+  bool _handleIntersection(ActiveIterT seg1, ActiveIterT seg2, bool adv_rm=false);
 
 
   void _repin(long a1, long a2, long b1, long b2);

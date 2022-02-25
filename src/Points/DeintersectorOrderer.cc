@@ -43,12 +43,17 @@ bool DeintersectorPointsOrderer::isIntersecting(sf::Vector2f a, sf::Vector2f b,
 }
 
 
-bool DeintersectorPointsOrderer::_checkIntersection(size_t idxA, size_t idxB, size_t idxC, size_t idxD)
+bool DeintersectorPointsOrderer::_handleIntersection(ActiveIterT seg1, ActiveIterT seg2)
 {
   auto& pts = *_pts;
-  bool intersect = isIntersecting(pts[idxA], pts[idxB], pts[idxC], pts[idxD]);
-  if(intersect)
-    _addIntersection(std::min(idxA, idxB), std::min(idxC, idxD));
+  bool intersect = isIntersecting(pts[seg1->first], pts[seg1->second],
+                                  pts[seg2->first], pts[seg2->second]);
+  if(intersect) {
+    _addIntersection(std::min(seg1->first, seg1->second),
+                     std::min(seg2->first, seg2->second));
+    _active.erase(seg1);
+    _active.erase(seg2);
+  }
   return intersect;
 }
 
@@ -56,17 +61,14 @@ void DeintersectorPointsOrderer::_handleStartPoint(size_t idxA, size_t idxB)
 {
   _current_x = _pts->at(idxA).x;
   auto it = _active.insert({idxA, idxB}).first;
-  auto dw = std::prev(it);
-  auto up = std::next(it);
-  if(it != _active.begin() &&
-      _checkIntersection(idxA, idxB, dw->first, dw->second)) {
-    _active.erase(it);
-    _active.erase(dw);
-  } else if(up != _active.end() &&
-      _checkIntersection(idxA, idxB, up->first, up->second)) {
-    _active.erase(it);
-    _active.erase(up);
+  if(it != _active.begin()) {
+    auto dw = std::prev(it);
+    if(_handleIntersection(it, dw))
+      return;
   }
+  auto up = std::next(it);
+  if(up != _active.end())
+    _handleIntersection(it, up);
 }
 
 
@@ -77,11 +79,8 @@ void DeintersectorPointsOrderer::_handleEndPoint(size_t idxA, size_t idxB)
     return;
   auto up = std::next(it);
   auto dw = std::prev(it);
-  if(dw != _active.end() && up != _active.end() &&
-      _checkIntersection(dw->first, dw->second, up->first, up->second)) {
-    _active.erase(up);
-    _active.erase(dw);
-  }
+  if(dw != _active.end() && up != _active.end())
+    _handleIntersection(dw, up);
   _active.erase(it);
 }
 

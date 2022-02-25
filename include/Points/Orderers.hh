@@ -136,6 +136,8 @@ class DeintersectorPointsOrderer : public PointsOrderer
   std::vector<std::pair<size_t, size_t>> _intersects;
   float _current_x;
   std::set<std::pair<size_t, size_t>, IdxsComparator> _active;
+  using ActiveIterT =
+    std::set<std::pair<size_t, size_t>, IdxsComparator>::iterator;
 
   void _init_structs(const std::vector<sf::Vector2f>&);
 
@@ -147,7 +149,7 @@ class DeintersectorPointsOrderer : public PointsOrderer
 
   void _handleStartPoint(size_t idxA, size_t idxB);
   void _handleEndPoint(size_t idxA, size_t idxB);
-  bool _checkIntersection(size_t idxA, size_t idxB, size_t idxC, size_t idxD);
+  bool _handleIntersection(ActiveIterT seg1, ActiveIterT seg2);
 
 
   void _repin(long a1, long a2, long b1, long b2);

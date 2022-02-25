@@ -84,7 +84,7 @@ void DeintersectorPointsOrderer::_handleEndPoint(size_t idxA, size_t idxB)
     return;
   auto up = std::next(it);
   auto dw = std::prev(it);
-  if(dw != _active.end() && up != _active.end())
+  if(it != _active.begin() && up != _active.end())
     _handleIntersection(dw, up);
   _active.erase(it);
 }

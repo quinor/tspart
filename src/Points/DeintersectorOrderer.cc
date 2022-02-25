@@ -90,22 +90,14 @@ DeintersectorPointsOrderer::find(const std::vector<sf::Vector2f>& pts)
 {
   _init_structs(pts);
   for (size_t idx: _idxs) {
-    if (idx > 0) {
-      if (pts[idx-1].x <= pts[idx].x)
+    if (idx > 0 && pts[idx-1].x <= pts[idx].x)
         _handleEndPoint(idx-1, idx);
-    }
-    if (idx+1 < pts.size()) {
-      if (pts[idx].x > pts[idx+1].x)
+    if (idx+1 < pts.size() && pts[idx].x > pts[idx+1].x)
         _handleEndPoint(idx+1, idx);
-    }
-    if (idx > 0) {
-      if (pts[idx-1].x > pts[idx].x) 
+    if (idx > 0 && pts[idx-1].x > pts[idx].x) 
         _handleStartPoint(idx, idx-1);
-    }
-    if (idx+1 < pts.size()) {
-      if (pts[idx].x <= pts[idx+1].x)
+    if (idx+1 < pts.size() && pts[idx].x <= pts[idx+1].x)
         _handleStartPoint(idx, idx+1);
-    }
   }
   return _intersects;
 }

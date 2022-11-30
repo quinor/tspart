@@ -121,7 +121,7 @@ tgui::HorizontalLayout::Ptr slider(int from, int def, int to, std::function<void
 }
 
 
-void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
+void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr, const char* preloaded_image)
 {
   auto& in_filename = gr.input<std::string>();
   auto& out_filename = gr.input<std::string>();
@@ -321,7 +321,7 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
   },
   1));
 
-  new_file("res/klaudia.jpg");
+  new_file(preloaded_image ? preloaded_image : "res/klaudia.jpg");
 
   tgui::Panel::Ptr panel = tgui::Panel::create();
   panel->setPosition(0, 0);
@@ -331,11 +331,11 @@ void create_app(tgui::Gui& gui, Graph<ImageMixin, PointsMixin>& gr)
 }
 
 
-int main()
+int main(int argc, char** argv)
 {
   sf::RenderWindow window(
     sf::VideoMode(1280, 720),
-    "TSPArt",
+    "TSPArt ∴ tesselation",
     sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close
   );
   window.setVerticalSyncEnabled(true);
@@ -346,7 +346,7 @@ int main()
   auto theme = tgui::Theme{"misc/TransparentGrey.txt"};
   tgui::Theme::setDefault(&theme);
 
-  create_app(gui, graph);
+  create_app(gui, graph, argc > 1 ? argv[1] : nullptr);
 
   sf::Event event;
   sf::Clock clock;

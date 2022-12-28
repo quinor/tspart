@@ -6,6 +6,7 @@ build.ninja
 venv/
 libs/
 package*
+.vscode
 
 color_normalization
 grayscale_normalization
@@ -35,3 +36,6 @@ activate
 .clang_complete
 /twitterbot_apps/
 TODO
+
+tspart.tar.gz
+tspart/

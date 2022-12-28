@@ -14,6 +14,8 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O3")
 endif()
 
+set(CMAKE_INSTALL_RPATH "./lib")
+
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE sources ${CMAKE_SOURCE_DIR}/src/*.cc ${CMAKE_SOURCE_DIR}/src/*.cpp)
@@ -47,3 +49,16 @@ foreach(test_src ${tests})
     )
     target_link_libraries(${binary} ${libraries})
 endforeach()
+
+
+install(TARGETS sfml-graphics sfml-window sfml-system tspart tgui tspart_gui tesselation_gui
+        RUNTIME DESTINATION . COMPONENT tspart_release
+        LIBRARY DESTINATION lib COMPONENT tspart_release
+        ARCHIVE DESTINATION lib/tspart COMPONENT tspart_release
+)
+
+install(DIRECTORY shaders misc
+        DESTINATION . COMPONENT tspart_release)
+
+install(FILES res/klaudia.jpg
+        DESTINATION res/ COMPONENT tspart_release)

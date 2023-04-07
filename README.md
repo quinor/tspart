@@ -1,22 +1,9 @@
 # TSPART
 
 ![example #2, tspart_gui](/readme_res/example_2.png)
-## Requirements
+## Download
 
-You have to provide:
-  * make
-  * cmake
-  * C++17-compatible compiler
-  * SFML build dependencies (*installing dependencies* list from [here](https://www.sfml-dev.org/tutorials/2.5/compile-with-cmake.php))
-
-
-## Build instructions
-
-Run `git submodule update --init` after cloning to update the submodule dependencies or clone the repository with `git clone https://github.com/quinor/tspart.git --recursive` to download the submodules instantly.
-
-Run `cmake -B build .` and then `cmake --build build -j4` to build the project.
-
-The binaries will be built and copied to the project's main directory.
+The app can be downloaded from the releases - no need to build it by hand!
 
 
 ## Usage instructions
@@ -41,3 +28,17 @@ Run the `./tesselation_gui` for an experimental application for generating tesse
 ![example #6, tesselation_gui](/readme_res/example_6.jpg)
 
 ![example #7, tesselation_gui](/readme_res/example_7.jpg)
+
+## For developent - build instructions
+
+You have to provide:
+  * make
+  * cmake
+  * C++17-compatible compiler
+  * SFML build dependencies (*installing dependencies* list from [here](https://www.sfml-dev.org/tutorials/2.5/compile-with-cmake.php))
+
+Run `git submodule update --init` after cloning to update the submodule dependencies or clone the repository with `git clone https://github.com/quinor/tspart.git --recursive` to download the submodules instantly.
+
+Run `cmake -B build .` and then `cmake --build build -j4` to build the project.
+
+The binaries will be built and copied to the project's main directory.
